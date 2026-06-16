@@ -1,0 +1,76 @@
+---
+name: loop-review
+description: >-
+  Audit and harden an EXISTING agentic-loop prompt or harness against
+  loop-engineering best practices. Use this whenever the user has an agent/loop
+  prompt and wants it reviewed, critiqued, scored, or made more reliable — or when
+  they describe loop misbehavior and want to know why: "my agent runs forever /
+  never stops", "it quits too early", "it says it's done but it isn't", "it keeps
+  redoing the same thing", "it forgets progress after a restart", "it edits the
+  tests to pass", "review/improve my agent prompt", "why is my loop flaky". It
+  produces a scored report — critical gaps first, each with a concrete fix — and
+  can rewrite the prompt to close them.
+---
+
+# Loop Review
+
+Audit an existing loop prompt or harness and tell the user exactly where it will
+break and how to fix it. The job is diagnosis + concrete fixes, not a vague "looks
+good." Most loop pathologies map to a specific missing piece — find it.
+
+> Write the report in **the user's language**; reasoning in English.
+
+## Inputs
+
+Get the artifact to review: the loop prompt / system prompt / harness (paste, file
+path, or repo). If the user describes a *symptom* instead, the symptom map below
+points straight at the likely gap. If they have a SPEC or success criteria, read
+those too — a loop that doesn't match its spec is itself a finding.
+
+## How to audit
+
+Run the artifact against the shared checklist in
+`../loop-engineering/references/checklist.md` (the same seven dimensions
+`loop-engineering` builds to). For each item, decide pass / gap, and for each gap
+note the **exact missing thing** and a **one-line fix**. Read
+`../loop-engineering/references/principles.md` if you need the "why" behind a
+dimension.
+
+Be a tough but fair reviewer:
+- **Critical gaps first.** The items that cause runaway, drift, or fake success
+  (no hard cap, no verifiable criteria, no externalized state, no real
+  verification, no anti-reward-hacking guardrail). Any one of these means "not
+  ready."
+- **Then non-critical gaps, ranked by impact.** Don't bury the big fix under nits.
+- **Then what it already does well** — so the user knows what *not* to touch
+  (surgical changes only).
+- **Quote the prompt** when pointing at a problem; concrete beats abstract.
+
+## Symptom → likely gap
+
+Use this to go straight to the cause when the user reports a behavior:
+
+| Symptom | Likely missing piece | Dimension |
+|---|---|---|
+| Runs forever / never stops | No hard cap; no verifiable "done" | B, A |
+| Quits too early / gives up | "Blocked" not defined, or criteria too vague to confirm done | B, A |
+| "Done" but it isn't | Verification not mandatory/real; criteria not verifiable | G, A |
+| Repeats the same failed action | No "stuck" detection; no hypothesis/progress log | B, D |
+| Forgets progress after restart | State not externalized to files | D |
+| Edits tests / weakens checks to pass | No anti-reward-hacking guardrail; goal not protected | G, D |
+| Tries to do everything at once | No "one increment per iteration" rule | C |
+| Slows down / loses the thread over time | No context discipline / compaction / notes | E |
+| Picks the wrong next thing | No Orient step / no prioritized task list | C, D |
+
+## Output
+
+A `LOOP-REVIEW.md` (or inline report) with:
+1. **Verdict** — ready / not ready, and the headline reason.
+2. **Score** — critical gap count + total gap count (from the checklist).
+3. **Critical gaps** — each: what's missing, why it bites, the one-line fix.
+4. **Other gaps** — ranked by impact.
+5. **Strengths** — what's already good; leave it alone.
+
+Then offer to **apply the fixes**: rewrite the prompt closing the gaps (using the
+`loop-engineering` template), changing only what the findings require — don't
+gold-plate a prompt that's mostly fine.

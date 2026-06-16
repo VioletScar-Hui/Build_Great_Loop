@@ -1,0 +1,33 @@
+{
+  "skill_name": "loop-engineering",
+  "evals": [
+    {
+      "id": 0,
+      "name": "build-until-green-api",
+      "prompt": "I'm building a small REST API in Node/Express for a bookmarks app. I want to point Claude at the repo and have it implement the endpoints one at a time until all my integration tests in tests/api.test.js pass — and I want it to survive getting restarted halfway through (my sessions keep timing out). Write me the prompt I should paste in to kick this agent off.",
+      "expected_output": "A complete, paste-ready loop prompt: role/goal, verifiable success criteria (tests pass), stop conditions incl. a hard cap, a state/progress mechanism that survives restart, an explicit per-iteration loop that orients first and does one increment at a time, a mandatory real verification step, and guardrails (don't fake completion, don't edit tests to pass).",
+      "files": []
+    },
+    {
+      "id": 1,
+      "name": "overnight-batch-labeling",
+      "prompt": "I have about 500 customer support chat transcripts in a folder (one .txt per chat) and I need an agent to read each one and label it with a category and a sentiment, writing results to a CSV, running unattended overnight. It absolutely cannot lose progress if it stops, and I need to trust the labels are accurate. Can you give me a prompt that sets this up as a reliable loop?",
+      "expected_output": "A paste-ready loop prompt for a batch/map-reduce style job: verifiable done criterion (all 500 labeled), a resumable manifest/state so progress survives interruption, one-item-or-batch-at-a-time processing, a verification/quality step for label accuracy, a hard stop/budget, and guardrails against skipping or fabricating labels.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "competitor-research-loop",
+      "prompt": "I want an autonomous research agent that figures out a competitor's full pricing (all tiers, add-ons, and any enterprise/hidden pricing) by checking their website plus third-party sources, keeps digging until it's actually confident, and then writes up the findings with sources. Give me the prompt to run it.",
+      "expected_output": "A paste-ready research-loop prompt: a confidence/coverage based success criterion, a notes/findings file that externalizes state and tracks open questions, an iterate-on-the-biggest-open-question loop, just-in-time retrieval discipline, a verification step (does this actually answer the question / are sources credible), a stop/diminishing-returns condition, and a sourced write-up as the deliverable.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "flaky-test-debug-loop",
+      "prompt": "There's a test in our Python suite (test_checkout_flow) that fails maybe 1 in 5 runs and nobody knows why. I want to hand it to an agent and have it loop — reproduce, form a theory, test it, fix it — until it nails the root cause, without just masking the symptom or deleting the test. What prompt should I give it?",
+      "expected_output": "A paste-ready debug-loop prompt: reproduce-first orientation, one-hypothesis-per-iteration with a hypothesis log (state that survives), a verification step that checks whether the symptom changed as predicted, a 'done = root cause understood and fixed' criterion, a stuck/escalate condition after N dead hypotheses plus a hard cap, and an explicit guardrail against masking the symptom or deleting/weakening the test.",
+      "files": []
+    }
+  ]
+}
