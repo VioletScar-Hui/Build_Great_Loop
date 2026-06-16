@@ -1,0 +1,53 @@
+<svg viewBox="0 0 780 380" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="fb" markerWidth="9" markerHeight="8" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#1f6f5c"/>
+    </marker>
+    <marker id="fbd" markerWidth="9" markerHeight="8" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#8a8780"/>
+    </marker>
+  </defs>
+  <rect x="6" y="6" width="768" height="368" rx="16" fill="#faf9f5" stroke="#e8e6dc"/>
+  <text x="40" y="50" font-size="20" font-weight="700" fill="#141413">The five-beat loop</text>
+  <text x="40" y="74" font-size="13" fill="#6b7280">one increment per iteration — until a stop condition fires</text>
+
+  <!-- clockwise arrows (drawn first, nodes cover the tails) -->
+  <line x1="290" y1="95"  x2="365" y2="149" stroke="#1f6f5c" stroke-width="2" marker-end="url(#fb)"/>
+  <line x1="409" y1="181" x2="380" y2="270" stroke="#1f6f5c" stroke-width="2" marker-end="url(#fb)"/>
+  <line x1="364" y1="321" x2="271" y2="321" stroke="#1f6f5c" stroke-width="2" marker-end="url(#fb)"/>
+  <line x1="217" y1="321" x2="188" y2="232" stroke="#1f6f5c" stroke-width="2" marker-end="url(#fb)"/>
+  <line x1="171" y1="181" x2="246" y2="127" stroke="#1f6f5c" stroke-width="2" marker-end="url(#fb)"/>
+
+  <text x="290" y="224" font-size="12" fill="#8a8780" text-anchor="middle">↻ loop</text>
+
+  <!-- nodes -->
+  <g text-anchor="middle">
+    <circle cx="290" cy="95"  r="46" fill="#14532d" stroke="#14532d"/>
+    <text x="290" y="92"  font-size="15" font-weight="700" fill="#ffffff">Orient</text>
+    <text x="290" y="110" font-size="10" fill="#cfe3da">read state</text>
+
+    <circle cx="409" cy="181" r="46" fill="#e7f0ec" stroke="#1f6f5c"/>
+    <text x="409" y="178" font-size="15" font-weight="700" fill="#14532d">Plan</text>
+    <text x="409" y="196" font-size="10" fill="#3f6b5c">pick 1 step</text>
+
+    <circle cx="364" cy="321" r="46" fill="#e7f0ec" stroke="#1f6f5c"/>
+    <text x="364" y="318" font-size="15" font-weight="700" fill="#14532d">Act</text>
+    <text x="364" y="336" font-size="10" fill="#3f6b5c">do only it</text>
+
+    <circle cx="217" cy="321" r="46" fill="#e7f0ec" stroke="#1f6f5c"/>
+    <text x="217" y="318" font-size="15" font-weight="700" fill="#14532d">Verify</text>
+    <text x="217" y="336" font-size="10" fill="#3f6b5c">prove it</text>
+
+    <circle cx="171" cy="181" r="46" fill="#e7f0ec" stroke="#1f6f5c"/>
+    <text x="171" y="178" font-size="15" font-weight="700" fill="#14532d">Record</text>
+    <text x="171" y="196" font-size="10" fill="#3f6b5c">persist</text>
+  </g>
+
+  <!-- stop conditions callout -->
+  <line x1="430" y1="250" x2="556" y2="214" stroke="#8a8780" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#fbd)"/>
+  <rect x="558" y="150" width="186" height="128" rx="12" fill="#ffffff" stroke="#c9d6cf"/>
+  <text x="574" y="178" font-size="14" font-weight="700" fill="#141413">Stop conditions</text>
+  <text x="574" y="204" font-size="12" fill="#1f6f5c">● done — verified</text>
+  <text x="574" y="226" font-size="12" fill="#c2643f">● blocked — escalate</text>
+  <text x="574" y="248" font-size="12" fill="#6b7280">● hard cap — can't run forever</text>
+</svg>

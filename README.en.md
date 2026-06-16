@@ -20,6 +20,8 @@ interrupted, and not fake completion** — it interviews your task and emits a
 > conditions that tell it to stop. This skill group turns "what a senior engineer does
 > instinctively" into default instructions inside the prompt.
 
+![Build Great Loop — the 4-skill workflow](assets/workflow.svg)
+
 ---
 
 ## What it is
@@ -141,6 +143,8 @@ loop-spec  ──►  loop-engineering  ──►  loop-eval
 ---
 
 ## The core method
+
+![The five-beat loop: Orient → Plan → Act → Verify → Record](assets/five-beats.svg)
 
 - **Five beats**: `Orient` (read state first) → `Plan` (pick one smallest increment) →
   `Act` (do only that) → `Verify` (test it like a user would) → `Record` (write durable

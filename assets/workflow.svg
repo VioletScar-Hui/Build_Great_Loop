@@ -1,0 +1,40 @@
+<svg viewBox="0 0 960 360" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="ar" markerWidth="10" markerHeight="8" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#1f6f5c"/>
+    </marker>
+    <marker id="ar2" markerWidth="10" markerHeight="8" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#c2643f"/>
+    </marker>
+  </defs>
+  <rect x="6" y="6" width="948" height="348" rx="16" fill="#faf9f5" stroke="#e8e6dc"/>
+  <text x="40" y="54" font-size="20" font-weight="700" fill="#141413">Build Great Loop · the 4-skill workflow</text>
+
+  <!-- A: loop-spec -->
+  <rect x="40" y="120" width="250" height="86" rx="12" fill="#ffffff" stroke="#c9d6cf"/>
+  <text x="62" y="158" font-size="17" font-weight="700" fill="#1f6f5c">loop-spec</text>
+  <text x="62" y="184" font-size="13" fill="#6b7280">intake → SPEC.md</text>
+
+  <!-- B: loop-engineering (core, emphasized) -->
+  <rect x="355" y="108" width="250" height="98" rx="12" fill="#e7f0ec" stroke="#1f6f5c" stroke-width="2"/>
+  <text x="377" y="146" font-size="17" font-weight="700" fill="#14532d">loop-engineering</text>
+  <text x="377" y="170" font-size="13" fill="#3f6b5c">core · interview → loop prompt</text>
+  <text x="377" y="190" font-size="12" fill="#6b7280">paste-ready harness</text>
+
+  <!-- C: loop-eval -->
+  <rect x="670" y="120" width="250" height="86" rx="12" fill="#ffffff" stroke="#c9d6cf"/>
+  <text x="692" y="158" font-size="17" font-weight="700" fill="#1f6f5c">loop-eval</text>
+  <text x="692" y="184" font-size="13" fill="#6b7280">success criteria + evals</text>
+
+  <!-- arrows A->B, B->C -->
+  <line x1="290" y1="160" x2="350" y2="157" stroke="#1f6f5c" stroke-width="2" marker-end="url(#ar)"/>
+  <line x1="605" y1="157" x2="665" y2="160" stroke="#1f6f5c" stroke-width="2" marker-end="url(#ar)"/>
+
+  <!-- D: loop-review feeding into B -->
+  <rect x="355" y="250" width="250" height="64" rx="12" fill="#ffffff" stroke="#c2643f"/>
+  <text x="377" y="280" font-size="16" font-weight="700" fill="#c2643f">loop-review</text>
+  <text x="377" y="301" font-size="12" fill="#6b7280">audit &amp; harden an existing loop</text>
+  <line x1="480" y1="250" x2="480" y2="210" stroke="#c2643f" stroke-width="2" marker-end="url(#ar2)"/>
+
+  <text x="40" y="340" font-size="12" fill="#8a8780">spec → engineering → eval   ·   each skill also triggers on its own   ·   review hardens any existing loop</text>
+</svg>

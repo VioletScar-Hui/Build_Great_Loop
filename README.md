@@ -18,6 +18,8 @@
 > 诚实的验证、以及告诉它何时该停的规矩。这套技能把「老手才会下意识做的事」变成提示词里
 > 的默认动作。
 
+![Build Great Loop — 4 个技能的工作流](assets/workflow.svg)
+
 ---
 
 ## 这是什么
@@ -134,6 +136,8 @@ loop-spec  ──►  loop-engineering  ──►  loop-eval
 ---
 
 ## 核心方法
+
+![五拍循环 Orient → Plan → Act → Verify → Record](assets/five-beats.svg)
 
 - **五拍循环**：`Orient`（先读状态）→ `Plan`（选一个最小增量）→ `Act`（只做这一个）→
   `Verify`（像用户那样真验）→ `Record`（写进耐久状态，保持干净可交接）。
