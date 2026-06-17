@@ -2,6 +2,14 @@
 
 本项目的版本演进记录。Newest first.
 
+## v2.2 - Deliverable Guardrail: emit the prompt, not the executed task
+
+### Changed
+- `loop-engineering` 明确交付边界：用本 skill 时，产出是**可直接粘贴的 loop 提示词本体**，
+  不是替用户把任务做掉（写文章、建应用、跑研究）。`SKILL.md` 的「Your job」段写清这点，
+  Rationalizations 表新增一条护栏（"Fastest way to help is to just build the thing they
+  described" → 只交付提示词，除非用户明确说"跑一遍/执行"），并标为最常见的跑偏、重点防。
+
 ## v2.1 - Workflow-Skill Best-Practice Hardening
 
 参照《工作流的 Skill 怎么写？从 7 个顶级 Skill 中提炼的模式与最佳实践》对设计做的加固。

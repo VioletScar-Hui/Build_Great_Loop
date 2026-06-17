@@ -23,8 +23,12 @@ loop is everything else: the goal it steers by, the state it remembers, the
 verification that keeps it honest, and the conditions that tell it to stop.
 
 Your job when this skill triggers: take the user's task description and produce a
-**complete loop prompt** they can paste into a fresh agent and run. Not advice
-about loops — the actual prompt.
+**complete loop prompt** they can paste into a fresh agent and run. The deliverable
+is the **prompt** — not advice about loops, and **not the task itself done for
+them**. Write the paste-ready prompt and stop there. Only go on to actually execute
+or build what the prompt describes if the user *explicitly* asks (e.g. "run it",
+"execute", "跑一遍", "show it working"). If they just say "use loop-engineering for
+X" or "build me a loop that does X", they want the prompt, not X.
 
 > Respond and write the produced prompt in **the user's language**. Keep this
 > skill's internal reasoning in English; switch to their language for the
@@ -175,6 +179,7 @@ column, apply the right.
 
 | The tempting shortcut | Why it's wrong |
 |---|---|
+| "Fastest way to help is to just build the thing they described." | The deliverable of *this skill* is the loop **prompt**, not the executed task. Hand over the paste-ready prompt and stop; only run/build it yourself if the user explicitly asks. This is the most common drift — guard it hardest. |
 | "The user's description is detailed enough — skip the spec." | A loop is only as good as its goal. Confirm the success criteria are *verifiable* and a stop condition exists before you write a line; a fuzzy goal is the #1 failure source. |
 | "This loop is simple — it doesn't need a hard cap." | Every loop needs a seatbelt. No hard cap means it runs forever the moment the logic fails. Always include one. |
 | "I'll just explain how to set the loop up." | The deliverable is the paste-ready prompt itself, not advice about loops. Write the prompt. |
