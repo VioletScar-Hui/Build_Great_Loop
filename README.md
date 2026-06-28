@@ -4,8 +4,8 @@
 
 ![Codex Skill](https://img.shields.io/badge/Codex-Skill-111827)
 ![Claude Compatible](https://img.shields.io/badge/Claude-Compatible-6B46C1)
-![Skills](https://img.shields.io/badge/Skills-4%20composable-0E7490)
-![Benchmarked](https://img.shields.io/badge/Benchmark-v2%20100%25%20vs%20v1%2070%25-success)
+![Skills](https://img.shields.io/badge/Skills-5%20composable-0E7490)
+![Benchmarked](https://img.shields.io/badge/Benchmark-v3%20100%25%20vs%20v2.2%2068%25-success)
 ![Language](https://img.shields.io/badge/Language-ZH%20%2B%20EN-blue)
 ![License](https://img.shields.io/github/license/VioletScar-Hui/Build_Great_Loop)
 ![Status](https://img.shields.io/badge/Status-Active-success)
@@ -32,6 +32,7 @@
 | **loop-engineering**（核心） | 访谈 → 产出**可粘贴的循环提示词本体** | 「帮我写个能一直跑到完成的 agent / 循环 / harness」 |
 | **loop-eval** | 设计成功标准 + 小评测集 + 评分器（pass@k vs pass^k） | 「怎么知道这循环靠不靠谱 / 给 agent 写评测」 |
 | **loop-review** | 体检并加固一份**已有**的循环提示词 | 「我的 agent 老是停不下来 / 说完成了其实没有 / 重启丢进度」 |
+| **loop-ops** | 把循环跑成周期性/无人值守的自动化（调度·成本·安全门·分级放权） | 「每天/每个 PR/每晚跑这个 agent」「无人值守怎么跑不出事」「babysit 我的 PR」「自动 triage issue」 |
 
 设计与最佳实践来自 Anthropic、GitHub、Sourcegraph、OpenAI 的官方工程文章（见[来源](#来源与致谢)）。
 
@@ -55,8 +56,8 @@
 直接对你的 Codex / Claude Code 说：
 
 > 帮我安装这个 skill 组：`https://github.com/VioletScar-Hui/Build_Great_Loop`
-> 把仓库里的 `loop-spec` / `loop-engineering` / `loop-eval` / `loop-review` 四个目录，
-> 复制到我的 skills 目录下。
+> 把仓库里的 `loop-spec` / `loop-engineering` / `loop-eval` / `loop-review` / `loop-ops`
+> 五个目录，复制到我的 skills 目录下。
 
 ### Codex（Windows PowerShell）
 
@@ -65,7 +66,7 @@ $tmp = Join-Path $env:TEMP "build_great_loop"
 git clone --depth 1 https://github.com/VioletScar-Hui/Build_Great_Loop $tmp
 $dest = "$env:USERPROFILE\.codex\skills"
 New-Item -ItemType Directory -Force $dest | Out-Null
-"loop-spec","loop-engineering","loop-eval","loop-review" | ForEach-Object {
+"loop-spec","loop-engineering","loop-eval","loop-review","loop-ops" | ForEach-Object {
   Copy-Item -Recurse -Force "$tmp\$_" $dest
 }
 Remove-Item -Recurse -Force $tmp
@@ -78,7 +79,7 @@ $tmp = Join-Path $env:TEMP "build_great_loop"
 git clone --depth 1 https://github.com/VioletScar-Hui/Build_Great_Loop $tmp
 $dest = "$env:USERPROFILE\.claude\skills"
 New-Item -ItemType Directory -Force $dest | Out-Null
-"loop-spec","loop-engineering","loop-eval","loop-review" | ForEach-Object {
+"loop-spec","loop-engineering","loop-eval","loop-review","loop-ops" | ForEach-Object {
   Copy-Item -Recurse -Force "$tmp\$_" $dest
 }
 Remove-Item -Recurse -Force $tmp
@@ -91,14 +92,14 @@ tmp=$(mktemp -d)
 git clone --depth 1 https://github.com/VioletScar-Hui/Build_Great_Loop "$tmp"
 dest="$HOME/.claude/skills"          # Codex 改成 "$HOME/.codex/skills"
 mkdir -p "$dest"
-for s in loop-spec loop-engineering loop-eval loop-review; do cp -R "$tmp/$s" "$dest/"; done
+for s in loop-spec loop-engineering loop-eval loop-review loop-ops; do cp -R "$tmp/$s" "$dest/"; done
 rm -rf "$tmp"
 ```
 
 ### 给 AI Agent 的快速安装检查
 
 ```powershell
-"loop-spec","loop-engineering","loop-eval","loop-review" | ForEach-Object {
+"loop-spec","loop-engineering","loop-eval","loop-review","loop-ops" | ForEach-Object {
   $p = "$env:USERPROFILE\.claude\skills\$_\SKILL.md"   # Codex 改 .codex
   if (Test-Path $p) { "OK  $_" } else { "MISSING  $_" }
 }
@@ -174,6 +175,8 @@ loop-spec  ──►  loop-engineering  ──►  loop-eval
 | v1 | 初版：五拍循环 + 七维度 + 两大失败模式；4 技能组合；6 篇参考资料蒸馏 |
 | v2 | 操作级严谨度：机器可检标准、崩溃安全幂等续跑、按规模设上限、可一眼扫到的状态（评测 v2 100% vs v1 70%） |
 | v2.1 | 参照「工作流 Skill 最佳实践」加固：`Rationalizations` 反驳表（堵住作者偷懒）+ Weak-vs-strong 对比教学 |
+| v2.2 | 交付边界护栏：用本组时产出是「可粘贴的循环提示词本体」，不替你执行任务（除非你明确要求） |
+| v3.0 | 参照 cobusgreyling/loop-engineering：新增第 5 个 skill **loop-ops**（运维层）+ 把 自治级别(L1/L2/L3)·human gate·成本预算·comprehension-debt 融进 loop-engineering（基准 v3 100% vs v2.2 67.5%） |
 
 ---
 
@@ -190,7 +193,8 @@ Build_Great_Loop/
 │   └── evals/evals.json     # 示例评测集
 ├── loop-spec/               # 访谈 → SPEC.md（assets/spec-template.md）
 ├── loop-eval/               # 成功标准 + 评测（assets/eval-template.md）
-└── loop-review/             # 审计/加固已有循环
+├── loop-review/             # 审计/加固已有循环
+└── loop-ops/                # 运营周期性/无人值守循环（调度·成本·安全·7 个周期模式 + STATE/run-log 模板）
 ```
 
 ---

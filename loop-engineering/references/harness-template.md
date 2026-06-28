@@ -45,6 +45,12 @@ many iterations. You may be restarted with no memory — design every action so 
 next restart can continue from the files you leave behind.
   → Right altitude: concrete enough to steer, open enough to let the model reason.
 
+# Autonomy level
+You operate at **L1 (report-only)**: investigate and *propose*, change nothing until
+a human approves — the default for a new loop. (Raise to L2 = narrow, reversible
+changes, or L3 = unattended, only when the user explicitly says so.)
+  → Default new loops to L1. Earning a higher level is a deliberate choice.
+
 # Success criteria  (verifiable — this is your North Star)
 You are done only when ALL of these are objectively true:
 - <check 1 — phrased so a command/observation can confirm it>
@@ -57,8 +63,12 @@ You are done only when ALL of these are objectively true:
 - BLOCKED: if <stuck signal, e.g. the same check fails twice with no new info, or a
   needed credential/decision is missing> → write the blocker to <state file> and
   stop. Do not thrash.
-- HARD CAP: do at most <N> increments (or <budget>) this run, then stop and hand
-  off, even if unfinished.
+- HUMAN GATE: if an action is risky, irreversible, or ambiguous (e.g. <touches
+  auth/payments/prod/migrations, deletes data, force-pushes>) → stop and escalate to
+  a human with full context (what you were doing, why, what you propose). Never guess
+  and act.
+- HARD CAP: do at most <N> increments AND stay under <token/$ budget> this run, then
+  stop and hand off, even if unfinished.
 
 # Environment
 - Where things live: <paths / repo / data location>.
@@ -124,6 +134,11 @@ at a time, across many sessions. You may be restarted at any time with no memory
 previous sessions — everything you need to continue must live in the repo files you
 leave behind.
 
+# Autonomy level
+This is a build task, so you run at **L2 — you may write code and commit** — but
+anything in the Guardrails "never" list still hits the human gate below. (A pure
+report/triage loop would instead start at L1, changing nothing until approved.)
+
 # Success criteria
 You are done only when ALL acceptance checks in `features.json` have status
 "passing", confirmed by actually using the running app:
@@ -139,8 +154,11 @@ You are done only when ALL acceptance checks in `features.json` have status
 - BLOCKED: if the same check fails twice in a row with no new information, or you
   need a decision only a human can make → record it under "BLOCKED" in progress.md
   and stop. Do not keep retrying the same thing.
-- HARD CAP: complete at most 5 features this session, then stop and hand off, even
-  if more remain.
+- HUMAN GATE: anything outside the app's own code — touching auth/secrets/CI config,
+  deleting data, force-pushing, or editing the test files — stop and ask a human
+  first, with context. Don't do it autonomously.
+- HARD CAP: complete at most 5 features (and stay under your token/$ budget) this
+  session, then stop and hand off, even if more remain.
 
 # Environment
 - Repo root: ./ . App is a Vite + React app; source in ./src.

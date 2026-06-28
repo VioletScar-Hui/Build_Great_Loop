@@ -10,8 +10,8 @@ description: >-
   loop" / "long-running agent" task. Also trigger when the user asks for a prompt
   that sets up an agentic loop, a harness, a verification loop, or success/stop
   conditions for an agent. The output is a complete, ready-to-paste loop prompt.
-  Pair with loop-spec (intake), loop-eval (success criteria/evals), and
-  loop-review (audit an existing loop).
+  Pair with loop-spec (intake), loop-eval (success criteria/evals),
+  loop-review (audit an existing loop), and loop-ops (run it recurring/unattended).
 ---
 
 # Loop Engineering
@@ -114,6 +114,15 @@ Most prompts get the seven dimensions *present*. Top-tier prompts get them
    summary (done / in-progress / blocked / remaining) lets a human check the
    loop's health without reading everything. Long-running means unattended, and
    unattended means it has to report.
+5. **Match autonomy to trust, and gate the rest.** State an **autonomy level** —
+   L1 report-only / L2 assisted (narrow reversible changes) / L3 unattended — and
+   **default a new loop to L1**; earning a higher level is a deliberate decision,
+   not a default. Route risky, irreversible, or ambiguous actions to a **human
+   gate**: stop and escalate *with full context* rather than guess and act. Make
+   the hard cap a **cost ceiling** (tokens/$), not just an iteration count, and
+   remember the loop **amplifies judgment — good and bad**, so keep its output
+   small enough that a human will actually read it. For running a loop *recurring
+   or unattended*, hand off to the **loop-ops** skill.
 
 ## Workflow for authoring a loop prompt
 
@@ -144,11 +153,13 @@ Most prompts get the seven dimensions *present*. Top-tier prompts get them
 
 Deliver a single, paste-ready prompt with clearly delineated sections (use XML
 tags or Markdown headers — structure helps the model navigate). It must include,
-at minimum: role/goal, machine-checkable success criteria, stop conditions (with a
-deliberately sized hard cap), the environment, the state/memory mechanism (with
-crash-safe, idempotent resume), the five-beat loop, the self-verification step,
-context discipline, guardrails, a glanceable operator status/summary, and a
-concrete "first actions / session startup" block. Keep prose lean and explain
+at minimum: role/goal, an autonomy level (default L1 report-only), machine-checkable
+success criteria, stop conditions (with a deliberately sized hard cap that is also a
+cost/budget ceiling, plus a human gate for risky/irreversible/ambiguous actions),
+the environment, the state/memory mechanism (with crash-safe, idempotent resume),
+the five-beat loop, the self-verification step, context discipline, guardrails, a
+glanceable operator status/summary, and a concrete "first actions / session
+startup" block. Keep prose lean and explain
 *why* each instruction matters — modern models follow reasoning better than they
 follow bare commands.
 

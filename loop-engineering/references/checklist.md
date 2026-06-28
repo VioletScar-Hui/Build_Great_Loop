@@ -28,6 +28,12 @@ those are the items that cause runaway, drift, or fake success.
 - [ ] Is "done" defined as *verified* criteria met?
 - [ ] Is "blocked/stuck" defined, with what to do (stop + report, or escalate)?
       *(Catches: thrashing.)*
+- [ ] Does the cap include a **cost/token budget**, not just an iteration count?
+      *(Catches: runaway spend.)*
+- [ ] Is there a **human gate** — risky / irreversible / ambiguous actions stop and
+      escalate *with full context*? *(Catches: unattended damage.)*
+- [ ] Is an **autonomy level** stated (L1 report-only / L2 assisted / L3 unattended),
+      starting at L1 for anything new? *(Catches: going unattended too soon.)*
 
 ## C. The loop skeleton
 - [ ] **(Critical)** Is it **one increment per iteration**? *(Catches: over-ambition
@@ -78,6 +84,11 @@ those are the items that cause runaway, drift, or fake success.
       / in-progress / blocked / remaining)? *(Catches: silent unattended failure.)*
 - [ ] On "blocked", does it leave a **clear, human-readable handoff** of what's
       needed? *(Catches: a stuck loop nobody can unstick.)*
+- [ ] Is the output kept **reviewable** — volume/cadence within what a human will
+      actually read (comprehension debt)? *(Catches: shipping faster than anyone
+      checks.)*
+- [ ] For recurring / unattended runs, are the operating controls covered (denylist,
+      kill switch, minimal scopes)? *(If so, design them with the **loop-ops** skill.)*
 
 ---
 

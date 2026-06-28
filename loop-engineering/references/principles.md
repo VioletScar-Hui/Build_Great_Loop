@@ -49,11 +49,18 @@ A loop without stop conditions is a runaway. Three kinds, all three needed:
   to do: write the blocker to state and stop, or escalate to a human, rather than
   thrashing.
 - **Hard cap** — a maximum number of iterations, wall-clock, or token/cost budget.
-  This is the seatbelt: even if logic fails, the loop can't run forever.
+  This is the seatbelt: even if logic fails, the loop can't run forever. Make the
+  cost ceiling explicit (tokens/$), not just an iteration count.
+- **Autonomy level & human gate** — state how much the loop may do on its own: L1
+  report-only, L2 assisted (narrow, reversible changes), L3 unattended. Default a
+  new loop to **L1**. Route risky / irreversible / ambiguous actions to a **human
+  gate** — stop and escalate *with full context* rather than act. (For running a
+  loop recurring or unattended, see the **loop-ops** skill.)
 
-*What to put in the prompt:* a stop-conditions block naming all three, with the
-exact signal for each ("if the same test fails twice in a row with no new
-information, stop and report"; "do at most N increments per run").
+*What to put in the prompt:* a stop-conditions block naming each of these, with the
+exact signal for each ("if the same test fails twice with no new information, stop
+and report"; "do at most N increments / $X per run"; "anything touching
+auth/payments/migrations → human gate").
 
 ---
 
@@ -206,6 +213,11 @@ Name these in the prompt so the agent designs against them:
   state, not the route (§1).
 - **Silent drift** — quietly rewriting the goal/spec. → protect the goal definition
   in durable state; only a human changes it.
+- **Straight to unattended** — letting the loop act on its own before report-only
+  (L1) has shown it behaves. → earn autonomy in stages (L1 → L2 → L3).
+- **Comprehension debt** — the loop ships faster than any human reads it. A loop
+  amplifies judgment, good *and* bad. → keep output reviewable and read what it
+  ships; don't just press go.
 
 ---
 

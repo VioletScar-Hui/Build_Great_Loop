@@ -2,6 +2,27 @@
 
 本项目的版本演进记录。Newest first.
 
+## v3.0 - Loop Ops + Autonomy / Human Gate / Cost Budget
+
+参照 **Cobus Greyling 的 loop-engineering 仓库**（github.com/cobusgreyling/loop-engineering）
+做的一轮扩展——把「运营周期性/无人值守循环」这一层补齐。
+
+### Added
+- 第 5 个 skill **`loop-ops`** —— 运营层：调度与节奏、五积木 + 记忆、**L1→L2→L3 分级放权**、
+  maker/checker + **human gate**、**成本/token 预算 + 运行日志**、denylist / auto-merge 闸门 /
+  MCP 权限 / 多循环协调 / failure modes / kill 开关、就绪检查表，以及 7 个真实周期模式
+  （PR babysitter、daily triage、CI sweeper、dependency sweeper、changelog drafter、
+  post-merge cleanup、issue triage）。含 `ops-plan` / `STATE` / `run-log` 模板。
+- `loop-engineering` 融入四个概念（写进 `harness-template` / `principles` / `checklist`，
+  产出的提示词与 `loop-review` 审查同步生效）：**自治级别 L1/L2/L3**（新循环默认 L1）、
+  **human gate**（高危/不可逆/模糊 → 带完整上下文升级）、**成本/token 预算**（硬上限不再只是
+  计数）、**comprehension-debt** 警示（循环放大判断力，好坏都放大）。
+
+### Changed
+- 基准（iteration-3，v3 vs v2.2 快照，更高的断言）：**100% vs 67.5%（+32.5 分）**，代价
+  +10.6s / +1.5k tokens。提升集中在 自治级别 / 成本预算（v2.2 各 0/5）+ human gate（v2.2 2/5，
+  只在任务「明喊风险」时才有）；核心 5 项两边都过，**无退化**。
+
 ## v2.2 - Deliverable Guardrail: emit the prompt, not the executed task
 
 ### Changed

@@ -4,8 +4,8 @@
 
 ![Codex Skill](https://img.shields.io/badge/Codex-Skill-111827)
 ![Claude Compatible](https://img.shields.io/badge/Claude-Compatible-6B46C1)
-![Skills](https://img.shields.io/badge/Skills-4%20composable-0E7490)
-![Benchmarked](https://img.shields.io/badge/Benchmark-v2%20100%25%20vs%20v1%2070%25-success)
+![Skills](https://img.shields.io/badge/Skills-5%20composable-0E7490)
+![Benchmarked](https://img.shields.io/badge/Benchmark-v3%20100%25%20vs%20v2.2%2068%25-success)
 ![Language](https://img.shields.io/badge/Language-ZH%20%2B%20EN-blue)
 ![License](https://img.shields.io/github/license/VioletScar-Hui/Build_Great_Loop)
 ![Status](https://img.shields.io/badge/Status-Active-success)
@@ -35,6 +35,7 @@ independently triggerable, and composable**:
 | **loop-engineering** (core) | Interview → emit the **paste-ready loop prompt itself** | "Write me an agent / loop / harness that keeps going until it's done" |
 | **loop-eval** | Design success criteria + a small eval set + graders (pass@k vs pass^k) | "How do I know this loop is reliable / write evals for my agent" |
 | **loop-review** | Audit and harden an **existing** loop prompt | "My agent never stops / says done when it isn't / loses progress on restart" |
+| **loop-ops** | Operate a loop as a recurring / unattended automation (scheduling · cost · safety gates · rollout) | "Run this agent daily / on every PR / nightly", "babysit my PRs", "auto-triage issues", "how do I run it unattended safely" |
 
 The method is distilled from official engineering writing by Anthropic, GitHub,
 Sourcegraph, and OpenAI (see [Sources](#sources--credits)).
@@ -59,7 +60,7 @@ Sourcegraph, and OpenAI (see [Sources](#sources--credits)).
 Just tell your Codex / Claude Code:
 
 > Install this skill group: `https://github.com/VioletScar-Hui/Build_Great_Loop`
-> Copy the four folders `loop-spec` / `loop-engineering` / `loop-eval` / `loop-review`
+> Copy the five folders `loop-spec` / `loop-engineering` / `loop-eval` / `loop-review` / `loop-ops`
 > into my skills directory.
 
 ### Codex (Windows PowerShell)
@@ -69,7 +70,7 @@ $tmp = Join-Path $env:TEMP "build_great_loop"
 git clone --depth 1 https://github.com/VioletScar-Hui/Build_Great_Loop $tmp
 $dest = "$env:USERPROFILE\.codex\skills"
 New-Item -ItemType Directory -Force $dest | Out-Null
-"loop-spec","loop-engineering","loop-eval","loop-review" | ForEach-Object {
+"loop-spec","loop-engineering","loop-eval","loop-review","loop-ops" | ForEach-Object {
   Copy-Item -Recurse -Force "$tmp\$_" $dest
 }
 Remove-Item -Recurse -Force $tmp
@@ -82,7 +83,7 @@ $tmp = Join-Path $env:TEMP "build_great_loop"
 git clone --depth 1 https://github.com/VioletScar-Hui/Build_Great_Loop $tmp
 $dest = "$env:USERPROFILE\.claude\skills"
 New-Item -ItemType Directory -Force $dest | Out-Null
-"loop-spec","loop-engineering","loop-eval","loop-review" | ForEach-Object {
+"loop-spec","loop-engineering","loop-eval","loop-review","loop-ops" | ForEach-Object {
   Copy-Item -Recurse -Force "$tmp\$_" $dest
 }
 Remove-Item -Recurse -Force $tmp
@@ -95,14 +96,14 @@ tmp=$(mktemp -d)
 git clone --depth 1 https://github.com/VioletScar-Hui/Build_Great_Loop "$tmp"
 dest="$HOME/.claude/skills"          # for Codex use "$HOME/.codex/skills"
 mkdir -p "$dest"
-for s in loop-spec loop-engineering loop-eval loop-review; do cp -R "$tmp/$s" "$dest/"; done
+for s in loop-spec loop-engineering loop-eval loop-review loop-ops; do cp -R "$tmp/$s" "$dest/"; done
 rm -rf "$tmp"
 ```
 
 ### Quick install check for agents
 
 ```powershell
-"loop-spec","loop-engineering","loop-eval","loop-review" | ForEach-Object {
+"loop-spec","loop-engineering","loop-eval","loop-review","loop-ops" | ForEach-Object {
   $p = "$env:USERPROFILE\.claude\skills\$_\SKILL.md"   # .codex for Codex
   if (Test-Path $p) { "OK  $_" } else { "MISSING  $_" }
 }
@@ -184,6 +185,8 @@ status** — exactly what baselines drop when the requirement is *implicit*. Cos
 | v1 | First release: five-beat loop + seven dimensions + two failure modes; 4-skill group; distilled from 6 references |
 | v2 | Operational rigor: machine-checkable criteria, crash-safe idempotent resume, sized caps, glanceable status (benchmark v2 100% vs v1 70%) |
 | v2.1 | Hardened per a "workflow-skill best practices" article: a `Rationalizations` table (closes the author's own shortcuts) + a Weak-vs-strong teaching contrast |
+| v2.2 | Deliverable guardrail: using the group yields the paste-ready loop prompt itself, not the executed task (unless you explicitly ask) |
+| v3.0 | Per cobusgreyling/loop-engineering: added a 5th skill **loop-ops** (operating layer) + folded autonomy levels (L1/L2/L3), human gate, cost budget, comprehension-debt into loop-engineering (benchmark v3 100% vs v2.2 67.5%) |
 
 ---
 
@@ -200,7 +203,8 @@ Build_Great_Loop/
 │   └── evals/evals.json     # example eval set
 ├── loop-spec/               # interview → SPEC.md (assets/spec-template.md)
 ├── loop-eval/               # success criteria + evals (assets/eval-template.md)
-└── loop-review/             # audit/harden an existing loop
+├── loop-review/             # audit/harden an existing loop
+└── loop-ops/                # operate recurring/unattended loops (scheduling · cost · safety · 7 patterns + STATE/run-log)
 ```
 
 ---
