@@ -4,8 +4,9 @@
 
 ![Codex Skill](https://img.shields.io/badge/Codex-Skill-111827)
 ![Claude Compatible](https://img.shields.io/badge/Claude-Compatible-6B46C1)
-![Skills](https://img.shields.io/badge/Skills-5%20composable-0E7490)
-![Benchmarked](https://img.shields.io/badge/Benchmark-v3%20100%25%20vs%20v2.2%2068%25-success)
+![Skills](https://img.shields.io/badge/Skills-6%20loop%20%2B%20skill--craft-0E7490)
+![Benchmarked](https://img.shields.io/badge/Benchmark-6%20rounds%20adversarial-success)
+![Field Tested](https://img.shields.io/badge/Field%20Tested-real%20run%202026--07-8B5CF6)
 ![Language](https://img.shields.io/badge/Language-ZH%20%2B%20EN-blue)
 ![License](https://img.shields.io/github/license/VioletScar-Hui/Build_Great_Loop)
 ![Status](https://img.shields.io/badge/Status-Active-success)
@@ -36,6 +37,8 @@ independently triggerable, and composable**:
 | **loop-eval** | Design success criteria + a small eval set + graders (pass@k vs pass^k) | "How do I know this loop is reliable / write evals for my agent" |
 | **loop-review** | Audit and harden an **existing** loop prompt | "My agent never stops / says done when it isn't / loses progress on restart" |
 | **loop-ops** | Operate a loop as a recurring / unattended automation (scheduling · cost · safety gates · rollout) | "Run this agent daily / on every PR / nightly", "babysit my PRs", "auto-triage issues", "how do I run it unattended safely" |
+| **loop-retro** | Post-run retrospective: evidence-cited diagnosis → harness revisions + real-failure gotchas + standards proposals + **sedimentation check** | "My loop finished — retro it", "why did it thrash / overspend", "analyze the run log" |
+| **skill-craft** | Full skill-lifecycle methodology front door: create / modify / diagnose / merge / retire (three-criteria gate, evals-first, pressure testing) | "Write me a skill", "why doesn't my skill trigger", "should these two skills merge", "retire this old skill" |
 
 The method is distilled from official engineering writing by Anthropic, GitHub,
 Sourcegraph, and OpenAI (see [Sources](#sources--credits)).
@@ -60,8 +63,12 @@ Sourcegraph, and OpenAI (see [Sources](#sources--credits)).
 Just tell your Codex / Claude Code:
 
 > Install this skill group: `https://github.com/VioletScar-Hui/Build_Great_Loop`
-> Copy the five folders `loop-spec` / `loop-engineering` / `loop-eval` / `loop-review` / `loop-ops`
-> into my skills directory.
+> Copy the seven folders `loop-spec` / `loop-engineering` / `loop-eval` / `loop-review` /
+> `loop-ops` / `loop-retro` / `skill-craft` into my skills directory.
+
+> Run the commands below **in a terminal** (PowerShell on Windows; Terminal on
+> macOS/Linux). Optional companion: skill-craft's benchmark machinery reuses
+> Anthropic's `skill-creator` (not bundled here; the methodology works without it).
 
 ### Codex (Windows PowerShell)
 
@@ -70,7 +77,7 @@ $tmp = Join-Path $env:TEMP "build_great_loop"
 git clone --depth 1 https://github.com/VioletScar-Hui/Build_Great_Loop $tmp
 $dest = "$env:USERPROFILE\.codex\skills"
 New-Item -ItemType Directory -Force $dest | Out-Null
-"loop-spec","loop-engineering","loop-eval","loop-review","loop-ops" | ForEach-Object {
+"loop-spec","loop-engineering","loop-eval","loop-review","loop-ops","loop-retro","skill-craft" | ForEach-Object {
   Copy-Item -Recurse -Force "$tmp\$_" $dest
 }
 Remove-Item -Recurse -Force $tmp
@@ -83,7 +90,7 @@ $tmp = Join-Path $env:TEMP "build_great_loop"
 git clone --depth 1 https://github.com/VioletScar-Hui/Build_Great_Loop $tmp
 $dest = "$env:USERPROFILE\.claude\skills"
 New-Item -ItemType Directory -Force $dest | Out-Null
-"loop-spec","loop-engineering","loop-eval","loop-review","loop-ops" | ForEach-Object {
+"loop-spec","loop-engineering","loop-eval","loop-review","loop-ops","loop-retro","skill-craft" | ForEach-Object {
   Copy-Item -Recurse -Force "$tmp\$_" $dest
 }
 Remove-Item -Recurse -Force $tmp
@@ -96,14 +103,14 @@ tmp=$(mktemp -d)
 git clone --depth 1 https://github.com/VioletScar-Hui/Build_Great_Loop "$tmp"
 dest="$HOME/.claude/skills"          # for Codex use "$HOME/.codex/skills"
 mkdir -p "$dest"
-for s in loop-spec loop-engineering loop-eval loop-review loop-ops; do cp -R "$tmp/$s" "$dest/"; done
+for s in loop-spec loop-engineering loop-eval loop-review loop-ops loop-retro skill-craft; do cp -R "$tmp/$s" "$dest/"; done
 rm -rf "$tmp"
 ```
 
 ### Quick install check for agents
 
 ```powershell
-"loop-spec","loop-engineering","loop-eval","loop-review","loop-ops" | ForEach-Object {
+"loop-spec","loop-engineering","loop-eval","loop-review","loop-ops","loop-retro","skill-craft" | ForEach-Object {
   $p = "$env:USERPROFILE\.claude\skills\$_\SKILL.md"   # .codex for Codex
   if (Test-Path $p) { "OK  $_" } else { "MISSING  $_" }
 }
@@ -157,6 +164,18 @@ loop-spec  ──►  loop-engineering  ──►  loop-eval
 - **Four "operational rigor" upgrades** (good → top-tier): machine-checkable success
   criteria, crash-safe + idempotent resume, deliberately sized caps, a glanceable operator
   status.
+- **Mandatory interactive intake** (v4+): clarify → standards → goal tree → sign-off;
+  a hard **final stop-condition confirmation** before delivery; tiny tasks take a
+  3-question lite path (all four lite criteria required).
+- **Profile prefill + the unknowns quadrant** (v7): answered questions are never re-asked
+  (`~/.claude/loop-profile.md`); unfamiliar domains get a **blindspot pass**, fuzzy quality
+  targets get **samples-first** elicitation, and references beat descriptions.
+- **Shakedown + calibration + Deviations**: auto-continue stays locked until a deliberate
+  kill/resume test passes; quality-fuzzy loops carry golden-set calibration increments;
+  off-plan surprises follow conservative-choice + log + continue.
+- **The retro flywheel** (loop-retro): real failures become gotcha evals; loops that ran
+  well get a three-criteria sedimentation check → handed to skill-craft to become a
+  reusable skill — one-off work turns into compounding assets.
 
 See `loop-engineering/references/` (`principles` / `patterns` / `harness-template` /
 `context-and-state` / `checklist`).
@@ -165,16 +184,24 @@ See `loop-engineering/references/` (`principles` / `patterns` / `harness-templat
 
 ## Why trust it
 
-Not vibes — validated with a with-skill vs baseline benchmark:
+Not vibes — six rounds of snapshot-vs-snapshot benchmarking (adversarially graded by
+independent grader agents from round 4 on), plus one real field run:
 
-| Round | Comparison | Result |
+| Round | New capability under test | Result (new vs old) |
 |---|---|---|
-| Round 1 | with-skill vs no-skill (4 tasks, 8 structural assertions) | **100% vs 69%** |
-| Round 2 | v2 vs v1 (5 tasks, harder quality assertions) | **100% vs 70% (+30 pts)** |
+| 1 | with-skill vs no-skill | **100% vs 69%** |
+| 2 | operational rigor | **100% vs 70%** |
+| 3 | autonomy / human gate / cost budget | **100% vs 67.5%** |
+| 4 | mandatory interview / final stop-condition gate / orchestration | **97.5% vs 60%** |
+| 5 | retro flywheel / shakedown / lite path | **97.5% vs 72.5%** |
+| 6 | question banks / standards library / calibration | **90% vs 82.5%** (diminishing returns → pivot to usage layer) |
 
-Round 2 finding: the gain concentrates in **sized caps, crash-safety, and operator
-status** — exactly what baselines drop when the requirement is *implicit*. Cost: only
-~+18s / +2k tokens.
+**Field evidence** (2026-07-06, legal-AI industry research loop): the VERIFIER sub-agent
+genuinely rejected a "reprint posing as an independent cross-validation source" and forced
+two more fixes — the maker/checker split earning its keep in the wild. The retro also
+exposed a real design flaw (agents can't self-measure $ spend), now folded into doctrine
+(hard caps use self-measurable quantities only). Trigger routing measured: 36/36 on a
+12-skill panel, 7/8 in the full real environment (≥85% bar).
 
 ---
 
@@ -187,6 +214,10 @@ status** — exactly what baselines drop when the requirement is *implicit*. Cos
 | v2.1 | Hardened per a "workflow-skill best practices" article: a `Rationalizations` table (closes the author's own shortcuts) + a Weak-vs-strong teaching contrast |
 | v2.2 | Deliverable guardrail: using the group yields the paste-ready loop prompt itself, not the executed task (unless you explicitly ask) |
 | v3.0 | Per cobusgreyling/loop-engineering: added a 5th skill **loop-ops** (operating layer) + folded autonomy levels (L1/L2/L3), human gate, cost budget, comprehension-debt into loop-engineering (benchmark v3 100% vs v2.2 67.5%) |
+| v4.0 | Restructured per the user's skill-writing handbook: **mandatory interactive intake** (5-phase loop-spec), the **final stop-condition confirmation** gate, in-harness sub-agent orchestration (decomposer / plan-reviewer / verifier / doc-writer@haiku) + docs scaffolding + plan iteration with default auto-continue |
+| v5.0 | 6th skill **loop-retro** (the flywheel: evidence diagnosis → revisions → real gotchas) + **shakedown protocol** (kill-test gates auto-continue) + **lite path** (3-question micro-interview for tiny tasks) |
+| v6.0 | **Question banks / standards library** (6 task families) + **mid-run calibration** (golden-set drift detection; deterministic loops explicitly waived) |
+| v7.0 | Usage layer + unknowns: **profile prefill** (ask once, ever), **blindspot pass / samples-first / reference-first** (four-quadrant elicitation), **Deviations protocol**, retro quiz, **retro→skill sedimentation channel** + **skill-craft** merged in (full skill-lifecycle methodology) |
 
 ---
 
@@ -202,9 +233,11 @@ Build_Great_Loop/
 │   ├── assets/              # harness-skeleton.md (blank template)
 │   └── evals/evals.json     # example eval set
 ├── loop-spec/               # interview → SPEC.md (assets/spec-template.md)
-├── loop-eval/               # success criteria + evals (assets/eval-template.md)
+├── loop-eval/               # success criteria + evals + calibration protocol (golden-set drift detection)
 ├── loop-review/             # audit/harden an existing loop
-└── loop-ops/                # operate recurring/unattended loops (scheduling · cost · safety · 7 patterns + STATE/run-log)
+├── loop-ops/                # operate recurring/unattended loops (scheduling · cost · safety · 7 patterns)
+├── loop-retro/              # post-run retrospective: evidence → gotchas → sedimentation check
+└── skill-craft/             # full skill lifecycle: create/modify/diagnose/merge/retire (pressure testing, templates, check-limits script)
 ```
 
 ---

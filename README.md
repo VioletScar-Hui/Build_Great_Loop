@@ -4,8 +4,9 @@
 
 ![Codex Skill](https://img.shields.io/badge/Codex-Skill-111827)
 ![Claude Compatible](https://img.shields.io/badge/Claude-Compatible-6B46C1)
-![Skills](https://img.shields.io/badge/Skills-5%20composable-0E7490)
-![Benchmarked](https://img.shields.io/badge/Benchmark-v3%20100%25%20vs%20v2.2%2068%25-success)
+![Skills](https://img.shields.io/badge/Skills-6%20loop%20%2B%20skill--craft-0E7490)
+![Benchmarked](https://img.shields.io/badge/Benchmark-6%20rounds%20adversarial-success)
+![Field Tested](https://img.shields.io/badge/Field%20Tested-real%20run%202026--07-8B5CF6)
 ![Language](https://img.shields.io/badge/Language-ZH%20%2B%20EN-blue)
 ![License](https://img.shields.io/github/license/VioletScar-Hui/Build_Great_Loop)
 ![Status](https://img.shields.io/badge/Status-Active-success)
@@ -33,6 +34,8 @@
 | **loop-eval** | 设计成功标准 + 小评测集 + 评分器（pass@k vs pass^k） | 「怎么知道这循环靠不靠谱 / 给 agent 写评测」 |
 | **loop-review** | 体检并加固一份**已有**的循环提示词 | 「我的 agent 老是停不下来 / 说完成了其实没有 / 重启丢进度」 |
 | **loop-ops** | 把循环跑成周期性/无人值守的自动化（调度·成本·安全门·分级放权） | 「每天/每个 PR/每晚跑这个 agent」「无人值守怎么跑不出事」「babysit 我的 PR」「自动 triage issue」 |
+| **loop-retro** | 跑完复盘：证据引证诊断 → harness 修订提案 + 真实失败 gotcha + 标准提案 + **沉淀判定** | 「loop 跑完了帮我复盘」「看看 run log 哪里出问题」「为什么超预算/thrash」 |
+| **skill-craft** | skill 全生命周期方法论前门：创建/修改/诊断/合并/退役（含三判据闸门、评测先行、压力测试法） | 「帮我写个 skill」「skill 为什么没触发」「这两个 skill 要不要合并」「把旧 skill 退役」 |
 
 设计与最佳实践来自 Anthropic、GitHub、Sourcegraph、OpenAI 的官方工程文章（见[来源](#来源与致谢)）。
 
@@ -57,7 +60,11 @@
 
 > 帮我安装这个 skill 组：`https://github.com/VioletScar-Hui/Build_Great_Loop`
 > 把仓库里的 `loop-spec` / `loop-engineering` / `loop-eval` / `loop-review` / `loop-ops`
-> 五个目录，复制到我的 skills 目录下。
+> / `loop-retro` / `skill-craft` 七个目录，复制到我的 skills 目录下。
+
+> 以下命令**在终端中执行**（Windows 用 PowerShell，macOS/Linux 用 Terminal）。
+> 可选搭档：skill-craft 的基准评测机器复用 Anthropic 的 `skill-creator`（本仓库
+> 不含它，不装也不影响方法论使用）。
 
 ### Codex（Windows PowerShell）
 
@@ -66,7 +73,7 @@ $tmp = Join-Path $env:TEMP "build_great_loop"
 git clone --depth 1 https://github.com/VioletScar-Hui/Build_Great_Loop $tmp
 $dest = "$env:USERPROFILE\.codex\skills"
 New-Item -ItemType Directory -Force $dest | Out-Null
-"loop-spec","loop-engineering","loop-eval","loop-review","loop-ops" | ForEach-Object {
+"loop-spec","loop-engineering","loop-eval","loop-review","loop-ops","loop-retro","skill-craft" | ForEach-Object {
   Copy-Item -Recurse -Force "$tmp\$_" $dest
 }
 Remove-Item -Recurse -Force $tmp
@@ -79,7 +86,7 @@ $tmp = Join-Path $env:TEMP "build_great_loop"
 git clone --depth 1 https://github.com/VioletScar-Hui/Build_Great_Loop $tmp
 $dest = "$env:USERPROFILE\.claude\skills"
 New-Item -ItemType Directory -Force $dest | Out-Null
-"loop-spec","loop-engineering","loop-eval","loop-review","loop-ops" | ForEach-Object {
+"loop-spec","loop-engineering","loop-eval","loop-review","loop-ops","loop-retro","skill-craft" | ForEach-Object {
   Copy-Item -Recurse -Force "$tmp\$_" $dest
 }
 Remove-Item -Recurse -Force $tmp
@@ -92,14 +99,14 @@ tmp=$(mktemp -d)
 git clone --depth 1 https://github.com/VioletScar-Hui/Build_Great_Loop "$tmp"
 dest="$HOME/.claude/skills"          # Codex 改成 "$HOME/.codex/skills"
 mkdir -p "$dest"
-for s in loop-spec loop-engineering loop-eval loop-review loop-ops; do cp -R "$tmp/$s" "$dest/"; done
+for s in loop-spec loop-engineering loop-eval loop-review loop-ops loop-retro skill-craft; do cp -R "$tmp/$s" "$dest/"; done
 rm -rf "$tmp"
 ```
 
 ### 给 AI Agent 的快速安装检查
 
 ```powershell
-"loop-spec","loop-engineering","loop-eval","loop-review","loop-ops" | ForEach-Object {
+"loop-spec","loop-engineering","loop-eval","loop-review","loop-ops","loop-retro","skill-craft" | ForEach-Object {
   $p = "$env:USERPROFILE\.claude\skills\$_\SKILL.md"   # Codex 改 .codex
   if (Test-Path $p) { "OK  $_" } else { "MISSING  $_" }
 }
@@ -148,6 +155,14 @@ loop-spec  ──►  loop-engineering  ──►  loop-eval
   都要点名防御这两个。
 - **四条「操作级严谨度」**（把「合格」抬到「顶级」）：成功标准机器可检、崩溃安全 + 幂等续跑、
   按任务规模设上限、给运维者一行可一眼扫到的状态。
+- **交互式访谈前置**（v4+）：强制需求澄清 → 标准制定 → 目标树拆解 → 文档签核；交付前必做
+  **停止条件终问**；微任务走 3 问轻量通道（四判据全满足才可）。
+- **画像预填 + 未知项四象限**（v7）：答过的问题不再问（`~/.claude/loop-profile.md`）；
+  领域不熟先**盲点扫描**、质量目标模糊先**样例先行**、有参考物直接读原件。
+- **摇测 + 校准 + Deviations**：自动续跑锁定直到通过 kill 测试；质量模糊型循环带黄金集
+  校准增量防漂移；计划外偏离走「保守选择 + 记录 + 继续」协议。
+- **复盘飞轮**（loop-retro）：真实失败 → gotcha 用例；跑得好的 loop → 三判据沉淀判定 →
+  交 skill-craft 变成可复用 skill——一次性工作变复利资产。
 
 详见 `loop-engineering/references/`（`principles` / `patterns` / `harness-template` /
 `context-and-state` / `checklist`）。
@@ -156,15 +171,22 @@ loop-spec  ──►  loop-engineering  ──►  loop-eval
 
 ## 为什么相信它
 
-不是凭感觉——用 with-skill vs baseline 的对照评测验证过：
+不是凭感觉——六轮快照对照基准（第 4 轮起由对抗性评分 agent 逐条引证评分），外加一次真实
+野外运行：
 
-| 轮次 | 对比 | 结果 |
+| 轮次 | 对比（新 vs 旧快照） | 结果 |
 |---|---|---|
-| 第一轮 | 带技能 vs 裸跑（4 个任务，8 条结构性断言） | **100% vs 69%** |
-| 第二轮 | v2 vs v1（5 个任务，更高的质量断言） | **100% vs 70%（+30 分）** |
+| 1 | 带技能 vs 裸跑 | **100% vs 69%** |
+| 2 | 操作级严谨度 | **100% vs 70%** |
+| 3 | 自治级别/human gate/成本预算 | **100% vs 67.5%** |
+| 4 | 强制访谈/停止条件终问/子代理编排 | **97.5% vs 60%** |
+| 5 | 复盘飞轮/摇测/轻量通道 | **97.5% vs 72.5%** |
+| 6 | 问题库/标准库/校准 | **90% vs 82.5%**（收益递减，转向使用层优化） |
 
-第二轮发现：提升精准集中在**硬上限设定、崩溃安全、可运维状态**——这些恰是基线在「隐含
-要求」下最常漏掉的。代价仅约 +18 秒 / +2k token。
+**野外实证**（2026-07-06，法律 AI 行业调研 loop）：VERIFIER 子代理真实拦下「转载源冒充
+独立交叉验证源」并促成 2 处修正——maker/checker 分离值回成本；复盘同时发现「$ 预算
+agent 无法自测」的设计缺陷并已修入教义（硬上限只用可自测量）。触发路由实测：12 技能
+面板 36/36，全量真实环境 7/8（≥85% 达标线）。
 
 ---
 
@@ -177,6 +199,10 @@ loop-spec  ──►  loop-engineering  ──►  loop-eval
 | v2.1 | 参照「工作流 Skill 最佳实践」加固：`Rationalizations` 反驳表（堵住作者偷懒）+ Weak-vs-strong 对比教学 |
 | v2.2 | 交付边界护栏：用本组时产出是「可粘贴的循环提示词本体」，不替你执行任务（除非你明确要求） |
 | v3.0 | 参照 cobusgreyling/loop-engineering：新增第 5 个 skill **loop-ops**（运维层）+ 把 自治级别(L1/L2/L3)·human gate·成本预算·comprehension-debt 融进 loop-engineering（基准 v3 100% vs v2.2 67.5%） |
+| v4.0 | 按《Skill 完整实操指南》重构：**强制交互访谈**（loop-spec 五阶段）、**停止条件终问**硬闸门、harness 内置子代理编排（decomposer/plan-reviewer/verifier/doc-writer@haiku）+ 文档脚手架 + 计划迭代默认自动续跑 |
+| v5.0 | 新增第 6 个 skill **loop-retro**（复盘飞轮：证据诊断→修订提案→真实 gotcha）+ **摇测协议**（kill 测试通过才解锁自动续跑）+ **轻量通道**（四判据微任务 3 问微访谈） |
+| v6.0 | **问题库/标准库**（6 任务族弹药）+ **循环内校准**（黄金集防漂移，确定性任务显式豁免） |
+| v7.0 | 使用层 + 未知项：**画像预填**（信息只问一次）、**盲点扫描/样例先行/参考物优先**（四象限引出法）、**Deviations 协议**、复盘测验、**retro→skill 沉淀通道** + 并入 **skill-craft**（skill 全生命周期方法论，据《Skill 完整实操指南》） |
 
 ---
 
@@ -192,9 +218,11 @@ Build_Great_Loop/
 │   ├── assets/              # harness-skeleton.md（空白模板）
 │   └── evals/evals.json     # 示例评测集
 ├── loop-spec/               # 访谈 → SPEC.md（assets/spec-template.md）
-├── loop-eval/               # 成功标准 + 评测（assets/eval-template.md）
+├── loop-eval/               # 成功标准 + 评测 + 校准协议（黄金集防漂移）
 ├── loop-review/             # 审计/加固已有循环
-└── loop-ops/                # 运营周期性/无人值守循环（调度·成本·安全·7 个周期模式 + STATE/run-log 模板）
+├── loop-ops/                # 运营周期性/无人值守循环（调度·成本·安全·7 个周期模式）
+├── loop-retro/              # 跑后复盘：证据诊断 + gotcha + 沉淀判定
+└── skill-craft/             # skill 全生命周期：创建/修改/诊断/合并/退役（含压力测试法、模板、check-limits 脚本）
 ```
 
 ---

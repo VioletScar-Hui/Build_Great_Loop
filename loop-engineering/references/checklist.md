@@ -10,6 +10,32 @@ those are the items that cause runaway, drift, or fake success.
 
 ---
 
+## A0. Interview & delivery gates (for loops built with this skill group)
+- [ ] **(Critical)** Was the spec **interview-ratified** — clarifications answered
+      by the user (not assumed), standards/goal-tree signed off? *(Catches: loops
+      built on guessed requirements.)*
+- [ ] **(Critical)** Were the stop conditions given a **final user confirmation**
+      immediately before delivery? *(Catches: a wrong "done" running unattended.)*
+- [ ] Does the harness build in **sub-agent orchestration** (decomposer /
+      plan-reviewer / verifier / doc-writer@haiku) and scaffold
+      `./loop-docs/` (SPEC/STANDARDS/GOALS/PLAN)? *(Catches: monologue prompts
+      that re-derive plans and standards every iteration.)*
+- [ ] Is there a **plan→review→revise cycle** (≤2 rounds) with default
+      **auto-continue** for interview-ratified loops? *(Catches: per-round
+      approval stalls, and unreviewed plans.)*
+- [ ] Is there a **shakedown protocol** — supervised first increments, a
+      deliberate mid-increment kill + clean-resume check, verifier-fired check —
+      gating auto-continue? *(Catches: crash-safety that was never tested.)*
+- [ ] Is the path **proportionate** — lite (flat harness) only when all four lite
+      criteria held AND the user confirmed; full ceremony otherwise? Lite never
+      waives state/cap/kill-test/stop-confirmation. *(Catches: over-process that
+      gets bypassed, and lite-as-escape-hatch.)*
+- [ ] For quality-fuzzy loops, is there a **calibration protocol** (golden set,
+      cadence with sizing reason, drift threshold → pause + escalate)? For
+      deterministic loops, is calibration **explicitly waived with the reason**
+      (the test suite is the calibration)? *(Catches: judgment drift across
+      hundreds of increments — and cargo-culted golden sets.)*
+
 ## A. Goal & success criteria
 - [ ] **(Critical)** Are success criteria explicit and **verifiable** — two people
       would agree whether they're met? *(Catches: endless wandering, fake success.)*

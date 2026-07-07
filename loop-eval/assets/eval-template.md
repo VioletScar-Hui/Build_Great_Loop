@@ -36,3 +36,14 @@ reference solution proving it's solvable.
 - **Capability** (currently failing, climbing): <which cases>
 - **Regression** (must stay ~100%): <which cases — graduate capability cases here
   once they saturate>
+
+## Calibration protocol (quality-fuzzy loops only; deterministic loops: state "test suite is the calibration" and skip)
+- **Golden set:** `./loop-docs/golden.json` · K = <≥10 or 2% of volume> items,
+  human-ratified expected outputs, diverse incl. hard cases. Human-owned.
+- **Cadence:** every <N> increments (<default 25 or 10% of total, whichever
+  smaller> — reason: <sizing rationale>).
+- **Calibration increment:** re-process <k> golden items fresh + VERIFIER
+  re-checks <k> random completed items.
+- **Drift threshold & action:** agreement < <X>% (from the ratified 抽检一致
+  standard) → pause auto-continue, log `CALIBRATION FAILED`, human gate with the
+  disagreeing cases. Never loosen the threshold to pass.

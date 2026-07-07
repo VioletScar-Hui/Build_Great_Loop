@@ -90,9 +90,40 @@ has to work reliably, not just occasionally.
 - Guard against eval-hacking: design graders so the loop must genuinely solve the
   task, not exploit a loophole (over-rigid string match, ambiguous spec).
 
+## Part 6 — Wire the evals INTO the loop: golden set + calibration protocol
+
+Per-increment verification catches broken increments; it cannot catch **drift** —
+the loop's own judgment sliding across hundreds of increments (labeling criteria
+loosening, research claims thinning, summaries bloating). For **quality-fuzzy
+loops** (verification is judgment-based rather than a deterministic command),
+design a calibration protocol the harness will run mid-loop:
+
+- **Golden set**: K items with human-ratified expected outputs, built BEFORE the
+  run (K ≥ 10, or 2% of total volume, whichever is larger; sample for diversity,
+  include the hard cases). Store at `./loop-docs/golden.json` — human-owned, the
+  loop never edits it.
+- **Cadence**: a calibration increment every N increments (default: every 25, or
+  10% of total, whichever is smaller — frequent enough that drift can't poison a
+  large batch, cheap enough to stay under ~5% overhead; state the sizing reason).
+- **The calibration increment**: re-process k golden items fresh + have the
+  VERIFIER re-check k random already-completed items. Compare against expected.
+- **Drift threshold**: agreement < X% (take X from the ratified 抽检一致 standard)
+  → **pause auto-continue**, log `CALIBRATION FAILED`, escalate via the human gate
+  with the disagreeing cases attached. Never continue past a failed calibration;
+  never loosen the threshold to pass — that is reward hacking on yourself.
+- **Deterministic loops** (a test suite proves each increment): the suite IS the
+  calibration — say so explicitly and skip the protocol rather than cargo-culting
+  golden sets where `npm test` already answers the question.
+
+Handoff: loop-spec's interview identifies the family; you build the golden set
+with the user during intake; **loop-engineering** embeds the protocol in the
+harness.
+
 ## Output
 
 Write an `EVAL.md` using `assets/eval-template.md`: the sharpened success criteria,
-the case set (with grader type per case), the chosen metric, and how to run it.
-Feed the sharpened criteria back into the loop prompt (via **loop-engineering**) so
-the agent's self-check matches what you measure.
+the case set (with grader type per case), the chosen metric, how to run it — and
+for quality-fuzzy loops, the **calibration protocol** (golden set path & size,
+cadence with sizing reason, drift threshold & action). Feed the sharpened criteria
+back into the loop prompt (via **loop-engineering**) so the agent's self-check
+matches what you measure.

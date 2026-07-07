@@ -2,6 +2,68 @@
 
 本项目的版本演进记录。Newest first.
 
+## v7.0 - Usage Layer + Unknowns + skill-craft 并入
+
+使用层优化（第一性原理评审驱动）+ Thariq Shihipar《Finding Your Unknowns》应用 + skill 部分入仓。
+
+### Added
+- **skill-craft**（新目录）：按《Skill 完整实操指南》的 skill 全生命周期方法论前门——创建
+  （三判据闸门/评测先行）、修改（回归+版本控制）、诊断（故障树）、合并拆分、删除退役（先归档）；
+  含压力测试法（吸收自 writing-skills）、四模板、check-limits.py 脚本、示例与 evals。
+- **画像预填**（loop-spec）：`~/.claude/loop-profile.md` 机制——答过的问题变确认、上下文可推断的
+  标「推断」预填；信息只问一次。
+- **未知项四象限引出法**（loop-spec references/unknowns-elicitation.md）：盲点扫描（不熟领域先列
+  行家陷阱）、样例先行（质量模糊先出 2-4 版微样例）、参考物优先（问题库全族通用问题 U1）。
+- **Deviations 协议**（harness）：计划外偏离三路分诊——动摇 SPEC → human gate；无风险偏离 →
+  保守选择 + 记录 + 继续；retro 把 Deviations 当头等证据。
+- **retro→skill 沉淀通道**：loop-retro 新增三判据沉淀判定，过判则连同 harness/SPEC/gotchas 交
+  skill-craft Task A；复盘可选「理解测验」对抗理解债。
+- 交付备注固定飞轮入口：「跑完后说『复盘』」。
+
+### Changed
+- 硬上限教义修正（真实运行实证）：只用循环**可自测**的量（增量/工具调用数）；$ 预算降级为
+  操作者事后核对参考——agent 无法观测自身花费。
+
+## v6.0 - Question Banks + Standards Library + Mid-run Calibration
+
+### Added
+- loop-spec `references/question-banks.md`（6 任务族载荷问题，floor-not-ceiling）+
+  `standards-library.md`（各族机器可检标准模式 + 反模式自查），接入 Phase 1/2。
+- 循环内校准（loop-eval Part 6 + harness Calibration 区块）：黄金集（K≥10 或 2%）、节奏带定量
+  理由（默认每 25 或 10% 取小）、漂移破限=暂停+human gate+不许放水；确定性任务显式豁免。
+
+### Changed
+- 基准 iteration-6（对抗评分）：v6 90% vs v5 82.5%——六轮最小差距，撰写层收益递减实锤，
+  转向使用层优化。评分员抓出 4 处缺陷已修（分轮规则全阶段化、流程去向脚注、轻量默认值数字化、
+  skeleton 补 STATUS 行区块）。
+
+## v5.0 - Retro Flywheel + Shakedown + Lite Path
+
+### Added
+- 第 6 个 skill **loop-retro**：证据引证复盘 → vitals → 8 类失败分类 → 三件套（harness
+  before→after 修订、真实失败 gotcha、需签核标准提案）；铁律「只提案不擅改、只记真实失败」。
+- **摇测协议**：自动续跑锁定，直至 监督首增量 + 故意 kill/续跑核验（用户执行）+ verifier
+  开工核验 通过并记录 SHAKEDOWN PASSED。
+- **轻量通道**：四判据（<20 增量/无不可逆/<$0.5/仅工作区写）全满足且用户确认 → 3 问微访谈 +
+  内联 spec；单向棘轮升级；永不豁免 状态/上限/kill 测试/停止条件终问。
+
+### Changed
+- 基准 iteration-5：v5 97.5% vs v4 72.5%；复盘场景 8/8 vs 4/8；防逃生门卫兵通过。
+
+## v4.0 - Mandatory Interview + Final Stop-condition Gate + Orchestrated Harness
+
+### Added
+- **loop-spec 重写为强制交互访谈**（铁律：不访谈不出规格、不回答不假设）：框架确认 → 澄清+
+  头脑风暴 → 标准制定 → 目标树（叶=一增量可验收）→ doc-writer(haiku) 落盘四文档签核。
+- **停止条件终问**：loop-engineering 交付前必须让用户最终确认停止条件，不确认不交付。
+- harness 内置**子代理编排**（DECOMPOSER/PLAN-REVIEWER/VERIFIER/DOC-WRITER@haiku，动态派生 +
+  可选 .claude/agents/ 持久化）+ ./loop-docs/ 脚手架 + 计划迭代（≤2 轮评审后默认自动续跑——
+  访谈签核即授权）。
+
+### Changed
+- 基准 iteration-4（对抗评分 agent 首次启用）：v4 97.5% vs v3 60%；模糊需求场景 v3 直接猜着
+  交付（0/8）、v4 守闸访谈（8/8）。
+
 ## v3.0 - Loop Ops + Autonomy / Human Gate / Cost Budget
 
 参照 **Cobus Greyling 的 loop-engineering 仓库**（github.com/cobusgreyling/loop-engineering）

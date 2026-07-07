@@ -1,40 +1,34 @@
-# Loop Spec: <task name>
+# SPEC — <task name>
 
-> The contract for the loop. `loop-engineering` turns this into a prompt;
-> `loop-eval` turns the success criteria into a measurable eval set. Only a human
-> edits this file.
+> User-ratified specification from the loop-spec interview. The loop steers by
+> this; only a human edits it. Companion docs: STANDARDS.md · GOALS.md · PLAN.md.
 
-## Goal
-<One sentence: what the agent accomplishes autonomously.>
+## Goal (Phase-0 framing, confirmed)
+<One sentence, exactly as the user confirmed it.>
 
-## Success criteria  (verifiable — done = all true)
-- [ ] <Check 1 — confirmable by a command or direct observation>
-- [ ] <Check 2>
-- [ ] <Check 3>
+**Out of scope:** <what the user agreed is NOT part of this loop>
+
+## Decisions (from clarification)
+| # | Question | User's decision |
+|---|---|---|
+| 1 | <e.g. 失败文件怎么处理> | <跳过并记录> |
+| 2 | <…> | <…> |
 
 ## Environment
 - **Location:** <repo / paths / data>
 - **Run / build / test:** <exact commands>
-- **Access / conventions:** <credentials, style, anything the agent must know>
+- **Tools available:** <minimal set>
 
-## Tools available
-- <tool — one-line purpose; keep the set minimal>
+## Constraints & red lines (never violate)
+- <e.g. 不碰生产库 / 不改测试 / 预算 ≤ $X>
 
-## Constraints & guardrails  (must never happen)
-- <e.g. don't touch production / don't exceed $X / don't edit tests to pass>
+## Stop conditions (to be FINAL-confirmed by loop-engineering before delivery)
+- **Done:** <all standards in STANDARDS.md verified>
+- **Blocked:** <what counts as stuck → escalate>
+- **Hard cap:** <N increments AND token/$ budget, with sizing reason>
 
-## Stop conditions
-- **Done:** all success criteria verified.
-- **Blocked:** <what "stuck" looks like> → record + stop / escalate.
-- **Hard cap:** <max iterations / time / budget>.
+## Open questions (user consented to defer)
+- <item — why it can wait, and who decides later>
 
-## Likely failure modes  (for this task specifically)
-- Over-ambition (one-shotting) and false completion are assumed; guard against both.
-- <Other task-specific risks.>
-
-## Pattern hint
-<build-until-green | research | debug | batch/parallel | orchestrator-worker |
-generator-critic — see loop-engineering/references/patterns.md>
-
-## Open questions  (unresolved — needs a human decision)
-- <Anything the spec couldn't pin down. Don't invent answers here.>
+## Sign-off
+- Interview completed: <date> · User signed off: <yes / pending>

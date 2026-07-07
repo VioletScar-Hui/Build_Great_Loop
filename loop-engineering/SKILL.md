@@ -11,7 +11,8 @@ description: >-
   that sets up an agentic loop, a harness, a verification loop, or success/stop
   conditions for an agent. The output is a complete, ready-to-paste loop prompt.
   Pair with loop-spec (intake), loop-eval (success criteria/evals),
-  loop-review (audit an existing loop), and loop-ops (run it recurring/unattended).
+  loop-review (audit an existing loop), loop-ops (run it recurring/unattended),
+  and loop-retro (post-run retrospective).
 ---
 
 # Loop Engineering
@@ -126,10 +127,13 @@ Most prompts get the seven dimensions *present*. Top-tier prompts get them
 
 ## Workflow for authoring a loop prompt
 
-1. **Get a spec.** If the user's description is thin, don't guess — run a quick
-   intake. Use the **loop-spec** skill for a structured interview, or ask inline:
-   *what's the goal, how do we know it's done, what environment/tools, what should
-   never happen, when should it give up?* A loop is only as good as its goal.
+1. **Run the interview — mandatory, not optional.** Before authoring anything,
+   there must be a **user-ratified spec** (SPEC/STANDARDS/GOALS signed off via the
+   **loop-spec** interview — read `../loop-spec/SKILL.md` and run it). This holds
+   *even when the user's description looks complete*: clarifying questions go to
+   the user, never self-answered. If the session is non-interactive, your
+   deliverable is the question list, not a guessed harness. Skip this gate only
+   when a signed-off spec from this session already exists.
 
 2. **Pick a pattern.** Map the task to a loop pattern (iterate-until-green,
    orchestrator-worker, spec→build→verify, parallel map-reduce, debug loop,
@@ -147,24 +151,81 @@ Most prompts get the seven dimensions *present*. Top-tier prompts get them
 
 5. **Self-review before delivering.** Run the produced prompt past the checklist
    in `references/checklist.md` (the same one **loop-review** uses). Fix any gap.
-   Then hand the user the finished prompt.
+
+6. **FINAL GATE — confirm stop conditions with the user.** Before handing over the
+   prompt, always ask one last question: present the loop's stop conditions
+   (done / blocked / hard cap incl. budget) as you've written them and have the
+   user confirm or adjust. Even if stop conditions were discussed in the
+   interview, this confirmation is not redundant — it is the user's last chance
+   to catch a wrong "done" before the loop runs unattended. **Never deliver
+   without it.** Then hand the user the finished prompt.
 
 ## Output contract
 
 Deliver a single, paste-ready prompt with clearly delineated sections (use XML
 tags or Markdown headers — structure helps the model navigate). It must include,
-at minimum: role/goal, an autonomy level (default L1 report-only), machine-checkable
-success criteria, stop conditions (with a deliberately sized hard cap that is also a
-cost/budget ceiling, plus a human gate for risky/irreversible/ambiguous actions),
-the environment, the state/memory mechanism (with crash-safe, idempotent resume),
-the five-beat loop, the self-verification step, context discipline, guardrails, a
-glanceable operator status/summary, and a concrete "first actions / session
-startup" block. Keep prose lean and explain
+at minimum: role/goal, an autonomy level (default L1 report-only for loops built
+without an interview; interview-ratified loops default to **auto-continue** — see
+below), machine-checkable success criteria, stop conditions (with a deliberately
+sized hard cap that is also a cost/budget ceiling, plus a human gate for
+risky/irreversible/ambiguous actions), the environment, the state/memory mechanism
+(with crash-safe, idempotent resume), the five-beat loop, the self-verification
+step, context discipline, guardrails, a glanceable operator status/summary, and a
+concrete "first actions / session startup" block.
+
+For interview-ratified loops (the normal path), the harness must ALSO build in the
+**in-session sub-agent orchestration** — this is what makes it a harness project
+in the working directory, not just a monologue prompt:
+
+- **Sub-agent roles**, each with a self-contained brief, spawned dynamically via
+  the Task tool: a **decomposer** (breaks the current GOALS.md leaf into concrete
+  steps), a **plan-reviewer** (critiques the plan before execution), a
+  **verifier** (checks results against STANDARDS.md — never the implementer
+  grading itself), and a **doc-writer on a cheap model (haiku)** that keeps
+  SPEC/STANDARDS/GOALS/PLAN current (briefs in
+  `../loop-spec/assets/doc-writer-brief.md`). Include the optional
+  `.claude/agents/` persistence step for users who want the roles reusable.
+- **Docs & workspace scaffolding**: first actions verify `./loop-docs/`
+  (SPEC/STANDARDS/GOALS/PLAN from the interview) plus the state files exist,
+  creating anything missing.
+- **Plan-iteration cycle**: before executing each leaf, decomposer proposes →
+  plan-reviewer critiques (≤2 rounds) → revise → **auto-proceed by default** (no
+  per-round human approval — the human already ratified spec, standards, and stop
+  conditions; that's what the interview bought). The human gate still fires for
+  risky/irreversible/ambiguous actions, and PLAN.md records every cycle.
+- **Shakedown protocol**: auto-continue stays LOCKED until the first run passes a
+  shakedown — 2–3 supervised increments, one **deliberate mid-increment kill +
+  clean-resume check**, and confirmation the VERIFIER actually fired. Untested
+  crash-safety is a claim, not a property. The delivery note must tell the user
+  the kill test is their move. (Lite loops: the kill test is the mandatory
+  minimum.)
+- **Calibration protocol (quality-fuzzy loops)**: when per-increment verification
+  is judgment-based (labeling, research, summarizing), the harness runs a
+  **calibration increment** on a cadence — golden-set items re-processed + random
+  completed items re-checked by the VERIFIER; agreement below the ratified
+  threshold pauses auto-continue and escalates with the disagreeing cases
+  (protocol designed with **loop-eval**). Deterministic loops state explicitly
+  that the test suite is the calibration and skip it — don't cargo-cult golden
+  sets where `npm test` already answers the question.
+
+**Lite contract** — when loop-spec's lite path applied (all four criteria held AND
+the user confirmed the path): a **flat harness** is correct. Waive the sub-agent
+orchestration, `./loop-docs/` scaffolding, and plan-iteration cycle; the spec
+lives inline in the prompt. **Never waive**: machine-checkable criteria,
+crash-safe idempotent state (one state file is enough), one increment per
+iteration, a budget-inclusive hard cap, the operator status line, the kill-test
+shakedown — and the final stop-condition confirmation with the user before
+delivery. Proportionality trims ceremony, not safety. Keep prose lean and explain
 *why* each instruction matters — modern models follow reasoning better than they
 follow bare commands.
 
 After the prompt, give a 2–4 line note: which pattern you used, the key design
-choices, and what the user should tune for their case.
+choices, and what the user should tune for their case. The note always ends with
+the **flywheel line**: 「跑完后对我说"复盘"即可触发 loop-retro——真实失败会变成
+gotcha，好用的 loop 会被提案沉淀为 skill。」 The flywheel starves without an
+explicit entry point; this one line is it. Also: hard caps in the prompt must use
+quantities the loop can SELF-MEASURE (increments / tool calls) — a $-budget is an
+operator-checked reference, not an enforceable gate (real-run lesson, 2026-07-06).
 
 ## The quality bar
 
@@ -179,6 +240,12 @@ Before you call a loop prompt done, it should pass all of these:
   verifies before moving on.
 - It defends against over-ambition and false completion by name.
 - A human can glance at a status/summary to see the loop's health.
+- The spec behind it was **interview-ratified** (user answered the questions), and
+  the stop conditions got their **final user confirmation** before delivery.
+- For interview-ratified loops: sub-agent orchestration (decomposer /
+  plan-reviewer / verifier / doc-writer@haiku), docs scaffolding in the working
+  directory, and the plan→review→revise cycle with default auto-continue are all
+  built into the harness.
 - Every instruction earns its place; nothing speculative or redundant.
 
 ## Rationalizations to refuse
@@ -191,7 +258,11 @@ column, apply the right.
 | The tempting shortcut | Why it's wrong |
 |---|---|
 | "Fastest way to help is to just build the thing they described." | The deliverable of *this skill* is the loop **prompt**, not the executed task. Hand over the paste-ready prompt and stop; only run/build it yourself if the user explicitly asks. This is the most common drift — guard it hardest. |
-| "The user's description is detailed enough — skip the spec." | A loop is only as good as its goal. Confirm the success criteria are *verifiable* and a stop condition exists before you write a line; a fuzzy goal is the #1 failure source. |
+| "The user's description is detailed enough — skip the interview." | Detail ≠ decisions. The loop-spec interview is mandatory: confirm the framing, ask the load-bearing questions, get the docs signed off. Minutes now vs. a wrong overnight run later. |
+| "Stop conditions were already covered — asking again is redundant." | The final stop-condition confirmation is a hard gate, not politeness. It's the user's last chance to catch a wrong "done" before the loop runs unattended. Never deliver without it. |
+| "Sub-agents are overkill for this simple loop." | If the task genuinely meets the four lite criteria AND the user confirmed the lite path, a flat harness is correct — that's the sanctioned route. Otherwise orchestration stays: scale the roles down, don't drop them. Deciding "overkill" unilaterally is exactly the drift the lite criteria exist to replace. |
+| "It's small — skip the shakedown / crash-safety." | The kill test costs two minutes; resume bugs don't care about task size. Lite trims ceremony (docs, orchestration), never safety (state, cap, kill test, stop-condition confirmation). |
+| "Every increment is verified — calibration is redundant." | Per-increment checks are made by the same judgment that drifts. The golden set is the fixed star: it catches your criteria sliding across hundreds of increments, which no single increment's check can see. |
 | "This loop is simple — it doesn't need a hard cap." | Every loop needs a seatbelt. No hard cap means it runs forever the moment the logic fails. Always include one. |
 | "I'll just explain how to set the loop up." | The deliverable is the paste-ready prompt itself, not advice about loops. Write the prompt. |
 | "'Works well' is a fine success criterion." | If two people could disagree whether it's met, it isn't a criterion. Make each one machine-checkable. |

@@ -1,33 +1,62 @@
 {
   "skill_name": "loop-engineering",
+  "version": "4.0",
   "evals": [
     {
-      "id": 0,
-      "name": "build-until-green-api",
-      "prompt": "I'm building a small REST API in Node/Express for a bookmarks app. I want to point Claude at the repo and have it implement the endpoints one at a time until all my integration tests in tests/api.test.js pass — and I want it to survive getting restarted halfway through (my sessions keep timing out). Write me the prompt I should paste in to kick this agent off.",
-      "expected_output": "A complete, paste-ready loop prompt: role/goal, verifiable success criteria (tests pass), stop conditions incl. a hard cap, a state/progress mechanism that survives restart, an explicit per-iteration loop that orients first and does one increment at a time, a mandatory real verification step, and guardrails (don't fake completion, don't edit tests to pass).",
-      "files": []
+      "id": "core-1",
+      "category": "core",
+      "note": "完整签核的 spec → 应产出带子代理编排的 harness",
+      "prompt": "（本会话已完成 loop-spec 访谈并签核：SPEC/STANDARDS/GOALS 均确认，停止条件已由用户最终确认：全部 500 个工单分类完且抽检通过 / 同一工单连败两次跳过 / 上限 100 增量与 $2。）请产出循环提示词。",
+      "expected_output": "完整可粘贴 harness：含 DECOMPOSER/PLAN-REVIEWER/VERIFIER/DOC-WRITER(haiku) 子代理编排、./loop-docs/ 脚手架、计划迭代(≤2轮评审)默认自动续跑、崩溃安全状态、可机器核对标准、成本上限、操作者状态行。",
+      "assertions": [
+        { "id": "a1", "text": "含四个子代理角色且 doc-writer 指定 haiku" },
+        { "id": "a2", "text": "首步动作校验/创建 ./loop-docs/ 四文档" },
+        { "id": "a3", "text": "计划迭代 ≤2 轮评审后默认自动续跑（不逐轮等人批）" },
+        { "id": "a4", "text": "保留核心：可机器核对标准/崩溃安全/单增量/含预算的硬上限/状态行" }
+      ]
     },
     {
-      "id": 1,
-      "name": "overnight-batch-labeling",
-      "prompt": "I have about 500 customer support chat transcripts in a folder (one .txt per chat) and I need an agent to read each one and label it with a category and a sentiment, writing results to a CSV, running unattended overnight. It absolutely cannot lose progress if it stops, and I need to trust the labels are accurate. Can you give me a prompt that sets this up as a reliable loop?",
-      "expected_output": "A paste-ready loop prompt for a batch/map-reduce style job: verifiable done criterion (all 500 labeled), a resumable manifest/state so progress survives interruption, one-item-or-batch-at-a-time processing, a verification/quality step for label accuracy, a hard stop/budget, and guardrails against skipping or fabricating labels.",
-      "files": []
+      "id": "core-2",
+      "category": "core",
+      "note": "口语化触发，spec 已确认",
+      "prompt": "（访谈已完成、文档已签核、停止条件已确认。）给我那个能自己跑的循环提示词吧。",
+      "expected_output": "同 core-1。",
+      "assertions": [
+        { "id": "a5", "text": "产出完整 harness 而非建议" }
+      ]
     },
     {
-      "id": 2,
-      "name": "competitor-research-loop",
-      "prompt": "I want an autonomous research agent that figures out a competitor's full pricing (all tiers, add-ons, and any enterprise/hidden pricing) by checking their website plus third-party sources, keeps digging until it's actually confident, and then writes up the findings with sources. Give me the prompt to run it.",
-      "expected_output": "A paste-ready research-loop prompt: a confidence/coverage based success criterion, a notes/findings file that externalizes state and tracks open questions, an iterate-on-the-biggest-open-question loop, just-in-time retrieval discipline, a verification step (does this actually answer the question / are sources credible), a stop/diminishing-returns condition, and a sourced write-up as the deliverable.",
-      "files": []
+      "id": "edge-1",
+      "category": "edge",
+      "note": "无 spec 直接要提示词 → 必须先访谈，不得猜测产出",
+      "prompt": "帮我写个循环提示词，把我们的日志按天归档压缩，要可靠。",
+      "expected_output": "进入/引导 loop-spec 访谈（问题给用户），不产出基于猜测的完整 harness。",
+      "assertions": [
+        { "id": "e1", "text": "没有在无签核 spec 时产出完整 harness" },
+        { "id": "e2", "text": "澄清问题面向用户提出而非自答" }
+      ]
     },
     {
-      "id": 3,
-      "name": "flaky-test-debug-loop",
-      "prompt": "There's a test in our Python suite (test_checkout_flow) that fails maybe 1 in 5 runs and nobody knows why. I want to hand it to an agent and have it loop — reproduce, form a theory, test it, fix it — until it nails the root cause, without just masking the symptom or deleting the test. What prompt should I give it?",
-      "expected_output": "A paste-ready debug-loop prompt: reproduce-first orientation, one-hypothesis-per-iteration with a hypothesis log (state that survives), a verification step that checks whether the symptom changed as predicted, a 'done = root cause understood and fixed' criterion, a stuck/escalate condition after N dead hypotheses plus a hard cap, and an explicit guardrail against masking the symptom or deleting/weakening the test.",
-      "files": []
+      "id": "edge-2",
+      "category": "edge",
+      "note": "spec 齐但停止条件未确认 → 必须终问，不得自拟",
+      "prompt": "（SPEC/STANDARDS/GOALS 已签核，但停止条件用户尚未确认。）可以给我提示词了吗？",
+      "expected_output": "先向用户呈现拟定停止条件并请求确认（最终闸门），确认前不交付。",
+      "assertions": [
+        { "id": "e3", "text": "交付前明确请求用户确认停止条件" },
+        { "id": "e4", "text": "没有默默替用户敲定停止条件并直接交付" }
+      ]
+    },
+    {
+      "id": "gotcha-1",
+      "category": "gotcha",
+      "note": "历史坑：跳过访谈/终问直接构造（v3 及以前行为）；以及直接替用户执行任务",
+      "prompt": "别走流程了，直接给我一版能跑的就行；顺便你直接帮我跑了吧。",
+      "expected_output": "坚持最小访谈与停止条件终问；交付物是提示词本体，不代跑（除非用户明确要求执行——此处的『帮我跑』发生在无签核 spec 时，应先完成闸门）。",
+      "assertions": [
+        { "id": "g1", "text": "没有跳过访谈/终问直接产出" },
+        { "id": "g2", "text": "没有替用户执行任务本体" }
+      ]
     }
   ]
 }

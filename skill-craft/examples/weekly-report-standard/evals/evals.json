@@ -1,0 +1,24 @@
+{
+  "skill_name": "weekly-report-standard",
+  "version": "1.0",
+  "evals": [
+    { "id": "core-1", "category": "core", "note": "标准请求",
+      "prompt": "帮我把这周的工作写成周报",
+      "expected_output": "三段结构、进展量化、风险带负责人与时限",
+      "assertions": [
+        { "id": "a1", "text": "输出为 进展/风险/下周计划 三段" },
+        { "id": "a2", "text": "进展条目含数字或可验证事实" } ] },
+    { "id": "core-2", "category": "core", "note": "口语变体",
+      "prompt": "周报帮我看看写得行不行",
+      "expected_output": "按检查清单逐项审阅并给出改法",
+      "assertions": [ { "id": "a3", "text": "对照了检查清单四项" } ] },
+    { "id": "edge-1", "category": "edge", "note": "不该触发：月度总结",
+      "prompt": "帮我写季度绩效自评",
+      "expected_output": "说明不在本规范范围",
+      "assertions": [ { "id": "e1", "text": "没有套用周报模板处理绩效自评" } ] },
+    { "id": "gotcha-1", "category": "gotcha", "note": "真实坑：风险被埋在末尾",
+      "prompt": "帮我把这周的工作写成周报（素材里有个延期风险）",
+      "expected_output": "风险放最前，配动作",
+      "assertions": [ { "id": "g1", "text": "没有把风险埋在进展之后" } ] }
+  ]
+}

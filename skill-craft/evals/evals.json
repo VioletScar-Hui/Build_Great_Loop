@@ -1,0 +1,128 @@
+{
+  "skill_name": "skill-craft",
+  "version": "1.0",
+  "evals": [
+    {
+      "id": "core-1",
+      "category": "core",
+      "note": "最常见：创建请求",
+      "prompt": "帮我写个 skill，把我们周报的格式规范固化下来",
+      "expected_output": "先过三判据闸门（问真实 case 与重复性），过了才选骨架（此例应为骨架 C 规范型），评测先行再写最小 skill，交付前过上线清单。",
+      "assertions": [
+        { "id": "a1", "text": "先做了三判据检查而非直接开写" },
+        { "id": "a2", "text": "选择了合适的骨架并说明理由" },
+        { "id": "a3", "text": "evals.json 先于或伴随 SKILL.md 产出" },
+        { "id": "a4", "text": "description 含触发词和排除边界且 ≤1024 字符" }
+      ]
+    },
+    {
+      "id": "core-2",
+      "category": "core",
+      "note": "口语化变体：修改请求",
+      "prompt": "我这个 skill 老是漏步骤，帮我加固一下",
+      "expected_output": "先确认 evals 存在（无则补建），定位跑偏步骤，用防偷懒武器加固，改后 iteration-N+1 回归对比。",
+      "assertions": [
+        { "id": "a5", "text": "改动前确认/补建了评测" },
+        { "id": "a6", "text": "改动后跑了回归且不覆盖旧结果" },
+        { "id": "a7", "text": "升级了版本号" }
+      ]
+    },
+    {
+      "id": "core-3",
+      "category": "core",
+      "note": "诊断请求",
+      "prompt": "我说'建个AB'的时候那个实验 skill 根本不触发，看看咋回事",
+      "expected_output": "按排查顺序：先查加载，再对比用户原话与 description 词汇，补口语化触发词；修后建议 20 问测试。",
+      "assertions": [
+        { "id": "a8", "text": "先查加载与 YAML 再动 description" },
+        { "id": "a9", "text": "用用户原话（'建个AB'）对照 description 补触发词" }
+      ]
+    },
+    {
+      "id": "core-6",
+      "category": "core",
+      "note": "测试验证请求（并入自 writing-skills，2026-07-03 合并）",
+      "prompt": "我刚写了个强制走审批流程的 skill，帮我测测它扛不扛得住",
+      "expected_output": "识别为纪律型 skill，用压力场景法测：组合 ≥3 种压力（时间/沉没成本/权威/疲惫）裸跑基线记录借口原话，再带 skill 重跑对比；新借口进反驳表（防弹三件套）。",
+      "assertions": [
+        { "id": "a14", "text": "按纪律型选择了压力场景测试而非只跑 happy path" },
+        { "id": "a15", "text": "基线借口被逐字记录并回填进借口反驳表" }
+      ]
+    },
+    {
+      "id": "core-4",
+      "category": "core",
+      "note": "Task D：合并判断",
+      "prompt": "我有两个 skill 老是一起被触发，功能也差不多，要不要合并成一个？",
+      "expected_output": "按合并触发条件判断（频繁共触发/语义重叠/各自准确率<80%），先试排除边界，确需合并则保留更清晰的名字、触发词并入、evals 全迁移、合并前归档原状、合并后回归+触发测试。",
+      "assertions": [
+        { "id": "a10", "text": "先评估了排除边界方案再谈合并" },
+        { "id": "a11", "text": "合并方案包含 evals 迁移与合并前归档" }
+      ]
+    },
+    {
+      "id": "core-5",
+      "category": "core",
+      "note": "Task A 口语变体：流程固化",
+      "prompt": "把我们的部署流程做成 skill 呗，省得每次都口头教",
+      "expected_output": "\"每次都口头教\"已含重复+需解释信号，仍确认交付物判据；选骨架 A 线性流程型，评测先行后按模板产出。",
+      "assertions": [
+        { "id": "a12", "text": "识别口语化请求为创建意图并走三判据" },
+        { "id": "a13", "text": "选择骨架 A 并给出理由" }
+      ]
+    },
+    {
+      "id": "edge-1",
+      "category": "edge",
+      "note": "边界：三判据不满足应劝退",
+      "prompt": "帮我写个万能助手 skill，什么都能干的那种",
+      "expected_output": "三判据闸门拦下：无单一交付物、边界模糊，明确劝退并解释上下文税，建议从小而特化的场景起步。",
+      "assertions": [
+        { "id": "e1", "text": "没有直接开写，而是用三判据劝退" },
+        { "id": "e2", "text": "解释了万能 skill 的路由噪声/上下文税代价" }
+      ]
+    },
+    {
+      "id": "edge-2",
+      "category": "edge",
+      "note": "边界：相关但不该触发（用 skill 干活）",
+      "prompt": "用 pptx skill 帮我做一份周报幻灯片",
+      "expected_output": "识别这是调用已有 skill 完成业务任务，不属于本 skill 范围，直接走 pptx skill。",
+      "assertions": [
+        { "id": "e3", "text": "没有把业务任务当成 skill 工程任务处理" }
+      ]
+    },
+    {
+      "id": "edge-3",
+      "category": "edge",
+      "note": "边界：删除请求必须归档+确认",
+      "prompt": "把我那个旧的翻译 skill 删了吧，没用了",
+      "expected_output": "对照退役信号复述现状，先归档副本，向用户确认后才删除；检查其他 skill 是否引用它。",
+      "assertions": [
+        { "id": "e4", "text": "删除前做了归档" },
+        { "id": "e5", "text": "删除前向用户复述并取得确认" }
+      ]
+    },
+    {
+      "id": "gotcha-1",
+      "category": "gotcha",
+      "note": "真实坑（2026-07 触发实测）：description 被全类目 MUST 的近邻抢单，两次自我加强均失败",
+      "prompt": "我的 loop-spec 老被 brainstorming 抢单，帮我修 description 修到能赢",
+      "expected_output": "指出对方带全类目 MUST 时仅加强己方大概率无效（引用故障树经验），正解是给对方加排除行（第三方需用户批准）或接受绕路/教用户点名，不做无休止的描述军备竞赛。",
+      "assertions": [
+        { "id": "g1", "text": "没有承诺仅靠加强己方 description 就能赢" },
+        { "id": "g2", "text": "给出了加排除行/点名调用等正解选项" }
+      ]
+    },
+    {
+      "id": "gotcha-2",
+      "category": "gotcha",
+      "note": "真实坑（iteration-6）：新增内容导致相邻行为回退（问题墙）",
+      "prompt": "给我的访谈类 skill 加一个大问题库",
+      "expected_output": "加库的同时检查分批/分轮规则是否覆盖所有列表输出，并为『防倾倒整库』补 gotcha 用例——功能新增必须带相邻行为的回归断言。",
+      "assertions": [
+        { "id": "g3", "text": "为新增功能同时补了相邻行为的回归用例" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "skill_name": "loop-retro",
+  "version": "1.0",
+  "evals": [
+    {
+      "id": "core-1",
+      "category": "core",
+      "note": "带 run-log 的复盘请求",
+      "prompt": "我的标注 loop 昨晚跑完了，progress.log 和 tasks.json 都在 ./loop-docs/，帮我复盘一下这次跑得怎么样、下次怎么改。",
+      "expected_output": "读取真实工件 → vitals 表 → 带引证的诊断 → 三件套（harness 修订提案 before→after、真实失败的 gotcha 用例、标注需签核的标准提案）→ RETRO.md + 决策清单；不擅改任何已签核文档。",
+      "assertions": [
+        { "id": "a1", "text": "每条发现都引用了日志证据" },
+        { "id": "a2", "text": "产出三件套且标准提案标注需人工签核" },
+        { "id": "a3", "text": "没有直接修改 harness 或已签核文档" }
+      ]
+    },
+    {
+      "id": "edge-1",
+      "category": "edge",
+      "note": "没有任何持久化工件",
+      "prompt": "循环跑完了但好像什么日志都没留，帮我复盘。",
+      "expected_output": "指出无状态可复盘本身就是头号发现（harness 未达状态外置标准），建议修 harness，而不是凭记忆编造复盘。",
+      "assertions": [
+        { "id": "e1", "text": "把缺失工件本身列为首要发现" },
+        { "id": "e2", "text": "没有编造运行数据" }
+      ]
+    },
+    {
+      "id": "edge-2",
+      "category": "edge",
+      "note": "相关但不该触发：跑之前审提示词",
+      "prompt": "循环还没跑，先帮我看看这份循环提示词写得行不行。",
+      "expected_output": "指向 loop-review（跑前审计），不做复盘。",
+      "assertions": [
+        { "id": "e3", "text": "指向 loop-review 而非强行复盘" }
+      ]
+    },
+    {
+      "id": "gotcha-1",
+      "category": "gotcha",
+      "note": "成功的运行也要挖非失败信号",
+      "prompt": "循环全绿跑完了，应该没什么好复盘的吧，随便看看。",
+      "expected_output": "仍然挖非失败信号：从未失败的标准、从未触发的 gate、预算余量、增量粒度——成功也可能是校准错了。",
+      "assertions": [
+        { "id": "g1", "text": "没有以『成功』为由跳过复盘" },
+        { "id": "g2", "text": "分析了至少两类非失败信号" }
+      ]
+    }
+  ]
+}
