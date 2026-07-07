@@ -55,6 +55,11 @@ whether resume was clean) · **PLAN.md `## Deviations` entries** — each one is
 map-vs-territory gap caught mid-flight; a run with zero deviations logged and
 visible surprises in the output means the protocol was skipped (itself a finding).
 
+Also read **EXPLAINER.md** if the run reached DONE: check its claims against the
+actual artifacts — every claim the artifacts don't support is a finding
+(false-completion smell), and a DONE run with **no** explainer is itself a finding
+(the harness's delivery bar was missing or skipped).
+
 **Checkpoint**: a vitals table with numbers, each traceable to the log.
 
 ### Step 2 — Diagnose against the failure taxonomy
@@ -113,10 +118,21 @@ edits is **loop-review --fix territory or a follow-up request** — not somethin
 you do unasked. **Profile feedback**: any stable preference this run revealed
 (e.g. a cap style, a red line) → propose appending to `~/.claude/loop-profile.md`.
 **Comprehension check（对抗理解债）**: for runs that produced substantial output
-the user hasn't read, offer a quiz — "要不要我出 5 道关于这次产出的测验，帮你
-确认真的读懂了它交付的东西？" A loop the user can't pass a quiz on is a loop
-they're trusting blind; accepting unread output is how comprehension debt
-compounds. Offer, don't force.
+the user hasn't read, quiz the user — ~5 questions grounded in the actual
+deliverables (EXPLAINER.md claims make good question material). Two modes, by
+where the output is headed:
+
+- **Merge/ship class** (output will be merged into a codebase, deployed, or
+  published): the quiz is a **gate by default** — administer it BEFORE presenting
+  the decision list. Fail or skip → the decision list opens with
+  `merge NOT recommended (quiz failed/skipped)`. The user may explicitly waive
+  the gate — record the waiver in RETRO.md: a logged waiver is a decision, a
+  silent skip is comprehension debt. (Source doctrine: merge only when you pass.)
+- **Report/research class** (output is read, not merged): offer the quiz, don't
+  force it — "要不要我出 5 道关于这次产出的测验？"
+
+A loop the user can't pass a quiz on is a loop they're trusting blind; accepting
+unread output is how comprehension debt compounds.
 
 ## Rationalizations table
 
@@ -137,6 +153,9 @@ compounds. Offer, don't force.
 - [ ] Triad produced: harness revisions (before→after) + ≥0 gotcha cases (every
       real failure captured, none invented) + standards proposals (marked 需签核).
 - [ ] Sedimentation check run (three-criteria precheck; 沉淀提案 or explicit skip).
+- [ ] Merge/ship-class run: comprehension quiz administered BEFORE the decision
+      list — outcome recorded as pass / fail / explicitly-logged waiver, never
+      silently skipped.
 - [ ] Nothing ratified was edited; `RETRO.md` written; decision list presented.
 
 ## Assets

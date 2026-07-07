@@ -2,6 +2,29 @@
 
 本项目的版本演进记录。Newest first.
 
+## v7.1 - Final Explainer + 理解测验条件闸门
+
+对照 Thariq Shihipar 三段框架（Before/During/After implementation）查缺：8 要素中
+7 个已落地，补齐最后一格「Pitches & explainers + Quizzes (merge only when you pass)」。
+
+### Added
+- **Final explainer**（harness 模板 + skeleton，DONE 交付件）：停在 DONE 之前必须
+  写一页 EXPLAINER.md——①做了什么/在哪 ②怎么跑/用/验证 ③关键决策 + Deviations
+  摘要 ④最可能先坏在哪。只写已验证的声明（是交接稿不是宣传稿）——未读的产出
+  就是理解债。
+- **loop-retro 证据采集**新增 EXPLAINER.md 对照读取：声明与工件不符 = 发现
+  （虚假完成气味）；DONE 却没有 explainer 本身 = 发现（交付线缺失）。
+- **理解测验条件闸门**（loop-retro Step 4 + exit conditions + RETRO 模板）：
+  merge/ship 类产出（要合并/上线/发布）测验**默认是闸门**——决策清单之前执行，
+  不过或跳过则清单以「merge NOT recommended」开头；显式豁免须记录在 RETRO.md
+  （记录在案的豁免是决策，静默跳过是理解债）。报告/研究类维持"提议不强制"。
+- loop-retro evals 新增 core-2（merge 类测验闸门），版本 1.0 → 1.1。
+
+### Changed
+- 回归（evals/iteration-1，runner + 对抗评分，新旧快照各跑 5 用例）：旧 4 用例
+  （core-1/edge-1/edge-2/gotcha-1）新旧全部满分持平——**零退步**；新增 core-2
+  旧版 1/3（c1 默认执行、c3 不过不建议合并正是缺口）→ 新版 3/3。
+
 ## v7.0 - Usage Layer + Unknowns + skill-craft 并入
 
 使用层优化（第一性原理评审驱动）+ Thariq Shihipar《Finding Your Unknowns》应用 + skill 部分入仓。

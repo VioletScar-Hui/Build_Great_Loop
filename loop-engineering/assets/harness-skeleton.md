@@ -42,7 +42,8 @@ You are done only when ALL of these are objectively true:
 - <CHECK 3>
 
 # Stop conditions
-- DONE: all success criteria verified → stop and report.
+- DONE: all success criteria verified → write EXPLAINER.md (section below), then
+  stop.
 - BLOCKED: if <STUCK SIGNAL> → write the blocker to <STATE FILE> and stop. No
   thrashing.
 - HUMAN GATE: risky / irreversible / ambiguous action (<e.g. auth, payments, prod,
@@ -85,6 +86,13 @@ You are done only when ALL of these are objectively true:
 Append one line to <PROGRESS LOG> at the end of every iteration:
 `STATUS | <done>/<total> | blocked=<n> | budget=<spent>/<cap> | next=<item>`
 (+ ` | CAL#<n> agree=<x>% PASS/FAIL` on calibration increments.)
+
+# Final explainer  (on DONE — the handoff artifact)
+Before stopping at DONE, write <WORKDIR>/EXPLAINER.md — one page for a human who
+watched none of the run: ① what was built/produced + where it lives ② how to
+run / use / verify it ③ key decisions + a 3-line digest of PLAN.md `## Deviations`
+④ where it's most likely to break first. Only verified claims — it's a handoff,
+not a pitch. (loop-retro reads this against the artifacts.)
 
 # Guardrails  (non-negotiable)
 - One increment per iteration.

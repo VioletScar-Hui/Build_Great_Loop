@@ -218,6 +218,7 @@ exposed a real design flaw (agents can't self-measure $ spend), now folded into 
 | v5.0 | 6th skill **loop-retro** (the flywheel: evidence diagnosis → revisions → real gotchas) + **shakedown protocol** (kill-test gates auto-continue) + **lite path** (3-question micro-interview for tiny tasks) |
 | v6.0 | **Question banks / standards library** (6 task families) + **mid-run calibration** (golden-set drift detection; deterministic loops explicitly waived) |
 | v7.0 | Usage layer + unknowns: **profile prefill** (ask once, ever), **blindspot pass / samples-first / reference-first** (four-quadrant elicitation), **Deviations protocol**, retro quiz, **retro→skill sedimentation channel** + **skill-craft** merged in (full skill-lifecycle methodology) |
+| v7.1 | Closes the last cell of Shihipar's three-phase frame: **Final explainer** (DONE must ship a one-page EXPLAINER.md handoff; retro reads it against the artifacts) + **comprehension-quiz gate** (merge/ship-class output defaults to "merge only when you pass", waivers logged; report-class stays offer-only). Regression: 4 legacy cases zero regression, new core-2 1/3 → 3/3 |
 
 ---
 

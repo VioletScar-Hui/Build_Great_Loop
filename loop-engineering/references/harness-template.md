@@ -63,7 +63,8 @@ You are done only when ALL of these are objectively true:
   → Prefer machine-checkable: a command exits 0, a file exists, a string appears.
 
 # Stop conditions
-- DONE: all success criteria verified → stop and report.
+- DONE: all success criteria verified → write the final EXPLAINER (section below),
+  then stop.
 - BLOCKED: if <stuck signal, e.g. the same check fails twice with no new info, or a
   needed credential/decision is missing> → write the blocker to <state file> and
   stop. Do not thrash.
@@ -187,6 +188,16 @@ the calibration):
   "looks right." <e.g. run the app and use the feature; hit the endpoint; check the
   output rows.> A green unit test alone is not proof the feature works.
 
+# Final explainer  (on DONE — the handoff artifact)
+Before stopping at DONE, write <workdir>/EXPLAINER.md — one page, written for a
+human who watched none of the run: ① what was built/produced and where it lives;
+② how to run / use / verify it; ③ the key decisions, plus a 3-line digest of
+PLAN.md `## Deviations`; ④ where it is most likely to break first. Only claims
+you actually verified — it is a handoff, not a pitch.
+  → Why: unread output is comprehension debt. The explainer is the cheapest unit
+    a human can absorb, and the retro (loop-retro) reads it against the artifacts —
+    a DONE without an explainer is an incomplete delivery.
+
 # Guardrails  (non-negotiable)
 - Do NOT attempt to do everything at once — one increment per iteration.
 - Do NOT mark anything done without verifying it.
@@ -232,7 +243,8 @@ You are done only when ALL acceptance checks in `features.json` have status
 
 # Stop conditions
 - DONE: every entry in features.json is "passing" AND npm test + npm run lint exit
-  0 → write a final summary to progress.md and stop.
+  0 → write EXPLAINER.md (what was built · how to run and use it · key decisions
+  & a deviations digest · where it's most likely to break first) and stop.
 - BLOCKED: if the same check fails twice in a row with no new information, or you
   need a decision only a human can make → record it under "BLOCKED" in progress.md
   and stop. Do not keep retrying the same thing.

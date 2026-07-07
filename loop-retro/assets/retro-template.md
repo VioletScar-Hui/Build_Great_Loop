@@ -15,6 +15,7 @@
 | Budget burned vs. cap | | |
 | Verifier verdicts (pass/fail counts) | | |
 | Resume events (clean?) | | |
+| EXPLAINER.md present & claims verified? | | |
 
 ## Findings (each with evidence)
 ### F1 — <failure class>: <one line>
@@ -51,6 +52,8 @@ cap sizing — anything miscalibrated even though nothing "broke".>
 Task A）/ 不过判：明说跳过，单次工作不沉淀>
 
 ## Decision list for the human
+- [ ] (merge/ship class) Comprehension quiz: <passed / failed / waived-and-logged>
+      — merge recommended only on pass
 - [ ] Apply H1..Hn to the harness? (say the word and they get applied)
 - [ ] Ratify S1..Sn?
 - [ ] Keep gotcha cases as written?
