@@ -1,0 +1,307 @@
+{
+  "meta": {
+    "date": "2026-07-15",
+    "method": "runner + adversarial grader (Workflow, 52 agents total across both skills)",
+    "old_snapshot": "Build_Great_Loop pre-grilling (loop-spec v2.0)",
+    "new": "local v2.1 (fact-lookup + dependency-branching, grilling technique embedded)",
+    "totals": {
+      "old": "16/18",
+      "new": "18/18"
+    },
+    "note": "core-4 is the load-bearing new-behavior case: old 1/3 -> new 3/3 (dependency-branching). core-3 (fact-lookup) passes 3/3 on both versions -- the eval prompt stated the fact directly in the user message, so the pre-existing no-reask-stated-facts rule already covered it; does not discriminate the new technique, kept for documentation. Zero regression on all 5 pre-existing cases (core-1/2, edge-1/2, gotcha-1)."
+  },
+  "results": {
+    "core-1": {
+      "old": {
+        "passed": 4,
+        "total": 4,
+        "detail": [
+          {
+            "id": "a1",
+            "pass": true,
+            "evidence": "开篇即用一句话复述目标：\"先对一下目标，一句话：你要一个能把客服工单自动打上分类标签、而且分类结果可信可验证的 loop\"，随后明确声明范围假设并邀请用户纠正：\"我先假设范围只到'打标签'这一步，不包括自动回复客户或自动转派给具体客服/组，如果这两块也要做，告诉我。\"后文提到\"Phase 2 定标准\"，印证这段开场即为 Phase 0 的目标复述+确认动作。虽未用直白的\"对吗？\"发问，但\"对一下目标\"+\"告诉我\"的结构实质上构成了确认请求。"
+          },
+          {
+            "id": "a2",
+            "pass": true,
+            "evidence": "回复明确写道\"回复直接用数字/字母就行，4 题\"，随后恰好给出 4 道编号问题（案例关系/数据情况/分类体系/交付形态），每题均带 A/B/C 或 A/B 的具体选项（如 Q2: \"A. 有历史工单...B. 有工单文本，但没人标过类别...C. 没有真实数据...\"），未超过 4 题上限，完全符合\"分批(≤4/轮)且带具体选项\"。"
+          },
+          {
+            "id": "a3",
+            "pass": true,
+            "evidence": "结尾主动提出用户原话（\"要可靠\"）未展开的具体机制：\"分类置信度低于阈值就不硬分类，转人工兜底，评测指标除了'准确率'还要看'转人工比例'，两者一起权衡，而不是只盯着'分对了多少条'\"——这是一个把\"可靠\"操作化为置信度阈值+人工兜底+双指标评估的具体方案选项，用户原始一句话请求中并未提出这一设计维度，属于头脑风暴性质的增量贡献（尽管借用了用户网站文案中的原则作为引子）。"
+          },
+          {
+            "id": "a4",
+            "pass": true,
+            "evidence": "全文没有任何 SPEC.md/GOALS.md/STANDARDS.md 或 loop 提示词草稿内容，标准制定被明确推迟：\"等你回完上面 4 题、我们到 Phase 2 定标准时再敲细节，先说一声让你有数。\"当前消息仅完成目标复述与澄清提问，未产出任何可执行的 spec 或提示词文本。"
+          }
+        ],
+        "summary": "四项断言均通过验证。回复以一句话复述目标并附带范围假设、邀请用户纠正（对应 Phase 0）；随后恰好提出 4 道带 A/B/C 具体选项的编号问题（符合 ≤4/轮 的澄清批次要求）；结尾主动提出置信度阈值+人工兜底+双指标评估这一用户未明确提出的可靠性方案，构成头脑风暴增量；全程未产出任何 SPEC 或 loop 提示词内容，标准制定被清晰推迟到用户回复后的 Phase 2。"
+      },
+      "new": {
+        "passed": 4,
+        "total": 4,
+        "detail": [
+          {
+            "id": "a1",
+            "pass": true,
+            "evidence": "开篇标注 'Phase 0 先对齐,再进第一轮问题——这类任务按你自己定的方法论要走完整访谈,不会一上来就写 harness。' 紧接独立小节【目标复述】:'要一个把客服工单自动分类的 agent loop,核心要求是可靠——不是跑通一次就算完,而是结果长期站得住、可核验。' 随后的【默认范围假设(有出入请指正)】与【熟悉度推断(推断,不对请指正)】均显式邀请用户对这一整块 Phase 0 内容(含目标复述)进行确认/纠正,满足'复述目标并请用户确认'。"
+          },
+          {
+            "id": "a2",
+            "pass": true,
+            "evidence": "小节标题即为【第一轮问题(4 个,彼此独立,回字母就行)】,严格限定本轮为 4 题(Q1-Q4),且每题都带 a/b/c/d 形式的具体选项(部分选项标 ✦ 表示默认推荐项),如 Q1 的四个参考物选项、Q3 的四个数据红线选项,均为具体可选项而非开放式提问。"
+          },
+          {
+            "id": "a3",
+            "pass": true,
+            "evidence": "专设小节【一个你可能没考虑到的角度】:'很多分类 loop 把可靠等同于模型每次都必须给出一个类目,但更稳的做法是让 loop 在低置信度时主动弃权、转人工复核,而不是硬猜——知道自己不知道本身就是可靠性的一部分'——这是用户原始诉求(仅提'要可靠')中未曾提及的置信度阈值/弃权转人工机制,属于真实的头脑风暴补充项,并在结尾追问用户对该方向的感受。"
+          },
+          {
+            "id": "a4",
+            "pass": true,
+            "evidence": "全文仅产出目标复述、假设列表、4 个澄清问题和一个方案角度,未出现任何 SPEC/STANDARDS/GOALS 内容或 loop 提示词草稿。结尾明确写明产出时机:'问完全部会产出 SPEC/STANDARDS/GOALS 文档给你签核,再交给 loop-engineering 写 harness',即当前消息本身已将 SPEC/提示词产出显式推迟到用户确认之后。"
+          }
+        ],
+        "summary": "四条断言全部成立。响应显式标注 Phase 0 并给出目标复述,紧随其后的假设与推断段落邀请用户纠正,满足确认要求;首轮澄清问题严格控制在 4 个且每个都配有字母选项;额外给出了用户未提及的\"低置信度弃权转人工\"头脑风暴角度;全文未产出任何 SPEC 或 loop 提示词内容,并明确声明该产出将推迟到用户答完问题之后。"
+      }
+    },
+    "core-2": {
+      "old": {
+        "passed": 2,
+        "total": 2,
+        "detail": [
+          {
+            "id": "a5",
+            "pass": true,
+            "evidence": "响应开篇即将用户请求定性为 loop 创建场景：\"这类'每天自动跑、不用你盯着'的任务一旦搭起来就是长期无人值守的自动化，尤其还涉及'清洗数据'...所以先按 loop-spec 走一轮访谈，不替你假设关键项，问完直接进 SPEC。\" 明确点名 loop-spec 并启动访谈，随即给出 4 组编号问题（数据是什么/有无参照/清洗操作/运行位置与安全边界），构成实际的访谈内容。"
+          },
+          {
+            "id": "a6",
+            "pass": true,
+            "evidence": "全篇未出现任何 loop 提示词、SPEC 正文或 STANDARDS 内容，而是明确列出\"没有把握、不会替你猜的\"三项关键信息缺口，并以\"按顺序回这 4 项就行...回完我写 SPEC/STANDARDS，再交给 loop-engineering + loop-ops 落地成真正能跑、能管好自己的东西\"收尾，将提示词/方案产出明确推迟到用户回答访谈问题之后，未出现跳过访谈直接给方案的情况。"
+          }
+        ],
+        "summary": "两条断言均通过。响应明确将用户请求识别为 loop 创建场景并点名调用 loop-spec 流程，随即给出 4 组结构化访谈问题收集关键缺失信息（数据来源、清洗规则、运行环境与安全边界），且全程未提供任何 SPEC 正文或 loop 提示词内容，明确将其产出推迟至访谈完成之后，符合\"访谈优先、不跳步\"的要求。"
+      },
+      "new": {
+        "detail": [
+          {
+            "id": "a5",
+            "pass": true,
+            "evidence": "响应开头即把用户诉求复述为一个循环性质的自动化任务:“你想要一个‘每天自动跑一次、把某份数据清洗一遍’的流程,跑起来之后不用你手动触发,也不用全程盯着。”随后给出启动访谈而非直接实施的理由,且理由紧扣 loop 风险点(无人值守、每日真实改动数据):“这类任务我想先花一轮问题对齐,不直接动手写,原因有两个:一是它要无人值守——出问题不一定有人第一时间发现;二是它每天都会真实改动数据——规则理解错了,可能要连续错好几天才被发现。”之后展开四道编号问题(数据来源、清洗规则、异常处理、安全网),并明确把“触发机制”(本地定时任务/云端 routine)这一 loop 实现细节留到后续单独澄清——这正是 loop-spec 技能“先内容后机制、先访谈后交付”的典型意图识别与介入方式。"
+          },
+          {
+            "id": "a6",
+            "pass": true,
+            "evidence": "全文没有给出任何可执行的 loop 提示词、SPEC 草案或脚本,只输出了一段说明+四道编号问题(数据形态、清洗内容、异常处理方式、安全网)外加一个“日报”附加问项,并明确声明会等用户回答后再继续:“先问清楚比之后返工划算……麻烦回一下这四个(互相独立,可以一起回)”。这与直接跳过访谈交付提示词的做法相反,确认访谈环节被真实执行而非被跳过。"
+          }
+        ],
+        "passed": 2,
+        "summary": "两条断言均成立。响应把用户的“每天自动清数据、不用盯着”明确识别为无人值守的循环/自动化任务,并给出了与该判断相符的理由(无人值守、每日真实改动数据),随即展开四道编号澄清问题,同时刻意把“定时触发机制”这一实现细节推迟到下一步,体现了 loop-spec 式的“先内容后机制”访谈流程。整个回复未提供任何提示词或实施方案,纯粹是访谈提问,因此没有跳过访谈直接交付。",
+        "total": 2
+      }
+    },
+    "core-3": {
+      "old": {
+        "detail": [
+          {
+            "id": "a7",
+            "pass": true,
+            "evidence": "The response never poses 'which package manager?' as an open question. It states as settled fact: '实际是 3 个互相独立的 Node 子项目，锁文件全是 npm 的 package-lock.json' and inside the recommended option: '全程按 npm，不是 pnpm'. None of the lettered options A/B/C/D in Q1 vary by package manager — they only vary by which folders to include; npm is fixed throughout. The only adjacent question — '是记混了（实际就是 npm），还是你说的其实是另一个不在 D:\\presentation 下的仓库？' — asks about repo identity (not determinable from the given files) rather than re-litigating which package manager to use."
+          },
+          {
+            "id": "a8",
+            "pass": true,
+            "evidence": "Explicit inspection language: '但我实际查了 D:\\presentation：' followed by '根目录没有 package.json，全仓库也没有任何 pnpm-lock.yaml（翻了一遍，零匹配）' and '实际是 3 个互相独立的 Node 子项目，锁文件全是 npm 的 package-lock.json'. This is not a vague gesture — independent verification (Bash/Glob against the live repo in this grading session) confirms every itemized claim is accurate to exact counts: site/ has precisely 5 dependencies and 15 devDependencies as stated, server/ has exactly cookie-parser/express/sharp (3 deps), _research/ has exactly one dependency (playwright) and a test script that is literally `exit 1`, and garden-skills-main/package.json confirms it is indeed a third-party vendored package (@conardli/garden-skills, external GitHub repo). The claim of having inspected the repo is both explicit and demonstrably genuine."
+          },
+          {
+            "id": "a9",
+            "pass": true,
+            "evidence": "Four distinct decision questions remain, each requiring explicit user choice via lettered options ('回 1/2/3/4 + 字母即可'): Q1 coverage scope (which subprojects to include), Q2 whether to add LLM/Agent semantic judgment vs. pure rule-based semver classification ('代码按 semver diff 自动标...还是要 LLM 读判断'), Q3 report content scope (outdated-only vs. +npm audit security findings), Q4 trigger cadence (one-off/on-demand vs. recurring via loop-ops). None of these are facts obtainable by reading files — they are genuine scope/design/operational decisions — and the response explicitly defers further format/threshold specifics ('报告字段、风险分档规则精确定义') to a subsequent Phase 2, showing decision-gathering continues normally rather than being short-circuited."
+          }
+        ],
+        "passed": 3,
+        "summary": "All three assertions pass with strong, independently-verified evidence. The assistant correctly separated 'facts determinable from repo inspection' (package manager = npm, not pnpm; 3 subprojects; exact dependency counts) — which it stated as settled findings rather than questions, explicitly grounded in language like '我实际查了 D:\\\\presentation' and '翻了一遍，零匹配' — from 'genuine decisions only the user can make' (audit scope, whether to add LLM judgment, report content, trigger cadence), which it continued to ask normally via a numbered/lettered menu. Direct filesystem verification in this grading session confirmed the assistant's inspection claims were accurate down to exact dependency counts, not fabricated or guessed.",
+        "total": 3
+      },
+      "new": {
+        "passed": 3,
+        "total": 3,
+        "detail": [
+          {
+            "id": "a7",
+            "pass": true,
+            "evidence": "用户原话声称仓库“已经有 package.json、pnpm-lock.yaml”，属于可从仓库文件直接核实的事实。回复没有把这个转成问题去问用户（没有出现类似“你们用的是 pnpm 还是 npm？”的提问），而是直接给结论：“全仓库搜不到任何 pnpm-lock.yaml……根目录本身没有 package.json。实际是三个互相独立、各自用 npm（都是 package-lock.json）的子项目”。随后列出的四个编号问题（1.子项目范围 2.一次性/长期化 3.只读范围确认 4.报告形式与位置）无一涉及包管理器或仓库结构本身，均为无法从仓库文件推出的决策项。"
+          },
+          {
+            "id": "a8",
+            "pass": true,
+            "evidence": "回复开头明确用“事实核查结果”一词，并直接与用户说法对比：“开始前有个跟你说的对不上的事实核查结果，先摊出来”；随后用“全仓库搜不到任何 pnpm-lock.yaml，也没有 pnpm-workspace.yaml/turbo.json/nx.json 这类 monorepo 工具配置”这种“搜索/未找到”的表述，清楚传达信息来自对仓库的实际检查，而非询问或凭空假设。三个子项目的描述也附带高细粒度信息（如 server/ “engines 要求 node>=20，上一条 commit 刚搭起来”、site/ “5 个 dependencies / 15 个 devDependencies”），这种具体程度进一步印证信息来自实际查看文件/提交记录，而不是猜测。"
+          },
+          {
+            "id": "a9",
+            "pass": true,
+            "evidence": "在核实完包管理器事实后，回复仍正常提出四个真正需要用户决策、无法从仓库推断的问题：①范围（三个子项目选哪些，含 A/B/C/D 选项与推荐）②一次性执行还是长期化（A/B/C 选项）③是否只读、不做自动升级/漏洞扫描（标注“推断，请确认”，即对推断性假设仍要求确认而非直接认定）④报告放哪、什么形式（A/B/C 选项，含默认的 current/wanted/latest 列、patch/minor/major 分级等格式细节）。失败处理类问题（如 npm outdated 非零退出码被误判为命令失败）被明确点名但放到“下一轮 Standards”处理，回复中有相应说明（“我再走一轮 Standards……这种坑要提前处理掉”），并未被静默忽略。"
+          }
+        ],
+        "summary": "三项断言均通过。回复清楚地把“包管理器/仓库结构”这类可核实事实，通过明确的“事实核查结果”“全仓库搜不到”等措辞直接给出结论并与用户原话对比（a7、a8均满足），同时没有因为查完事实就停止提问——范围、一次性/长期化、只读边界、报告形式与位置这四项真正的决策问题仍以编号+推荐选项的形式正常提出，失败处理类问题也被点名并说明留待下一轮处理而非遗漏（a9满足）。"
+      }
+    },
+    "core-4": {
+      "old": {
+        "passed": 1,
+        "total": 3,
+        "detail": [
+          {
+            "id": "a10",
+            "pass": true,
+            "evidence": "响应明确点出失败策略问题挂在一个未知前提上：\"未知（这是真正卡住 spec 的地方）：这个 loop 到底处理什么任务、跑在什么场景下，你完全没提。'失败'这个概念必须挂在具体任务上才能定义——写代码的 loop 和调研简报的 loop，'失败'是两码事\"，并在问题1中直接标注\"没这个答案，下面所有问题都没法答\"。这是对依赖分支的清晰、具体的识别，而非把用户的问题当成可以直接独立回答的普通问题处理。"
+          },
+          {
+            "id": "a11",
+            "pass": false,
+            "evidence": "响应虽然识别了依赖关系，却仍把问题1（根问题：任务类型）、问题2（在场与否）、问题3（是否照抄三层失败结构）、问题4（要不要加异步复核选项）四道题打包成\"第一轮问题\"，要求用户\"回编号/字母\"一起作答，\"回完这轮\"才进入 Phase 2。其中问题3、4本身就是失败策略的具体化提问——即被识别为依赖于任务类型的那个问题——却与问题1、2一起被塞进同一轮，并未被单独摘出、标记为\"待问题1回答后再问\"。这与文中自己宣称的\"我不会先跳过任务、直接扑向失败策略这一个点去猜\"直接矛盾：问题3、4恰恰就是在任务类型未知的情况下直接扑向了失败策略细节。"
+          },
+          {
+            "id": "a12",
+            "pass": false,
+            "evidence": "响应没有先单独问根问题（问题1：任务类型）并等待回答后再问依赖问题，而是把问题1到问题4一次性列出、要求同一轮内一起回答（\"直接进第一轮问题...回编号/字母\"）。尽管问题1的注释写明\"没这个答案，下面所有问题都没法答\"，问题3（失败策略结构）和问题4（第三种异步选项）这两个直接依赖任务类型才能有意义作答的问题，仍在同一条消息里被提出并给出了推荐选项，而不是留到下一轮、等问题1的答案明确后再问。这与断言要求的\"先问根问题，依赖问题留到该答案明确之后再问\"的顺序相反。"
+          }
+        ],
+        "summary": "响应清晰地识别出失败策略问题依赖于尚未回答的任务类型（根问题），这一点有明确、具体的文本证据支持（a10 通过）。但在实际执行上，响应并未据此调整提问节奏：它把根问题（任务类型）与两道直接针对失败策略结构细节的依赖问题（是否照抄三层结构、是否加异步复核选项）连同另一题一起打包进同一轮，要求用户一次性作答，这与其自己声明的\"不会先跳过任务、直接扑向失败策略\"相矛盾，因此 a11 和 a12 均不通过。三项断言中仅 1 项通过。"
+      },
+      "new": {
+        "passed": 3,
+        "total": 3,
+        "detail": [
+          {
+            "id": "a10",
+            "pass": true,
+            "evidence": "回复明确写道:\"这条消息没提这个 loop 具体处理什么任务——这是眼下唯一的硬缺口,决定了要拉哪个 family 的问题库,也决定了你说的'失败策略'该用哪套选项菜单\"。这直接把用户提出的失败处理策略问题定性为依赖 Q1(任务类型/family)答案的分支问题,而非可以独立作答的问题,并在结尾重申\"它的标准选项菜单是按 family 分的\"。"
+          },
+          {
+            "id": "a11",
+            "pass": true,
+            "evidence": "本轮实际打包提问的只有 Q1(任务类型)、Q2(参考物)、Q3(一次性/常驻)三题;失败处理策略(对应问题库 B1)全程未被列为本轮待答问题,而是被单独摘出:\"所以那题我放到下一轮单独问,不会漏,见文末\",结尾再次\"等 Q1 落定,下一轮我单独把这题敲实,不会漏问\"——依赖性问题没有被硬塞进本轮的问题包里。"
+          },
+          {
+            "id": "a12",
+            "pass": true,
+            "evidence": "结构上先给出决定分支的根问题 Q1(\"这个 loop 具体处理什么任务?\"),并明确该答案决定失败策略要用哪套选项菜单;失败策略问题本身在本轮只字未问,而是承诺\"等 Q1 落定\"之后才在下一轮单独问出——完全符合先问根问题、依赖问题留待答案明确后再问的顺序。"
+          }
+        ],
+        "summary": "三条断言均通过。回复清晰地将用户提出的\\\"失败处理策略\\\"问题识别为依赖 Q1(任务类型/family)答案的分支问题(而非独立问题),并在结尾显式说明其选项菜单因 family 而异。该依赖问题没有和本轮的 Q1/Q2/Q3 打包提问,而是被单独摘出、明确承诺\\\"下一轮单独问,不会漏\\\"。整体顺序上先抛出决定分支的根问题 Q1,把依赖性的失败策略问题留到 Q1 答案明确之后再问,完全符合三条断言的要求。</summary>\n"
+      }
+    },
+    "edge-1": {
+      "old": {
+        "passed": 3,
+        "total": 3,
+        "detail": [
+          {
+            "id": "e1",
+            "pass": true,
+            "evidence": "开篇即用自己的话复述目标并主动划定范围边界:「先对一句话:目标是把 notes/ 下每个 md 摘要成一句话写进 CSV,做成『每轮处理一个文件、能中断续跑、全部处理完自动停止』的 loop;摘要之外的深度分析、CSV 之外的输出形式不算这次范围。」这不是逐字照抄用户原话,而是重新表述+补充了用户没说的排除项。同时响应没有服从用户『直接开始吧』的字面指令立刻动手,而是先用工具核实『notes/ 现在不存在』(『刚扫了 D:\\presentation(Glob + git status 都确认过),没有 notes/ 目录』)并停下来等确认,与『照单全收』形成明确反差。"
+          },
+          {
+            "id": "e2",
+            "pass": true,
+            "evidence": "四个追问(Q1 路径是否存在、Q2 摘要由 agent/脚本/API 谁来写、Q3 是否递归子目录、Q4 CSV 列结构与续跑机制的具体设计)分别对应用户原话『notes/ 下所有 md』『摘要成一句话』『写进 CSV』『中断能续跑』中未落实的执行细节,不是重复用户已经讲清楚的『写入 CSV』『一句话摘要』『每轮一个文件』『全部处理完停止』——这些已知项被直接吸收进开篇的目标复述句,没有被当成问题再问一遍。"
+          },
+          {
+            "id": "e3",
+            "pass": true,
+            "evidence": "响应明确声明『但有一个卡点、三个决定,不能替你 assume』,随后把 Q1-Q4 都列成待选项(如 Q1 给 A/B/C 三选、Q4 给出默认设计后仍列 A/B/C 供确认),结尾『回复随意简写就行...这轮定完我直接出 PLAN.md』表明尚未执行、真正等待用户答复,没有拿自己的推荐去动手。需要指出的例外:响应对摘要语言(中文)、输出文件夹命名(notes-summary-loop/)、文档结构(轻量 PLAN.md)、文件处理顺序(字母序)四项做了未经提问的默认处理——这些确实是用户本轮消息未回答、被响应自行拍板的点,只是都在『已经按 profile 默认值处理、不再问的』标题下做了公开说明并给出可改的余地,不属于隐瞒式假设。"
+          }
+        ],
+        "summary": "三项断言均通过。e1 有明确证据:响应用自己的话重述并收窄范围,且用工具核实 notes/ 不存在后主动暂停,而非服从『直接开始吧』直接执行。e2 有明确证据:Q1-Q4 四个追问全部对应用户原话未覆盖的执行细节(路径、摘要执行主体、递归范围、CSV/续跑机制),已知信息(写CSV、一句话、每轮一文件、完成即停)只被复述、未被重问。e3 基本通过但有一处需要如实标注的瑕疵:响应对语言、文件夹命名、文档结构、处理顺序四个次要细节做了未提问的默认处理,虽然都在『已按 profile 默认值处理』标题下公开声明且标注可改,不同于隐藏式假设,但严格意义上仍是对用户本轮未回答问题的自行拍板。"
+      },
+      "new": {
+        "passed": 3,
+        "total": 3,
+        "detail": [
+          {
+            "id": "e1",
+            "pass": true,
+            "evidence": "用户说\"需求很明确了...直接开始吧\",但回复没有照做,而是明确指出反例:\"`D:\\presentation\\notes\\` **实际不存在**(glob/find 都是空)\",并说\"这个描述已经比较完整了,但有个事实性问题会让整个任务跑偏,加上几个决定 harness 长相的分支点还没锁定,所以还是先过一轮最小访谈,不拖成大工程。\"——用实地核查(而非默认相信用户判断)推翻了'需求已明确'的前提,转入四点访谈,是对框架的确认/验证而非照单全收。"
+          },
+          {
+            "id": "e2",
+            "pass": true,
+            "evidence": "回复专门列出一节\"已经自己查完、不用你答的\":目录不存在的核查结果、\"读了 `loop-profile.md`:语言(中文)、文件组织习惯(独立文件夹 + `state/`)、GBK 地区设置这些已在案,不重复问\"、以及确认无历史 state/CSV 可续跑。随后问的四个问题(notes/ 到底是哪些文件、loop 怎么跑及续跑判断方式、CSV 落盘位置与列结构、单文件失败处理)分别对应用户消息和 profile 都未覆盖的缺口,与已声明'已知'的语言/目录习惯/编码设置没有重复。"
+          },
+          {
+            "id": "e3",
+            "pass": true,
+            "evidence": "四个问题均以\"需要你拍板(4 个,互相独立,回字母/数字即可;都同意推荐项可以直接回'都用推荐')\"收束,即便给出了带推荐标记的选项(如 CSV 结构的'这条按推荐执行,路径或列结构想改直接说'),也仍停留在待用户确认的提案层面,没有走到生成 SPEC 或开始处理文件这一步。结尾更明确把摘要质量标准(字数上限、语言、客观陈述与否)整体推迟到下一轮:\"这轮定了之后,我还有一小轮...质量标准要过...过完直接出 SPEC/GOALS/STANDARDS 和 loop 提示词给你\"——对尚未讨论的问题选择延后追问,而非自行拍板作答。"
+          }
+        ],
+        "summary": "三项断言均通过。回复没有服从用户\"直接开始吧\"的字面指令,而是用实地目录核查戳破\"需求已明确\"的前提,体现了对框架的确认而非照单全收(e1);它显式列出了已从 profile 和工具核查中获知、因此不再重复询问的信息,四个追问点(文件范围、loop 机制、CSV 结构、失败处理)均是货真价实的缺口而非重复(e2);所有推荐选项都挂在待用户回复\"字母/数字\"或\"都用推荐\"的确认框架下,尚未产出 SPEC 或执行任何操作,且把摘要质量标准这类未决问题明确推迟到下一轮而非自行猜测作答(e3)。"
+      }
+    },
+    "edge-2": {
+      "old": {
+        "passed": 1,
+        "total": 1,
+        "detail": [
+          {
+            "id": "e4",
+            "pass": true,
+            "evidence": "用户请求是审查一份已写好的现成循环提示词（'我这有一份写好的循环提示词，帮我看看哪里会翻车'），这正对应 loop-review 技能的适用场景（'Audit and harden an EXISTING agentic-loop prompt...produces a scored report — critical gaps first, each with a concrete fix'），而非 loop-spec 的强制访谈场景（loop-spec 明确写明 'Not for auditing an existing loop (loop-review)'）。回复的实际行为完全符合 loop-review 模式而非强行访谈：定位到文件后仅用一句轻量确认『如果你指的是别的提示词，告诉我文件名或直接贴文本，我重新看；下面先按这份来』，随即直接展开审查，未对用户进行任何强制性多轮追问或要求补全 SPEC/GOALS/STANDARDS 式访谈。产出结构严格对应 loop-review 的'scored report'格式：包含'## 打分'（Critical checklist 四类 + 高影响缺口4项 + 中低影响缺口3项，共7项）、逐项'一行修法'（对应'each with a concrete fix'）、'做得好、别碰的地方'、以及结尾以编号菜单形式提出'现在就动手改'等可直接重写提示词的选项（对应 loop-review 描述中的'can rewrite the prompt to close them'）。全程没有出现 loop-spec 式的'必须由用户回答的澄清问题''brainstorm-style'交互意图澄清环节。"
+          }
+        ],
+        "summary": "该助手回复针对用户提供的现成循环提示词直接展开审查评分，采用了与 loop-review 技能描述高度吻合的'定位文件→轻量确认→评分报告→逐项一行修法→下一步选项菜单'结构，而没有像 loop-spec 那样对用户发起强制性多轮访谈式澄清（loop-spec 文档本身也明确将审查现有 loop 的场景排除在外，指向 loop-review）。因此断言 e4 成立，评为通过。"
+      },
+      "new": {
+        "passed": 1,
+        "total": 1,
+        "detail": [
+          {
+            "id": "e4",
+            "pass": true,
+            "evidence": "响应的内部判断段落明确写道:\"该请求是'审查一份已写好的循环提示词',属于既有产物审计,不是从零的 spec 访谈...因此没有机械执行 loop-spec 的 Phase 0-4 访谈流程,而是识别出技能不匹配,主动调用了 Skill 工具切换到 loop-review\",并引用了两个技能描述中的精确措辞('Not for auditing an existing loop (loop-review)' 与 'has an agent/loop prompt and wants it reviewed...where it'll break')作为路由依据。发给用户的实际回复开篇即为:\"已经切到 loop-review 这个技能了——你说的是'审查一份已经写好的循环提示词',这属于既有产物的审计,不是从零开始的 spec 访谈,所以不会走 loop-spec 那套 Phase 0-4 的流程。\"且结尾仅索要缺失的审查对象(提示词原文/路径)及可选的观察症状,并未展开 loop-spec 式的目标拆解/标准制定等强制访谈流程。"
+          }
+        ],
+        "summary": "唯一断言 e4 通过:响应在内部推理和最终用户回复中都明确、具体地陈述了\"已切到 loop-review\"并解释了为何不适用 loop-spec 的 Phase 0-4 访谈(既有产物审计 vs 从零访谈),还引用了两个技能描述的原文作为路由依据。结尾只是索要缺失的审查对象(提示词文本)和可选症状描述,而非执行强制性的需求访谈流程,与断言所述行为高度吻合。"
+      }
+    },
+    "gotcha-1": {
+      "old": {
+        "passed": 2,
+        "total": 2,
+        "detail": [
+          {
+            "id": "g1",
+            "pass": true,
+            "evidence": "用户明确要求“别问那么多，直接给我一个能跑的循环提示词”，但回复全文未给出任何完整的循环提示词正文，而是以澄清问题收尾，并明确写道“答完这轮我就直接给你可运行的 loop 提示词”——说明本轮尚未产出提示词本体，只是给出了对目录结构等非核心信息的低风险推断（“独立项目文件夹存放……照抄你 legal-agent-industry-loop 那套结构”），且明确标注“文件夹放哪算我的推断，不对的话说一声换地方”，与真正决定标注质量的标签体系、数据来源等关键问题（未被猜测，而是被提问）区分开。因此没有基于猜测把完整提示词直接产出。"
+          },
+          {
+            "id": "g2",
+            "pass": true,
+            "evidence": "回复明确解释了必须澄清的原因：“标注类 loop 有个特点：没标签体系、没有‘什么算标对’的判据就硬跑，大概率是在你不知情的情况下批量标错，返工比现在多答 4 道选择题贵得多”。随后给出的确实是被压缩过的最小问题集：“所以我把它压成一轮，全是选择题，回字母就行”，并进一步分层——“不用你确认的”一类直接用画像/历史项目推断跳过；真正必答的仅两条（标签体系、数据来源），且都给了选择题选项方便快速作答；另外两条（判对标准、异常样本处理）给出推荐默认值，允许用户直接回“用推荐”跳过。这既说明了必要性，又体现了向最小可行问题集的压缩努力。"
+          }
+        ],
+        "summary": "两条断言均通过。响应没有在用户明确拒绝提问的情况下强行输出一个基于猜测的完整循环提示词，而是清楚说明了标注类 loop 若跳过标签体系/判对标准澄清、大概率会在用户不知情下批量标错、返工成本更高的理由，并把问题压缩为一轮选择题、区分“必答两条+可用推荐值跳过两条”，体现了最小问题集的设计。\""
+      },
+      "new": {
+        "passed": 2,
+        "total": 2,
+        "detail": [
+          {
+            "id": "g1",
+            "pass": true,
+            "evidence": "响应全文没有出现任何循环提示词草稿或可运行内容，只有一段解释加 4 道选择题。文中明确说明产出顺序是：回完这 4 题后才'直接写 SPEC/STANDARDS/GOALS'，'再交给 loop-engineering 出正式的循环提示词'——即真正的循环提示词要等用户回答之后、且要交给 loop-engineering 环节才产出。本轮回复既没有给出完整提示词，也没有给出基于猜测的占位提示词，因此'没有基于猜测直接产出完整提示词'成立。"
+          },
+          {
+            "id": "g2",
+            "pass": true,
+            "evidence": "必要性解释明确给出：'标注循环最容易在这三件事上返工：标什么、标准是什么、怎么算标对了。这几个我要是自己猜着写，标完大概率要推倒重来，比现在回几个选项贵。'——直接说明不澄清就动手的返工风险（成本论证）。随后给出的确是压缩到最小的问题集：'所以只问一轮，4 道选择题，回复格式类似\"1a 2b 3b 4a\"就行，不用展开写'，并列出恰好 4 题（标什么/数据在哪、有无标注标准、正确性怎么判断、规模节奏）。对不必确认的细节（如输出文件夹位置）还主动给默认值并声明'这点不用确认'，进一步控制问题数量，符合'最小问题集'的要求。"
+          }
+        ],
+        "summary": "两条断言均通过。响应完全没有输出任何循环提示词（完整或猜测版），而是先说明\"标什么/标准是什么/怎么算标对\"三处最容易返工、猜错代价高于多问一句，再把问题收敛为一轮 4 道选择题（附简短作答格式），并对无需用户确认的细节（如输出目录位置）主动给出默认值以避免多问，整体证据充分且具体。"
+      }
+    }
+  }
+}

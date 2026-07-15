@@ -1,0 +1,263 @@
+{
+  "meta": {
+    "date": "2026-07-15",
+    "method": "runner + adversarial grader (Workflow, 52 agents total across both skills)",
+    "old_snapshot": "loop-eval SKILL.md before this change (no evals.json existed prior to this iteration)",
+    "new": "local v1.0 (first-ever eval set + grilling-derived Part 2 item 5: ambiguous-edge-case fact/decision split)",
+    "totals": {
+      "old": "14/16",
+      "new": "14/16"
+    },
+    "note": "This is the FIRST evals.json this skill has ever had -- old/new comparison is same-skill-text-minus-Part-2-item-5, not a shipped-baseline regression. core-5 (grilling-derived) passes 3/3 on both -- the model already avoided inventing expected_output even without the explicit rule; does not discriminate, kept for documentation. edge-1 fails assertion e2 (explicit STANDARDS.md citation) identically on both old and new -- a pre-existing gap unrelated to this change, not fixed here, flagged for a future iteration. Zero regression on core-1..4."
+  },
+  "results": {
+    "core-1": {
+      "old": {
+        "passed": 2,
+        "total": 2,
+        "detail": [
+          {
+            "id": "a1",
+            "pass": true,
+            "evidence": "响应开篇即明确给出并应用了该判定测试：“两个熟悉这个领域的专家，拿同一份摘要，能不能各自独立给出一致的通过/不通过结论？‘质量要好’做不到——‘质量’和‘好’都没定义到可判定的程度，两人全凭直觉打分，分歧率会很高，而且吵起来还都有道理。”这不是泛泛提及，而是直接用该测试去检验原标准并得出“不行”的结论。"
+          },
+          {
+            "id": "a2",
+            "pass": true,
+            "evidence": "响应把模糊的“摘要质量要好”拆解为五条具体可核对的子标准：事实一致性（无幻觉，每条陈述都能在原文找到依据）、关键信息覆盖率（列出N个要点，覆盖≥90%）、长度约束（字数落在[X,Y]区间）、无关内容排除、格式合规。虽然部分数值（N/X/Y/90%）留作占位符待用户补充场景，但检查维度和判定动作本身已经具体化、可观察，明显脱离了“好”这类无法判定的模糊词。"
+          }
+        ],
+        "summary": "响应完整应用了“两个专家独立判断是否一致”的测试来否定原标准，并给出清晰的失败原因；同时将“摘要质量要好”拆解为事实一致性、覆盖率、长度、无关内容排除、格式合规五条具体可核对的子标准。两条断言均有明确文本证据支持，判定通过。"
+      },
+      "new": {
+        "passed": 2,
+        "total": 2,
+        "detail": [
+          {
+            "id": "a1",
+            "pass": true,
+            "evidence": "响应第1点的\"verdict\"明确写道：\"不行——过不了'两个专家独立判断一致'的底线测试，因为'质量''好'没锚定到可观察维度。\"这里点名了具体测试名称，并把\"未锚定可观察维度\"这一具体理由与该测试的核心逻辑（若无可观察锚点则专家判断易分歧）直接挂钩，作为得出\"不行\"结论的依据，构成对该测试的应用，而非仅仅提及测试名称却不说明理由。不足之处是没有展开逐一模拟两位专家各自会如何判断、是否真的会出现分歧的具体推演过程，应用停留在一句话的结论式套用，但仍具备可引用的具体文本支撑，非空泛姿态。"
+          },
+          {
+            "id": "a2",
+            "pass": true,
+            "evidence": "两处证据支持该断言：(1) 第2点\"落地校验\"引用现成文件S5标准——\"简报顶部'本次变化'精简摘要≤1屏\"（长度可判）+ Red lines R1/R3（编造/冲突处理可核查）——作为把\"摘要质量\"具体化的范例，并建议用户直接采用；(2) 第4点\"通用框架\"给出一张表，把\"摘要质量\"拆成忠实度/覆盖度/长度压缩比/结构/禁用内容五个维度，并标注各自适合代码型还是模型型grader，明显比笼统的\"好\"更具体。需要注意的限制：响应自己承认忠实度、覆盖度这两个维度目前仍是\"模糊质量维度\"，要等后续Part 6黄金集校准协议（给出了K≥10、2%、25次增量等具体数字参数）才能真正钉死阈值——即五个维度中只有3个（长度压缩比、结构、禁用内容）当下即是可直接观察的检查，另外2个是给出了走向具体化的明确路径与量化协议，而非当场就成的最终检查项。整体上响应仍显著脱离了单一模糊词\"好\"，故判定通过，但这一限制值得在采信时留意。"
+          }
+        ],
+        "summary": "两条断言均通过，且均有具体文本支撑。a1有明确的verdict语句将\"不行\"结论直接归因于\"两个专家独立判断一致\"测试，并给出\"质量/好未锚定可观察维度\"的具体理由，构成对该测试的应用，尽管未展开逐步的双专家分歧推演。a2通过现成S5标准的具体阈值示例（≤1屏、Red lines可核查）以及把\"摘要质量\"拆解为五个可分别归类到代码型/模型型grader的维度，明显脱离了单一模糊词\"好\"；但其中忠实度、覆盖度两个维度自身仍被称为\"模糊质量维度\"，需要后续黄金集校准协议才能完全钉死，属于给出了具体化路径而非当场即成的检查，这是通过判定中值得注意的限制。"
+      }
+    },
+    "core-2": {
+      "old": {
+        "detail": [
+          {
+            "id": "a3",
+            "pass": true,
+            "evidence": "响应开篇即注明「（Part 2 明确要求评测集优先用真实失败案例，不能凭空编）」，随后第4条问题明确询问「跑的这几次里，有没有印象深的翻车/误标案例」，并称「这些是评测集里最值钱的负样本，Part 2 明确要求真实失败优先于臆造；有的话我也会去读实际的运行日志/输出自己找更多案例，不会只靠你回忆的几条」——不仅指向真实失败案例，还承诺主动查阅运行日志而非道听途说或凭空编造。"
+          },
+          {
+            "id": "a4",
+            "pass": true,
+            "evidence": "响应第一句任务复述中明确列出「20-50 条用例、正负样本平衡、每条配参考解，再挑 grader」，其中「正负样本平衡」一词直接、具体地要求正负例平衡，并非仅提单一方向的用例。"
+          },
+          {
+            "id": "a5",
+            "pass": true,
+            "evidence": "同一句任务复述「20-50 条用例、正负样本平衡、每条配参考解，再挑 grader」中的「每条配参考解」明确说明每条用例都需要配一个参考解，表述具体、非模糊带过。"
+          }
+        ],
+        "passed": 3,
+        "summary": "三项断言均在响应开篇的任务复述句「20-50 条用例、正负样本平衡、每条配参考解，再挑 grader」中被具体、明确地提及，覆盖了 a4（正负样本平衡）与 a5（参考解）。a3 则在括号夹注和第4条澄清问题中反复、具体地强调评测用例应来自真实运行失败案例而非凭空编造，并承诺会主动查阅实际日志核实。三项均有确凿文本证据，非模糊表述，全部通过。",
+        "total": 3
+      },
+      "new": {
+        "detail": [
+          {
+            "id": "a3",
+            "pass": true,
+            "evidence": "响应明确写道:'Part 2 的方法论要求用「真实失败案例」打底,不能我凭空编,按错对象搭一版返工成本也高',并具体索要'已经跑过的这几次留下的产出/日志在哪...或者你已经手动看出过的几个具体「这次标错了」的例子——这些是评测集里「真实失败案例」的原始素材,比我自己编的 case 值钱得多'。这清楚地将用例来源锚定在真实运行日志/人工发现的失败案例上,并明确排斥凭空构造。"
+          },
+          {
+            "id": "a4",
+            "pass": true,
+            "evidence": "响应在收尾规划里明确写道:'先出一个 5–10 条的小样(正负案例都有,每条带 reference 解、标好该用 code-based 还是 model-based grader)'。'正负案例都有'一句直接、明确地要求正负例平衡,而非单一方向。"
+          },
+          {
+            "id": "a5",
+            "pass": true,
+            "evidence": "同一句话中包含'每条带 reference 解'——明确提出每条用例都需要配一个参考解,满足该断言。"
+          }
+        ],
+        "passed": 3,
+        "summary": "响应虽然因为无法确认目标 loop 而未直接产出评测集,但在说明后续搭建计划时完整体现了 loop-eval 方法论的三项要求:明确要求真实失败案例/人工检查产出而非凭空编造(并主动索要运行日志和具体错标案例作为原始素材)、明确要求正负案例都有、明确要求每条用例带 reference 解。三项断言均有清晰的原文直接支持,全部通过。",
+        "total": 3
+      }
+    },
+    "core-3": {
+      "old": {
+        "passed": 2,
+        "total": 2,
+        "detail": [
+          {
+            "id": "a6",
+            "pass": true,
+            "evidence": "响应用独立小标题明确给出该建议：\"## 格式检查 → code-based grader / 判定是非黑即白的，能写成规则就别上模型判——快、便宜、可复现。\" 并列举了具体格式检查项（字数/篇幅、必需 section、禁用词正则、产物文件是否生成），明确将确定性/格式类用例归为 code-based grader。"
+          },
+          {
+            "id": "a7",
+            "pass": true,
+            "evidence": "响应同样用独立小标题给出建议：\"## 文风判断 → model-based grader（rubric + calibrated）\"，明确推荐 model-based。且同时满足两个子要求：(1) 分维度打分——\"拆维度，每个维度单独一次调用打分，不要一次性混打总分。比如'文风'可以拆成：是否口语化 / 是否有 AI 味套话 / 句长分布 / 称呼是否统一...不要给单个模糊的 1-10 综合分\"；(2) 校准——另设小节\"## 文风判断要接 Part 6 的校准协议\"，具体给出 Golden set（K≥10 或用例总量 2%）、校准节奏（每 25 次或总量 10%）、漂移阈值等要求。"
+          }
+        ],
+        "summary": "两条断言均通过，且证据充分具体。响应用清晰的分节结构（\\\"## 格式检查 → code-based grader\\\" 与 \\\"## 文风判断 → model-based grader\\\"）直接对应两种用例类型给出建议，并在文风判断部分进一步展开了分维度打分（拆解为口语化、AI 味套话、句长分布等具体维度）与 Part 6 校准协议（Golden set、校准节奏、漂移阈值）的具体要求，完全满足 a7 的双重条件。"
+      },
+      "new": {
+        "detail": [
+          {
+            "id": "a6",
+            "pass": true,
+            "evidence": "响应第2点明确写道:\"格式检查 → code-based grader:字段/结构类(必填字段、JSON/Markdown 合法性、字数区间、引用对应关系)、关键词/正则类(禁用词检测...);强调能写成脚本规则的不要交给模型判,可直接当硬闸门。\" 这是对确定性/格式类用例推荐 code-based 打分器的明确、具体陈述,并给出了字段校验、正则关键词检测等可编码规则的例子。"
+          },
+          {
+            "id": "a7",
+            "pass": true,
+            "evidence": "响应第3点明确写道:\"文风判断 → model-based rubric grader(校准过的评分):要求把'文风'拆成 3-5 条具体可举反例的 rubric...并按技能 Part 6 校准协议要求接入 golden set(K≥10 或用例量 2%)、周期性抽检模型判分与人工判分一致率、低于'抽检一致'阈值即暂停 auto-continue 转人工闸门、阈值只能收紧不能放松\"。这既明确推荐 model-based 打分(且是 rubric 形式),又明确提到了需要校准(golden set、一致率抽检、阈值机制)和分维度打分(拆成3-5条 rubric 维度),两个子条件均有具体文本支撑。"
+          }
+        ],
+        "passed": 2,
+        "summary": "两条断言均获得响应中直接、具体的文本支持。a6 由\\\"格式检查 → code-based grader\\\"及字段/正则类举例明确满足;a7 由\\\"文风判断 → model-based rubric grader(校准过的评分)\\\"加上详细的校准协议(golden set、一致率抽检、阈值机制)与3-5条维度拆分的 rubric 设计明确满足,双重子条件(model-based + 校准/分维度)都有独立证据。",
+        "total": 2
+      }
+    },
+    "core-4": {
+      "old": {
+        "passed": 3,
+        "total": 3,
+        "detail": [
+          {
+            "id": "a8",
+            "pass": true,
+            "evidence": "响应明确给出公式化规则:\"规模:取 10 条和总量 2% 里较大的那个\"(即 max(10, 2%×总量)),并补充边界说明校准何时切换:\"几百条量级的话大概率卡在 10 条这个下限——除非总量奔着 800、900 去,2% 才会反超\"。这是具体可执行的量化规则,而非模糊描述。"
+          },
+          {
+            "id": "a9",
+            "pass": true,
+            "evidence": "响应给出具体频率公式:\"默认:每跑 25 条或总量 10% 抽检一次,取较小值\",并用总量 300 的例子演算:\"10% 是 30,取较小的 25,也就是每 25 条对一次账\"。同时给出该规则背后的驱动原则:\"标错一条的代价越高,节奏就该越密,不是拍脑袋定的\"。全程用数字(25、10%、300、30)说话,没有出现'定期检查'一类模糊表述。注:base 值 25 本身未做统计学层面的深层推导,但公式结构(固定值与百分比取小)和配套算例足以构成量化理由,而非空泛说法。"
+          },
+          {
+            "id": "a10",
+            "pass": true,
+            "evidence": "响应明确写道:\"一旦低于阈值:暂停自动继续,升级到人工卡点,不是自动放宽阈值让循环接着跑。跑偏了就该停下来对齐,及格线本身不能动\"。第4点进一步强化:\"对齐确认后再解锁自动跑\"。这与断言描述的'暂停+升级,而非放宽标准继续跑'完全吻合,且全文未出现任何'放宽标准'的表述。"
+          }
+        ],
+        "summary": "三条断言均通过且证据充分具体。响应为黄金集规模给出 max(10, 2%×总量) 的明确公式(a8);为校准节奏给出 min(25, 10%×总量) 的公式并配有 N=300 的实际演算及成本驱动的原则说明,未使用'定期'类模糊语言(a9);漂移触发后明确采用'暂停自动继续、升级人工卡点'且显式排除'自动放宽阈值继续跑'的做法(a10)。三项均有可直接引用的原文支持,3/3 通过。"
+      },
+      "new": {
+        "passed": 3,
+        "total": 3,
+        "detail": [
+          {
+            "id": "a8",
+            "pass": true,
+            "evidence": "响应明确给出量化公式：“大小：K ≥ 10，且 ≥ 总量的 2%（两个下限取较大者——量小时保底 10 条有统计意义，量大时跟着总量扩大）。” 这是具体的数字规则（取 10 和总量2%中的较大值），而非模糊描述。"
+          },
+          {
+            "id": "a9",
+            "pass": true,
+            "evidence": "响应给出具体数字并附理由：“默认每 25 条，或总量的 10%，取较小者（量特别大时按 10% 算间隔会拖太长，所以设 25 条兜底）”，并补充“标注越主观/风险越高，节奏要更密”作为节奏调整原则。不是单纯说“定期校准”，而是给出了公式加上取小逻辑背后的原因（避免大样本时间隔过长导致漂移检测不及时）。"
+          },
+          {
+            "id": "a10",
+            "pass": true,
+            "evidence": "第4点标题即为“失败即停，绝不放水”，具体写明：“一致率低于阈值 → 暂停自动继续，记一条 CALIBRATION FAILED (agree=xx%)，把分歧样本原样甩给人工复核，不准继续往下标剩下的几百条”，并有铁律强调“不能因为总卡在阈值线下就调低阈值让它‘过’——那是在跟自己的标准玩 reward hacking”。明确是暂停+升级人工，且显式禁止放宽标准。"
+          }
+        ],
+        "summary": "三条断言均获得响应文本的具体、可引用证据支持：黄金集规模给出了 K≥max(10, 2%总量) 的量化规则；校准节奏给出了“25条或10%取较小值”并附带尺度相关的理由说明；漂移触发后的处理是暂停自动执行、记录失败日志并转人工复核，且明确写了“绝不因卡阈值就放宽标准”的铁律。三项全部通过。"
+      }
+    },
+    "core-5": {
+      "old": {
+        "detail": [
+          {
+            "id": "a11",
+            "pass": true,
+            "evidence": "响应通篇用「建议 PASS=...；FAIL=...」的措辞而非断言式写法，且明确声明未落地：「涉及文件（均为只读探查，未做任何修改）」「未擅自写入任何文件（gotchas.json 未改动，STANDARDS.md/SPEC.md 未改动）」。经核实，gotchas.json 目前确实只有 gotcha-1/gotcha-2，无新增条目，证实该声明属实。响应还明确定性「这本质是 STANDARDS 缺口而非单纯的 eval 写法问题」「判据定下来后应该落回 STANDARDS 一条新检查项」，承认这需要人工签核（对应 SPEC.md/STANDARDS.md 文首「only a human edits」的治理规则，已核实属实），而非把自己给出的判据当作已定案的事实。三种情况的划分和判据均建立在对 SPEC.md/STANDARDS.md（确认空白）、state/CURRENT-RUN.json（G1.2 blocked 原因，已核实字段内容完全一致）、funding-market.md（已核实确为 3 行占位符）的真实探查之上，不是脱离依据的凭空编造。"
+          },
+          {
+            "id": "a12",
+            "pass": true,
+            "evidence": "结尾明确给出编号菜单 A/B/C/D 并写道「最后给出编号菜单等待用户选择，未擅自写入任何文件」；选项 D 甚至保留了「'这个loop'/'输入文件'指的是别的项目，需要用户指明」的可能性，选项 B/C 也允许用户否定或简化整个方案。响应以「当前会话到此结束，等待用户在实际对话中回复 A/B/C/D 后续再执行写入操作」收尾，清楚地把裁决权交给用户，没有单方面下结论并执行。"
+          },
+          {
+            "id": "a13",
+            "pass": true,
+            "evidence": "响应给出了具体、可执行的推荐方案：把空文件拆成「真首跑 / 单叶节点因拒收未合并 / 异常空文件」三种情况，并对每种情况都写明了「建议 PASS=... FAIL=...」的具体判定标准（如第二种情况「PASS=该板块按首次落地处理但如实标注'补跑非整体首跑'...；FAIL=把整个 run 误判成首次运行从而放松其它板块对比逻辑」）。菜单选项 A 直接写道「认可三分判据+给出的 pass/fail 定义，现在就写 3 条 case 进 gotchas.json」，说明这是一套完整成型的推荐答案，而非纯开放式提问（不是那种只问「你觉得该怎么定」的空提问）。"
+          }
+        ],
+        "passed": 3,
+        "summary": "三项断言均通过且证据充分。响应没有把边界用例的判据凭空焊死为既成事实——它对照真实文件（SPEC/STANDARDS 确认空白、CURRENT-RUN.json 的 G1.2 blocked 记录、funding-market.md 的真实占位内容均已逐一核实为真）做了扎实探查后才提出三分方案，且明确注明未写入 gotchas.json/STANDARDS.md，将其定性为需人工签核的 STANDARDS 缺口；同时给出了 A/B/C/D 编号菜单把决定权交还用户，而非单方面拍板；但又不是空手发问，而是随附了每种情况下具体的 PASS/FAIL 判定标准和可直接执行的选项 A。三点相互印证、没有冲突。",
+        "total": 3
+      },
+      "new": {
+        "detail": [
+          {
+            "id": "a11",
+            "pass": true,
+            "evidence": "Response states: \"未写入任何文件（按技能要求，真正未决的判断点要先问用户，不能替他们拍板 ground truth）\" and \"等待用户回复 A/B/两者都要 后,再将 case 落地进 gotchas.json...这两步目前均未执行,是后续待办。\" Independently verified: gotchas.json (last modified 2026-07-07, predating this session) still contains only the original gotcha-1/gotcha-2 entries — no new expected_output was committed. The proposed '方案 B' is also explicitly labeled a 推荐 (recommendation) grounded in the real 'Run-level Blocked' SPEC.md concept (confirmed at line 44), not asserted as settled ground truth."
+          },
+          {
+            "id": "a12",
+            "pass": true,
+            "evidence": "Response states: \"识别出真正未决、会改变判分结果的分支——knowledge-base 文件为空但 CHANGELOG.md 已有历史记录...该如何处理。这一点 SPEC.md 的 Run-level Blocked 枚举和 LOOP-PROMPT.md 都未覆盖...按技能要求只问了这一个问题（未与其他边界用例打包）\" followed by \"等待用户回复 A/B/两者都要\". Verified against SPEC.md line 44: its Run-level Blocked enumeration (source shortfall / write failure / repeated check failure) indeed omits this exact empty-file-with-history scenario, confirming the gap is real rather than a pretext, and the response frames resolution as contingent on the user's reply, not a stated conclusion."
+          },
+          {
+            "id": "a13",
+            "pass": true,
+            "evidence": "Response states: \"并附上了推荐的 expected_output（方案 B：用 CHANGELOG 做交叉判定，异常时归入 Run-level Blocked 人工介入）,同时指出若采纳该方案,LOOP-PROMPT.md 目前完全没有教过 agent 这个判定逻辑,需要同步补充,否则该 eval case 没有可行的 reference solution.\" This is a concrete, named, mechanism-level recommendation (not an open-ended 'you decide'), including a note on its downstream implementation cost — satisfying the 'attached its own recommendation' bar."
+          }
+        ],
+        "passed": 3,
+        "summary": "All three assertions pass. Beyond taking the self-report at face value, I independently verified its specific factual claims against the actual repo files (D:\\presentation\\legal-agent-industry-loop\\loop-docs\\SPEC.md, LOOP-PROMPT.md, gotchas.json, knowledge-base\\CHANGELOG.md): the cited line numbers and quoted content match verbatim, gotchas.json is unmodified (confirming no premature write), and the proposed 'undecided' scenario turns out to correspond to the loop's actual live state (funding-market.md's placeholder content plus a real CHANGELOG entry from a prior VERIFIER rejection), which strongly corroborates that the recommendation was grounded rather than invented. The response cleanly separates cited fact (first-run case, already answered in LOOP-PROMPT.md) from a genuinely open decision (posed to the user with a labeled, reasoned recommendation and no file committed pending reply).",
+        "total": 3
+      }
+    },
+    "edge-1": {
+      "old": {
+        "passed": 1,
+        "total": 2,
+        "detail": [
+          {
+            "id": "e1",
+            "pass": true,
+            "evidence": "我用 Read 工具直接核验了仓库里唯一的 `legal-agent-industry-loop/loop-docs/STANDARDS.md`（S1–S5/Q1–Q2/R1–R3，全部是来源数量/交叉验证/优劣红线相关条款）和 `GOALS.md`（status 枚举确实是 `pending | in_progress | done | blocked`），确认真实文件里完全没有'空输入'或'skipped'相关条目——用户消息里的前提（STANDARDS.md 写了『空输入一律跳过并记 skipped』）与仓库实际内容不符。全仓库 grep '空输入|skipped' 也未在任何项目文件中命中相关规则。既然真实 STANDARDS.md 本就没有回答这个问题，助手结尾追问的两件事——'(a) 这条规则实际在哪个 loop/哪份 STANDARDS.md 里；(b) 真实字段名和日志格式'——不是把文件里已有的答案又抛回去，而是文件里确实没有、只能找用户要的信息。同时助手没有以此为由拒答，第 1-5 部分完整给出了方法论框架和可用模板，只对无法从仓库验证的具体字段名/来源留空并说明用占位符。"
+          },
+          {
+            "id": "e2",
+            "pass": false,
+            "evidence": "模板里 expected_output 字段的实际文本是：'识别为空输入，不执行正常处理；对应条目在状态记录中标记为 skipped（原因：空输入）；loop 不中断，其余条目正常继续'——通篇没有出现 'STANDARDS' 或 'STANDARDS.md' 字样，没有把这条 expected_output 挂靠到 STANDARDS.md 的具体条款上。assertions（a1–a4）同样只描述行为断言，未引用 STANDARDS.md。前面说理部分虽多次提到'STANDARDS'（如'STANDARDS 已经拍死的机械行为''字段值要和 STANDARDS 用词逐字一致'），但这些提法是在讨论用户转述的规则时的泛指，而助手自己刚验证过仓库里的真实 STANDARDS.md 并不包含这条规则，因此它没有（事实上也不能诚实地）把 expected_output 明确挂靠到 STANDARDS.md 作为已确认的依据来源，反而明确表示这条规则的出处待用户确认。"
+          }
+        ],
+        "summary": "e1通过：助手先用工具核验了仓库里唯一的STANDARDS.md/GOALS.md，确认其中确实没有\"空输入/skipped\"相关条目，因此结尾追问的两个问题（规则出处、真实字段名）是文件里本就没有答案的必要澄清，不是把文件已答内容甩回给用户，且方法论部分已完整作答未回避。e2不通过：JSON模板里的expected_output字段文本本身未出现\"STANDARDS\"或\"STANDARDS.md\"字样，没有明确将该expected_output挂靠到STANDARDS.md作为依据来源——这与助手自己验证到\"真实STANDARDS.md并不包含此规则\"的发现是自洽的，但确实不满足\"明确引用STANDARDS.md\"这一断言的字面要求。"
+      },
+      "new": {
+        "passed": 1,
+        "total": 2,
+        "detail": [
+          {
+            "id": "e1",
+            "pass": true,
+            "evidence": "回复称已逐条核对仓库内唯一的 STANDARDS.md（D:\\presentation\\legal-agent-industry-loop\\loop-docs\\STANDARDS.md）的 S1–S5、Q1–Q2、R1–R3，'没有任何一条提到\"空输入\"或 skipped'，并顺手查了 GOALS.md/golden.json/gotchas.json 同样无相关内容，因此判断'这条规则应该是另一个 loop 项目的 STANDARDS.md，我这边没有对应文件'。经直接读取该文件并对全仓库 grep '空输入'/'skipped'/'一律跳过' 复核，确认仓库里确实只有这一份 STANDARDS.md 且其中确无空输入/skipped 规则（唯一命中的'空输入'字样在 Build_Great_Loop/skill-craft/references/evals.md 里，是通用 eval 方法论里举例的边界用例类别，不是任何项目的 STANDARDS.md 规则）。既然该问题在现有 STANDARDS.md 里并未被回答，助手请用户澄清路径/贴原文就不构成'把已回答的问题再次抛给用户'，而是恰当的核实后升级。",
+            "verdict": "CONFIRMED"
+          },
+          {
+            "id": "e2",
+            "pass": false,
+            "evidence": "全篇回复没有给出任何一个定案的 expected_output。结尾明确写的是'我拿到原文就能直接把这个边界用例的 expected_output 和 assertions 定下来'，即 expected_output 待用户提供原文后才会产出；正文中出现的 {\"status\": \"skipped\", \"reason\": \"empty_input\"} 只是以'是……还是……还是别的形式？'的方式列出的三种猜测性可能之一，用来说明格式不确定，并未被采纳为最终 expected_output，也没有标注为引自 STANDARDS.md（因为该文件里本来就没有这条规则可引用）。由于回复中根本不存在一个已定稿的 expected_output，'expected_output 明确引用了 STANDARDS.md 作为依据来源'这一断言无从满足。",
+            "verdict": "CONFIRMED"
+          }
+        ],
+        "summary": "助手没有盲信用户转述，而是实际读取了仓库里唯一的 STANDARDS.md（及 GOALS.md/golden.json/gotchas.json）并逐条核对，经独立复核确认该文件确实不含\"空输入/skipped\"规则；因此它请用户澄清路径或贴原文，并不构成把已被回答的问题重新抛回（e1 通过）。但回复全篇都在请求澄清，并未给出任何定案的 expected_output（文中出现的示例格式明确标注为待定猜测之一），所以不存在\"expected_output 明确引用 STANDARDS.md\"这一事实（e2 不通过）。总分 1/2。"
+      }
+    }
+  }
+}

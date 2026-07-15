@@ -54,13 +54,20 @@ not confirmed; treating this skill as optional when a loop is being created.
 Run phases in order. Each phase has a **verify** gate — do not advance until it
 passes. Ask **2–4 questions per round** using structured options (use the
 AskUserQuestion tool when available, with concrete choices + your recommendation
-first; otherwise numbered questions in chat). Never ask a wall of ten questions,
-and never ask questions whose answer is already in what the user said — confirm
-those instead. The ≤4-per-round grouping applies to **every list you put in front
-of the user, in every phase** — Phase 1 questions, Phase 2 open points, sign-off
-items — and to non-interactive deliverables too (Round 1 = the blocking minimum,
-later rounds follow-ups). A wall of questions is a wall even on paper, and even
-when you call them "open points".
+first; otherwise numbered questions in chat) — **but only for independent
+questions**, ones whose answer doesn't change what else needs asking. The moment
+a question **branches off a prior answer** (dependent, not parallel — "if retry,
+how many times; if not, escalate to whom") stop batching: ask that one alone,
+wait for the answer, then formulate the next question from it. Pre-guessing every
+branch to keep the batch full is how "2–4/round" quietly turns back into the
+ten-question wall it exists to prevent. Never ask a wall of ten questions, and
+never ask questions whose answer is already in what the user said — confirm those
+instead (see Profile & prefill below for facts, which shouldn't be asked at all).
+The ≤4-per-round grouping applies to **every list you put in front of the user,
+in every phase** — Phase 1 questions, Phase 2 open points, sign-off items — and
+to non-interactive deliverables too (Round 1 = the blocking minimum, later rounds
+follow-ups). A wall of questions is a wall even on paper, and even when you call
+them "open points".
 
 One more universal rule: **every deliverable that pauses for user input ends with
 a one-line "what happens next"** — through docs sign-off → harness authoring
@@ -73,11 +80,20 @@ question round:
    defaults, environment facts — each with provenance). **Never re-ask what the
    profile answers**; instead show it as a prefilled decision ("按你的画像默认：
    预算 ~$3/12 增量 — 沿用还是这次改？").
-2. **Infer-prefill from context**: answers already present in the conversation or
-   the repo get drafted by you, marked 「推断」, and put up for confirmation —
-   confirming costs the user a tenth of answering.
-3. Only what is neither in the profile nor inferable becomes a real question.
-4. At sign-off, any NEW stable preference learned this interview → **propose**
+2. **Fact-lookup, not question**: for a load-bearing question that is a *fact*
+   about the environment rather than a *decision* — settled by a config file,
+   lockfile, existing script, `git remote -v`, and not yet stated by the user —
+   go look it up rather than asking. One unambiguous answer → state it and move
+   on (not even marked 「推断」 — it isn't a guess). Multiple candidates or
+   nothing found → it's not a fact anymore; fall through to inference or a real
+   question. What never moves: decisions stay the user's, however easy they'd
+   be to guess.
+3. **Infer-prefill from context**: answers pattern-matched from the conversation
+   or repo (not a hard fact, still a guess) get drafted by you, marked 「推断」,
+   and put up for confirmation — confirming costs the user a tenth of answering.
+4. Only what is neither a looked-up fact, in the profile, nor inferable becomes
+   a real question.
+5. At sign-off, any NEW stable preference learned this interview → **propose**
    appending it to the profile (user confirms; the profile is user-owned).
    Conflicts resolve in favor of this task's answer, with a profile-update
    proposal. The lite micro-interview consults the profile the same way — three
@@ -209,6 +225,7 @@ exits only through the checklist below.
 | "文档可以之后再补。" | The docs ARE the loop's steering state. A loop without STANDARDS.md re-invents its quality bar every iteration. |
 | "先给个初版提示词，跑起来再迭代。" | An unratified loop prompt is exactly the deliverable this skill exists to prevent. Spec first. |
 | "用户说这是小任务/很赶，走轻量吧。" | Lite eligibility is judged by the four criteria, not by framing or urgency. An irreversible action stays full-path however "small" the task sounds — and pressure is precisely when gates earn their keep. |
+| "这几个问题有依赖，但硬凑进一轮也就是多问几个选项。" | A batched question covering every possible branch of a dependent answer IS the ten-question wall, just reshuffled into one message. Ask the root question alone; the dependent one only exists once you know which branch you're on. |
 
 ## Good / bad interview (contrast)
 

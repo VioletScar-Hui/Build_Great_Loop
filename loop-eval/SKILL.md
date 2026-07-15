@@ -54,6 +54,17 @@ Where cases come from:
    not over-search). One-sided sets teach one-sided behavior.
 4. For each case, have a **reference solution** proving it's solvable — if you can't
    solve your own task, the task is broken, not the agent.
+5. **For an edge case whose "correct" behavior is a genuine judgment call** (not
+   yet settled by SPEC/STANDARDS, not a documented real failure) — don't invent
+   the `expected_output` unilaterally. Split it like an interview:
+   - **Fact** (already settled — reread SPEC.md/STANDARDS.md/golden.json rather
+     than re-asking; the ratified docs already decided it) → look it up, cite it.
+   - **Decision** (genuinely unsettled, would change the eval's verdict either
+     way) → put it to the user, **one at a time**, with your recommended
+     `expected_output` attached — don't batch several ambiguous edge cases into
+     one question wall; each answer often reshapes the next case you'd write.
+   Inventing a plausible-sounding `expected_output` for a real ambiguity is how
+   eval sets quietly encode the case-writer's guess as ground truth.
 
 ## Part 3 — Choose graders
 

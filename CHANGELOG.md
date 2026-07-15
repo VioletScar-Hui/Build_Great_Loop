@@ -2,6 +2,39 @@
 
 本项目的版本演进记录。Newest first.
 
+## v7.2 - grilling 技巧嵌入（事实/决策分流 + 依赖问题拆批）
+
+安装并甄别第三方 skill **grilling**（mattpocock/skills，grill-me 57 万+ / grilling 18.7 万+
+安装量，Gen/Socket/Snyk 三项安全评估均 Safe/0 alerts/Low Risk），把它的核心技巧（决策树
+分支追问、事实查环境不查用户、单题确认制）拆解后嵌入 loop-spec 与 loop-eval——不是整体
+搬运，是识别出两条与现有设计不重叠的增量。
+
+### Added
+- **loop-spec 事实查找**（Profile & prefill 新增第 2 步）：load-bearing 问题若是可从
+  配置文件/锁文件/已有脚本/`git remote -v` 等环境直接核实的**事实**而非**决策**，主动
+  查证后陈述、不发问（也不标「推断」——不是猜）；多候选或查无结果才降级为推断或真问题。
+  决策永远留给用户，无论多好猜。
+- **loop-spec 依赖问题拆批**（"The interview loop" 主规则加细则）：2-4 题/轮的打包仅限
+  **相互独立**的问题；一旦某问题的存在或措辞依赖前一个答案（决策树分支，非并列项），
+  停止打包——单独问、等答案、再问依赖它的下一题。新增 Rationalizations 表条目堵住
+  "硬凑进一轮"的偷懒路径。
+- **loop-eval 首次建立 evals/evals.json**（此前从未有过）：5 core + 1 edge，覆盖标准
+  锐化/评测集搭建/打分器选型/校准协议 + 新技巧验证用例。
+- **loop-eval 边界用例事实/决策分流**（Part 2 新增第 5 条）：构造预期行为属真决策
+  （SPEC/STANDARDS 未 settle、非已知失败）的边界用例时，不许替用户发明 `expected_output`
+  ——已 settle 的查文档引用，真悬而未决的单独问用户并附推荐答案，不与其他模糊用例打包。
+
+### Changed
+- loop-spec evals 2.0 → 2.1（新增 core-3 事实查找、core-4 依赖拆批两个用例）。
+- 回归（Workflow，52 agents，runner+对抗评分）：
+  - loop-spec 旧 5 用例（core-1/2、edge-1/2、gotcha-1）**零退步**；**core-4（依赖拆批）
+    1/3 → 3/3**，是本次唯一有干净区分度的证据；core-3（事实查找）新旧均 3/3——用例设计
+    疏漏（prompt 里事实已由用户口头给出，旧版靠"不复问用户已说内容"就答对，未能单独
+    检验"主动查环境"这一新增能力），如实记录而非隐去。
+  - loop-eval 首个基线 core-1~4 均 100%；core-5（新技巧）新旧均 3/3，同样不具区分度
+    （模型本身对不替用户瞎编已有较好本能）；edge-1 新旧**同样**在 e2（要求显式引用
+    STANDARDS.md 出处）上失手——改动前就存在的缺口，本次未修，留作后续 gotcha。
+
 ## v7.1 - Final Explainer + 理解测验条件闸门
 
 对照 Thariq Shihipar 三段框架（Before/During/After implementation）查缺：8 要素中

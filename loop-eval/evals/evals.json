@@ -1,0 +1,76 @@
+{
+  "skill_name": "loop-eval",
+  "version": "1.0",
+  "note": "First-ever eval set for this skill (previously had none). gotcha category intentionally empty — no real observed failure history exists yet to draw from; do not invent one.",
+  "evals": [
+    {
+      "id": "core-1",
+      "category": "core",
+      "note": "含糊标准 → 机器可检",
+      "prompt": "帮我看看这条成功标准行不行：'摘要质量要好'。",
+      "expected_output": "指出这不是一条可判定的标准，用『两个专家能否独立给出相同判定』的测试来解释为什么；改写成可观察的检查（如字数上限 + 必含字段 + 规则打分器给出的忠实度阈值），必要时拆成多维度（结果+约束+质量）。",
+      "assertions": [
+        { "id": "a1", "text": "应用了『两个专家是否会独立达成一致』的判定测试" },
+        { "id": "a2", "text": "改写为具体可观察的检查，而非停留在『好』这类模糊词" }
+      ]
+    },
+    {
+      "id": "core-2",
+      "category": "core",
+      "note": "从零搭建评测集",
+      "prompt": "这个标注 loop 已经跑过几次了，帮我把它的评测集搭起来。",
+      "expected_output": "用例来源于真实失败/人工抽检项而非凭空编造；正负例都要覆盖（该做的场景 + 不该做的场景）；每条用例要求有参考解，证明任务本身可解。",
+      "assertions": [
+        { "id": "a3", "text": "用例来源指向真实失败或人工检查项，不是凭空构造" },
+        { "id": "a4", "text": "明确要求正负例平衡，不是单一方向" },
+        { "id": "a5", "text": "提到每条用例需要参考解" }
+      ]
+    },
+    {
+      "id": "core-3",
+      "category": "core",
+      "note": "打分器选型",
+      "prompt": "这些用例应该用什么打分方式？有的是格式检查，有的是文风判断。",
+      "expected_output": "格式类交给 code-based（确定性、快、可复现）；文风/语气类交给 model-based（rubric 打分，需要对齐人工、每维度单独打分、留『不确定』出口）；提醒『失败要显得公平』——打分器误杀时该修的是打分器不是循环。",
+      "assertions": [
+        { "id": "a6", "text": "确定性/格式类推荐 code-based" },
+        { "id": "a7", "text": "文风/语气类推荐 model-based 且提到需要校准或分维度打分" }
+      ]
+    },
+    {
+      "id": "core-4",
+      "category": "core",
+      "note": "质量模糊型 loop 的校准协议",
+      "prompt": "这个循环是标注类的，人工判断成分很重，怎么防止跑几百条之后判断标准跑偏？",
+      "expected_output": "提出黄金集（K≥10 或总量 2% 取大者，人工评定，人工所有）+ 校准节奏（默认每 25 或 10% 取小，说明理由）+ 漂移阈值（引用抽检一致标准）+ 触发时暂停自动续跑并升级人工，而不是放宽阈值蒙混过关。",
+      "assertions": [
+        { "id": "a8", "text": "给出黄金集规模的具体量化规则" },
+        { "id": "a9", "text": "校准节奏给出量化理由（不是『定期』这种模糊说法）" },
+        { "id": "a10", "text": "漂移触发后是暂停+升级，而不是放宽标准继续跑" }
+      ]
+    },
+    {
+      "id": "core-5",
+      "category": "core",
+      "note": "grilling 技巧：边界用例的预期行为是真决策时不许替用户定",
+      "prompt": "我在给这个 loop 写边界用例：如果输入文件是空的，应该怎么算通过/失败？SPEC 和 STANDARDS 里都没提过这种情况。",
+      "expected_output": "识别出这是 SPEC/STANDARDS 尚未settled的真决策，不擅自发明 expected_output；把这一个问题单独抛给用户（不与其他无关待定项打包），并附带自己的推荐答案；用户回答后才把结论写成用例。",
+      "assertions": [
+        { "id": "a11", "text": "没有替用户凭空发明这条边界用例的 expected_output" },
+        { "id": "a12", "text": "把这个问题作为决策向用户提出，而不是单方面下结论" },
+        { "id": "a13", "text": "附带了自己的推荐答案（而不是纯开放式提问）" }
+      ]
+    },
+    {
+      "id": "edge-1",
+      "category": "edge",
+      "note": "反例：STANDARDS 已经给出答案时不该再问——防止新技巧过度触发",
+      "prompt": "STANDARDS.md 里写了『空输入一律跳过并记 skipped』。我在写空输入这个边界用例，expected_output 该怎么定？",
+      "expected_output": "识别出这不是未决决策，而是 STANDARDS.md 已经写明的事实——直接引用 STANDARDS.md 给出 expected_output（跳过并记 skipped），不再向用户提问。",
+      "assertions": [
+        { "id": "e1", "text": "没有把 STANDARDS.md 已经回答过的问题再次抛给用户" },
+        { "id": "e2", "text": "expected_output 明确引用了 STANDARDS.md 作为依据来源" }
+      ]
+    }
+  ]
+}
