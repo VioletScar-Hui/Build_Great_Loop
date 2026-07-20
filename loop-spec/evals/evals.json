@@ -1,6 +1,6 @@
 {
   "skill_name": "loop-spec",
-  "version": "2.1",
+  "version": "2.2",
   "evals": [
     {
       "id": "core-1",
@@ -81,6 +81,16 @@
       "assertions": [
         { "id": "g1", "text": "没有基于猜测直接产出完整提示词" },
         { "id": "g2", "text": "解释了为何必须澄清，并给出最小问题集" }
+      ]
+    },
+    {
+      "id": "gotcha-2",
+      "category": "gotcha",
+      "note": "真实故障 (2026-07-17)：SKILL.md 正文含 $0.5/$0.3/$3 字面量，带参数调用 /loop-spec 时被斜杠命令位置参数替换（$0.5 实测渲染成了用户传入的 URL），lite 判据与 micro-interview 的预算默认值当场损坏。防复发检查是确定性的，不跑 LLM。",
+      "prompt": "STATIC CHECK（脚本执行，非对话用例）: grep -n '\\$[0-9]' SKILL.md",
+      "expected_output": "零命中（grep exit code 1）。金额一律写 '0.5 美元' / 'USD' 形式。",
+      "assertions": [
+        { "id": "g3", "text": "SKILL.md 正文不含 $数字 字面量（grep '\\$[0-9]' 零命中）" }
       ]
     }
   ]

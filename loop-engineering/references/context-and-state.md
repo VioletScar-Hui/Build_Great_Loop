@@ -65,6 +65,18 @@ killed mid-iteration — design so that's harmless:
   The bar: if the process dies at *any* instant, the next run continues cleanly with
   nothing lost and nothing done twice.
 
+### Derive, don't track (the strongest resumability)
+A ledger can lie about the workspace; the workspace can't lie about itself. Where
+each work item leaves an output artifact, don't maintain a status ledger at all —
+**rebuild the work queue from disk at every startup**: done = the output file
+exists (and passes its check); pending = it doesn't. There is no status field to
+corrupt and no claim to leak — the loop is resumable *by construction*, and the
+claim-before-act protocol above becomes unnecessary for those items. Keep a
+tracked ledger only for what disk can't show (attempt counts, error notes,
+ordering). Corollary — the **self-writing queue**: mechanical verification output
+(compiler errors, failing tests, crash logs) can populate the queue directly, one
+finding = one work item, with no human task-entry in between.
+
 ### Notes / memory (for non-code or long research)
 Structured note-taking generalizes the progress file: the agent writes findings,
 maps, tallies, decisions to a notes file outside the window and reads them back

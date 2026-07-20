@@ -2,6 +2,48 @@
 
 本项目的版本演进记录。Newest first.
 
+## v7.3 - 吸收《AI-driven code migration》五机制 + loop-spec 位置参数 bug 修复
+
+对照 Anthropic 的 AI 代码迁移实战文（claude.com/blog/ai-code-migration，Bun 1M 行
+Zig→Rust 两周 / Mike Krieger Python→TS 一个周末）做差距分析，把套件缺的五个运行时
+机制补进 loop-engineering；顺带修掉一个本次会话真实触发的 skill 基建 bug。
+
+### Added（loop-engineering 4.0 → 4.1）
+- **RULEBOOK 分层 + 系统性失败升级**：STANDARDS 人签核冻结（验收线），RULEBOOK.md 为
+  循环自有战术规则、运行中生长、复盘时收割入标准；同类失败 ≥3 → 修规则并**重新生成
+  受影响批次**，绝不逐个手补（"You don't fix the code. You fix the process."）。
+- **丢弃式规则压测**：shakedown 新增一步——批量任务（≥50 条目）开跑前用 2–3 个代表性
+  条目「按规则 vs 无约束（像资深从业者那样）」双做 + diff，修订 RULEBOOK 后**丢弃产物**
+  （买的是规则修正，不是进度；此处漏掉的规则 bug 会级联污染整批）。
+- **对抗式双评审 + 按角色分配模型**：高风险/大批量时两个独立上下文 VERIFIER 复核同一份
+  工作、分歧升级第三方仲裁；最大模型给 verifier / plan-reviewer / 一切「写规则给其他
+  agent 遵守」的角色，高频 fan-out 用小模型（doc-writer 维持 haiku）。
+- **Derive, don't track**：有产出工件的条目，队列每次启动从磁盘重建（done = 输出文件
+  存在且过检），台账只记磁盘看不出的东西（尝试数/错误原因）；含自写队列推论（编译错误/
+  失败测试直接生成任务项，无人工建单）。
+- **按成本放置校验 + Pipeline of loops**：operational rigor 新增第 6 条（秒级检查内联
+  每增量，分钟级检查批量成独立阶段，最贵操作用 build-daemon 序列化）；patterns.md 新增
+  模式 8「Pipeline of loops (phase-gated)」。
+- 同步落点：harness-template / harness-skeleton / checklist / context-and-state /
+  principles（新增来源条目）——SKILL.md 说到的，模板与审计清单都跟上，防产出漂移。
+
+### Fixed（loop-spec 2.1 → 2.2）
+- 真实触发的 bug：SKILL.md 正文含 "$0.5"/"$0.3"/"$3" 字面量，带参数调用 `/loop-spec`
+  时被斜杠命令位置参数替换（实测 "$0.5" 渲染成了用户传入的 URL），损坏 lite 判据与
+  micro-interview 的预算默认值。4 处改写为「x 美元 / USD」形式 + 文件头维护红线注释 +
+  gotcha-2 确定性 grep 检查（插曲：第一版注释自身含同类字面量，已重写为描述式表述）。
+- loop-spec standards-library 增补「"最小套件/按需/起步"当范围边界 → 打回」条目
+  （真实复盘教训：枚举才是边界，"按需再加"不是）。
+
+### Changed
+- 回归（子代理模拟各跑 core-1）：loop-spec 4/4、loop-engineering 5/5（含新断言 a6
+  系统性失败升级；产出的 harness 五机制全部落地且裁量得当——对抗评审只花在校准与终检，
+  不机械摊薄）。记录：loop-spec/evals/iteration-3、loop-engineering/evals/iteration-1。
+- frontmatter 增加 version 字段（loop-spec 2.2 / loop-engineering 4.1）；
+  loop-engineering description 补排除边界；两 skill 新增 per-skill CHANGELOG。
+- 如实披露既有缺口（未修）：loop-spec description 超限 58 字符；core 用例数
+  loop-spec 4 / loop-engineering 2（skill-craft 标准 ≥5）——待真实案例补齐，不硬凑。
+
 ## v7.2 - grilling 技巧嵌入（事实/决策分流 + 依赖问题拆批）
 
 安装并甄别第三方 skill **grilling**（mattpocock/skills，grill-me 57 万+ / grilling 18.7 万+

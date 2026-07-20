@@ -1,5 +1,6 @@
 ---
 name: loop-engineering
+version: "4.1"
 description: >-
   Author top-tier prompts and harnesses for long-running, iterative AI agent
   loops ("loop engineering"). Use this WHENEVER the user wants to build, design,
@@ -12,7 +13,9 @@ description: >-
   conditions for an agent. The output is a complete, ready-to-paste loop prompt.
   Pair with loop-spec (intake), loop-eval (success criteria/evals),
   loop-review (audit an existing loop), loop-ops (run it recurring/unattended),
-  and loop-retro (post-run retrospective).
+  and loop-retro (post-run retrospective). Not for auditing an existing prompt
+  (loop-review), scheduling/operating a running loop (loop-ops), or post-run
+  analysis (loop-retro).
 ---
 
 # Loop Engineering
@@ -96,7 +99,7 @@ sure each is concretely specified, not hand-waved. Deep guidance for each lives 
 ## Operational rigor (what separates good from top-tier)
 
 Most prompts get the seven dimensions *present*. Top-tier prompts get them
-*right*. Four upgrades do most of that work — apply them by default:
+*right*. These upgrades do most of that work — apply them by default:
 
 1. **Make every success criterion machine-checkable.** "Works well" can't be
    verified; "`npm test` exits 0", "the output CSV has N non-empty rows", "the
@@ -106,15 +109,24 @@ Most prompts get the seven dimensions *present*. Top-tier prompts get them
    mid-iteration. Claim the work item before acting (mark it in-progress), make
    the Record step atomic, and ensure resuming never double-processes or corrupts
    state. The test: killed at any instant, the next run picks up cleanly — nothing
-   lost, nothing done twice.
+   lost, nothing done twice. The strongest form is **derived, not tracked**: where
+   each item leaves an output artifact, rebuild the work queue from the workspace
+   at startup — done = the output file exists (and passes its check) — instead of
+   maintaining a ledger that can lie. Ledger only what disk can't show (attempt
+   counts, error notes). See `references/context-and-state.md`.
 3. **Size the increment and the cap on purpose.** The increment is the *smallest
    unit you can independently verify*. The hard cap is *large enough to make real
    progress, small enough to stay inside the context/time budget* — state the
    reasoning; don't drop in a random number.
-4. **Give the operator a glanceable signal.** A one-line status or end-of-run
-   summary (done / in-progress / blocked / remaining) lets a human check the
-   loop's health without reading everything. Long-running means unattended, and
-   unattended means it has to report.
+4. **Give the operator a glanceable signal — including efficiency, not just
+   status.** A one-line status or end-of-run summary (done / in-progress /
+   blocked / remaining) lets a human check the loop's health without reading
+   everything. It must also surface a **cost/efficiency metric** (steps or tool
+   calls per item, time per item, increment count vs. cap) — an efficiency or
+   risk regression that only shows up as "slower / more exposed" is invisible in a
+   done/blocked line, and a human noticing it by eye (real run: a user spotting
+   screen-flipping the harness never reported) means the signal failed. Long-
+   running means unattended, and unattended means it has to report.
 5. **Match autonomy to trust, and gate the rest.** State an **autonomy level** —
    L1 report-only / L2 assisted (narrow reversible changes) / L3 unattended — and
    **default a new loop to L1**; earning a higher level is a deliberate decision,
@@ -124,6 +136,23 @@ Most prompts get the seven dimensions *present*. Top-tier prompts get them
    remember the loop **amplifies judgment — good and bad**, so keep its output
    small enough that a human will actually read it. For running a loop *recurring
    or unattended*, hand off to the **loop-ops** skill.
+6. **Never feed infra/transient errors to a semantic classifier.** A `502`, a
+   timeout, a "service unavailable" is not a domain signal. Routed into a
+   state/intent classifier it produces a confident wrong verdict on a real-world
+   condition (real run: an infra `502` classified as "not logged in" → a false
+   login-repush that would freeze an actually-logged-in account). Detect
+   infra/transient failures *before* any semantic step and treat them as
+   **"uncertain → conservatively continue / retry"**, never as a domain state. And
+   make the hard cap a counter the loop **self-measures and prints each increment**
+   (`n/CAP`) — a cap the harness never counts against is a cap in name only (real
+   run: a ≤40-increment loop ran 34+ across three days with no burn line).
+7. **Place verification by cost.** Cheap checks (seconds) belong inside every
+   iteration's Verify beat; expensive checks (a minutes-long build, a full suite)
+   get batched into their own phase and run once per batch — and when parallel
+   workers all need the expensive step, serialize it behind a single owner (a
+   build-daemon: workers submit patches, it batches, runs once, feeds results
+   back). Paying a minutes-long check per item is how batch loops die of
+   wall-clock. See the pipeline-of-loops pattern in `references/patterns.md`.
 
 ## Workflow for authoring a loop prompt
 
@@ -173,6 +202,14 @@ risky/irreversible/ambiguous actions), the environment, the state/memory mechani
 step, context discipline, guardrails, a glanceable operator status/summary, and a
 concrete "first actions / session startup" block.
 
+**DONE-delivery contract**: the harness must specify that reaching DONE emits an
+**EXPLAINER.md** — a short distillation of what was built / what was verified /
+what remains, written for a human or a next-shift agent who will *not* read the
+full run log. A multi-day loop accretes a hundreds-of-lines PLAN ledger; without a
+DONE-time distillation, every retro and every handoff has to re-read it (real run:
+a 10/10-complete loop left a 300-line PLAN and no EXPLAINER). loop-retro expects
+this file; a DONE run without one is itself a finding.
+
 For interview-ratified loops (the normal path), the harness must ALSO build in the
 **in-session sub-agent orchestration** — this is what makes it a harness project
 in the working directory, not just a monologue prompt:
@@ -185,9 +222,26 @@ in the working directory, not just a monologue prompt:
   SPEC/STANDARDS/GOALS/PLAN current (briefs in
   `../loop-spec/assets/doc-writer-brief.md`). Include the optional
   `.claude/agents/` persistence step for users who want the roles reusable.
+  **Tier models by role**: the largest model goes to the verifier, the
+  plan-reviewer, and anything that writes rules other agents will follow;
+  high-volume implementation fan-out can run a smaller model (the doc-writer
+  stays haiku — it formats, it doesn't decide). For high-risk or large-batch
+  loops, make verification **adversarial**: two verifiers with separate contexts
+  review the same work and disagreement escalates to a third — worth the tokens
+  on anything long-running.
 - **Docs & workspace scaffolding**: first actions verify `./loop-docs/`
   (SPEC/STANDARDS/GOALS/PLAN from the interview) plus the state files exist,
-  creating anything missing.
+  creating anything missing. Batch loops add a **RULEBOOK.md layer**:
+  STANDARDS.md stays human-ratified and frozen (the acceptance bar), while
+  RULEBOOK.md holds the loop-owned tactical rules (conventions, idiom mappings,
+  edge-case rulings) that **grow during the run** and get harvested toward
+  standards at retro.
+- **Systemic-failure escalation** (fix the process, not the item): when the same
+  class of failure appears across ≥3 items, stop patching items — amend the
+  RULEBOOK.md rule that produced it and **regenerate the affected batch** from
+  the amended rule. Outputs are never hand-patched against the rulebook: a
+  violation becomes a queue item or a rule amendment, never a silent divergence,
+  and the verifier cites the rule behind every finding.
 - **Plan-iteration cycle**: before executing each leaf, decomposer proposes →
   plan-reviewer critiques (≤2 rounds) → revise → **auto-proceed by default** (no
   per-round human approval — the human already ratified spec, standards, and stop
@@ -196,9 +250,14 @@ in the working directory, not just a monologue prompt:
 - **Shakedown protocol**: auto-continue stays LOCKED until the first run passes a
   shakedown — 2–3 supervised increments, one **deliberate mid-increment kill +
   clean-resume check**, and confirmation the VERIFIER actually fired. Untested
-  crash-safety is a claim, not a property. The delivery note must tell the user
-  the kill test is their move. (Lite loops: the kill test is the mandatory
-  minimum.)
+  crash-safety is a claim, not a property. Batch loops (≥50 similar items) add a
+  **rules stress-test**: process 2–3 representative items twice — once strictly
+  by the RULEBOOK, once unconstrained ("as a senior practitioner would") — diff
+  the two to surface rulebook blind spots, fold the findings into RULEBOOK.md,
+  then **discard the outputs** (they buy rule fixes, not progress; a rule bug
+  caught here would otherwise cascade across the whole batch). The delivery note
+  must tell the user the kill test is their move. (Lite loops: the kill test is
+  the mandatory minimum.)
 - **Calibration protocol (quality-fuzzy loops)**: when per-increment verification
   is judgment-based (labeling, research, summarizing), the harness runs a
   **calibration increment** on a cadence — golden-set items re-processed + random
@@ -246,6 +305,9 @@ Before you call a loop prompt done, it should pass all of these:
   plan-reviewer / verifier / doc-writer@haiku), docs scaffolding in the working
   directory, and the plan→review→revise cycle with default auto-continue are all
   built into the harness.
+- For batch loops: RULEBOOK layered under STANDARDS, systemic failures escalate
+  to a rule amendment + batch regeneration (never per-item hand-patches), and the
+  shakedown includes a discarded rules stress-test.
 - Every instruction earns its place; nothing speculative or redundant.
 
 ## Rationalizations to refuse
@@ -269,6 +331,7 @@ column, apply the right.
 | "The model will test its own work, so verification is optional." | False completion is the #1 way loops fail. Verification must be mandatory and actually exercise the result. |
 | "Keeping state in the conversation is fine." | The context window resets. Anything that must survive a restart goes to a file. |
 | "Crash-safety is overkill here." | A long loop *will* be interrupted mid-step. Claim-before-act + atomic record is the floor, not a luxury. |
+| "Same failure again — patching this one item too is quickest." | The third occurrence of a failure class is a rule bug, not an item bug. Hand-patching outputs against the rulebook scatters silent divergence across the batch; amend the rule and regenerate what it touched. |
 | "I'm unsure what they want, but I'll pick something reasonable and proceed." | When a load-bearing requirement is genuinely ambiguous, surface it / ask the human — don't bake a guess into a loop that then runs unattended. |
 
 ## Reference files

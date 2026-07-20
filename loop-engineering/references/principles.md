@@ -235,6 +235,11 @@ Name these in the prompt so the agent designs against them:
 - Anthropic — *Demystifying evals for AI agents* (verifiable criteria / "two
   experts agree", grade the output not the path, pass@k vs pass^k, small eval sets,
   code-based vs model-based graders, "failures should seem fair").
+- Anthropic — *AI-driven code migration* (claude.com/blog/ai-code-migration:
+  rulebook-driven regeneration / "fix the process, not the code", discarded rules
+  stress-test, adversarial dual review with escalation, model tiering by role,
+  derive-the-queue-from-disk / self-writing queue, verification placement by
+  cost, build-daemon serialization, phase-gated pipeline of loops).
 - GitHub — *Spec-driven development* and *agentic primitives / context
   engineering* (write the spec first; small composable units; reliable workflows).
 - GitHub — *Continuous AI / agentic CI* (verification loops in automation).

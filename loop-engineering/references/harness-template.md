@@ -83,6 +83,9 @@ You are done only when ALL of these are objectively true:
 # State & memory  (this is how you survive a restart)
 - Task list: <path> — JSON, one entry per success criterion with a `status` field.
   You may change ONLY the `status` field. Never edit descriptions or remove items.
+  Where items leave output artifacts, prefer deriving the queue from the
+  workspace at startup (done = the output exists and passes its check); ledger
+  only what disk can't show (attempts, error notes).
 - Progress log: <path> — after each increment, append what you did, what's next,
   anything blocked.
 - Checkpoints: commit after each verified increment with a descriptive message.
@@ -114,6 +117,11 @@ be self-contained; keep only their returned summaries.
     first run if the user wants the roles reusable; otherwise dynamic spawn only.
   → Scale roles to the task (briefs can be 3 lines for small loops) — but keep the
     separation: planner ≠ reviewer ≠ verifier.
+  → Tier models by role: largest model for VERIFIER / PLAN-REVIEWER / anything
+    that writes rules other agents will follow; implementation fan-out can run a
+    smaller model. High-risk or large-batch loops: adversarial verify — two
+    VERIFIERs with separate contexts review the same work; disagreement
+    escalates to a third.
 
 # Plan iteration  (before executing each leaf — replaces ad-hoc PLAN)
 1. DECOMPOSER proposes the step plan for the current leaf.
@@ -141,6 +149,10 @@ Verify `./loop-docs/` contains SPEC.md, STANDARDS.md, GOALS.md, PLAN.md (from th
 interview) + the state files; create anything missing via the DOC-WRITER before
 the first increment. These documents are the loop's steering state — GOALS.md
 `status` fields are the task list; STANDARDS.md checks are the verification bar.
+Batch loops also keep `./loop-docs/RULEBOOK.md`: loop-owned tactical rules
+(conventions, idiom mappings, edge-case rulings) that grow during the run.
+STANDARDS.md stays human-ratified and frozen; the retro harvests rulebook →
+standards.
 
 # Shakedown — first-run protocol  (auto-continue is LOCKED until this passes)
 Crash-safety that has never been tested is a claim, not a property. Before the
@@ -154,7 +166,13 @@ loop may run unattended:
 3. VERIFIER CHECK: confirm the VERIFIER sub-agent actually fired on those
    increments (its verdicts are recorded in the log) — not the implementer
    self-grading.
-4. Only then unlock auto-continue. Append `SHAKEDOWN PASSED (n increments, kill
+4. RULES STRESS-TEST (batch loops, ≥50 similar items): process 2–3
+   representative items twice — once strictly by the RULEBOOK, once
+   unconstrained ("as a senior practitioner would") — diff the two, fold the
+   findings into RULEBOOK.md, then DISCARD both outputs. They buy rule fixes,
+   not progress; a rule bug caught here would otherwise cascade across the
+   whole batch.
+5. Only then unlock auto-continue. Append `SHAKEDOWN PASSED (n increments, kill
    test clean, verifier active)` to the progress log; if it never appears, the
    loop must keep running supervised.
   → Lite loops: the kill test (step 2) alone is the mandatory minimum.
@@ -203,6 +221,9 @@ you actually verified — it is a handoff, not a pitch.
 - Do NOT mark anything done without verifying it.
 - It is unacceptable to weaken, edit, or delete tests/criteria to make the bar pass
   — that hides missing or broken functionality. Fix the work, not the goalposts.
+- Same failure class on ≥3 items → stop patching items: amend the RULEBOOK rule
+  that produced it and regenerate the affected batch. Never hand-patch outputs
+  against the rulebook.
 - Leave the workspace in a clean, mergeable state at the end of every iteration.
 
 # First actions  (do these now, in order)

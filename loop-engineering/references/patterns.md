@@ -176,6 +176,44 @@ or it polishes forever past diminishing returns.
 
 ---
 
+## 8. Pipeline of loops (phase-gated)
+
+A large job run as a sequence of DISTINCT loops — e.g. generate → compile/typecheck
+→ smoke-test → behavior-match — each phase with its own queue, its own
+done-condition, and a **mechanical gate** before the next phase starts. (The shape
+behind Anthropic's 1M-line Bun migration: translate 1,448 files, then fix compile
+errors, then fix crashes, then fix behavior diffs — four queues, not one.)
+
+**Use when:** the output must clear several *different kinds* of verification with
+very different costs (per-item checks are cheap, but the full build or suite takes
+minutes), or when one phase's failures are naturally the next phase's work items.
+
+**Skeleton:**
+```
+For each phase P in the pipeline:
+  Queue:  derived from the workspace (pending = no output artifact / failing check).
+  Run:    phase P's own loop (often map-reduce or iterate-until-green) to empty.
+  Gate:   one mechanical check over the whole phase (it compiles / all smoke pass).
+  Feed:   gate failures BECOME phase P+1's queue — the queue writes itself,
+          no human task-entry.
+```
+
+**Verification placement (the key design choice):** match check cadence to check
+cost. Seconds-cheap checks run inside the per-item loop; minutes-expensive checks
+(full build, whole suite) get their own phase and run once per batch. If parallel
+workers all need the expensive step, serialize it behind a single owner — a
+**build-daemon**: workers submit patches, the daemon batches them, rebuilds once,
+re-runs affected tests, and feeds results back to the workers' queues.
+
+**State:** per-phase queue derived from workspace artifacts (done = the output
+exists and passes its check); a phase-gate status the operator can glance at.
+
+**Guards against:** paying a minutes-long verification per item (wall-clock death),
+parallel workers thrashing the one expensive resource, and phase-skipping (the
+gate is mechanical, not vibes).
+
+---
+
 ## Choosing fast
 
 - Objective bar, incremental work → **iterate-until-green** (1).
@@ -185,3 +223,5 @@ or it polishes forever past diminishing returns.
 - Something's broken → **debug loop** (5).
 - Open-ended "find out" → **research loop** (6).
 - "Make it better" quality pass → **generator-critic** (7), nested.
+- Several kinds of verification, some expensive / failures feed the next stage →
+  **pipeline of loops** (8).

@@ -1,5 +1,6 @@
 ---
 name: loop-spec
+version: "2.2"
 description: >-
   Mandatory interactive intake BEFORE any agent loop is authored: co-run
   requirement clarification, standards setting, spec writing, and goal/sub-goal
@@ -18,6 +19,11 @@ description: >-
   existing loop (loop-review), scheduling/operating one (loop-ops), or writing
   evals (loop-eval).
 ---
+
+<!-- 维护红线：正文里美元符号后面绝不能紧跟数字。带参数调用 /loop-spec 时，斜杠命令
+     会把「美元符号+0/1/3」这类序列当位置参数替换成用户输入，当场破坏展示给用户的
+     数字（2026-07-17 实测：预算默认值被替换成了用户传入的 URL）。金额一律写
+     "0.5 美元" / "USD 0.5"。防复发检查见 evals gotcha-2（确定性 grep）。 -->
 
 # Loop Spec — Interactive Intake
 
@@ -79,7 +85,7 @@ question round:
 1. Read `~/.claude/loop-profile.md` if it exists (stable preferences, family
    defaults, environment facts — each with provenance). **Never re-ask what the
    profile answers**; instead show it as a prefilled decision ("按你的画像默认：
-   预算 ~$3/12 增量 — 沿用还是这次改？").
+   预算 ~3 美元/12 增量 — 沿用还是这次改？").
 2. **Fact-lookup, not question**: for a load-bearing question that is a *fact*
    about the environment rather than a *decision* — settled by a config file,
    lockfile, existing script, `git remote -v`, and not yet stated by the user —
@@ -113,7 +119,7 @@ criteria — ALL four must hold**:
 1. Estimated **< 20 increments**;
 2. **No irreversible or risky actions** (nothing that would trip a human gate:
    deletes, prod, payments, auth, force-push…);
-3. Budget **< $0.5**;
+3. Budget **< 0.5 USD**;
 4. Writes **only inside the workspace**.
 
 All four hold → *propose* the lite path in the same breath as the framing
@@ -130,8 +136,8 @@ urgency** ("很小/很急" is not a criterion).
 **Micro-interview (lite path, exactly these three — each with a numeric default):**
 1. 完成的机器可检标准是什么？（哪条命令/观察能证明做完了）
 2. 失败怎么处理 + 有什么绝对不能碰的？（✦默认：跳过并记录；只写工作区）
-3. 上限：最多多少增量 / 多少预算？（✦默认：增量 = 条目数 ×1.2 封顶，预算 $0.3 —
-   lite 判据本就要求 <$0.5。默认值必须是具体数字，"跑跑看再定"不算上限）
+3. 上限：最多多少增量 / 多少预算？（✦默认：增量 = 条目数 ×1.2 封顶，预算 0.3 美元 —
+   lite 判据本就要求 <0.5 美元。默认值必须是具体数字，"跑跑看再定"不算上限）
 
 **Verify (both paths)**: the user explicitly confirms the framing AND the path.
 No confirmation, no progress.
