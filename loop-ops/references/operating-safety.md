@@ -33,6 +33,12 @@ was doing, why, what it proposes, what it's unsure about) — it does not guess 
 act. Define exactly what trips the gate (see each pattern's "must-gate" list), and
 make the escalation legible enough that a human can decide in one read.
 
+For recurring operation, prose is not a gate. Persist
+`open → waiting_for_human → approved|rejected|expired → consumed`, keyed by a
+unique gate ID and digest of the exact action, inputs, scope, and expiry. The
+scheduler skips normal runs while waiting. Approval can be consumed once only by
+the matching action.
+
 ---
 
 ## 3. Cost & budget
@@ -40,7 +46,10 @@ make the escalation legible enough that a human can decide in one read.
 Recurring loops are where spend silently explodes (short cadence × sub-agents ×
 long runs). Treat cost as a stop condition, not an afterthought:
 
-- A **per-run** ceiling (tokens/$ or max turns) and a **per-day** ceiling.
+- An external scheduler/quota ledger atomically reserves a **per-run** and
+  **per-day** ceiling before dispatch and before costly increments.
+- Prefer enforceable increments, tool calls, or wall time. Tokens/$ are hard caps
+  only when an external meter can stop execution; otherwise they are observations.
 - A **max-attempts** cap on any single fix (e.g. PR Babysitter retries).
 - A **run-log** that records cost per run, so you can see the trend before the bill.
 - Prefer a longer cadence until the loop has proven its value at L1.
@@ -54,6 +63,9 @@ long runs). Treat cost as a stop condition, not an afterthought:
 - **MCP / tool scopes:** grant the minimum the pattern needs. A triage loop is
   read-only; it doesn't get write/merge tokens. Scope creep is how a "harmless"
   loop does damage.
+- For L2/L3, implement these boundaries outside the model with least-privilege
+  credentials, filesystem/network sandboxing, and protected environments. Prompt
+  text is an explanation of policy, not the enforcement layer.
 
 ---
 
@@ -69,9 +81,9 @@ attempt cap. Anything outside → PR for human review, never an autonomous merge
 
 When several loops touch the same repo they collide: two loops grabbing the same
 issue, fighting over a branch, or stacking conflicting commits. Coordinate with
-isolated **worktrees**, a claim in shared `STATE.md` (one loop owns an item at a
-time), non-overlapping scopes, and staggered cadences. If two loops can act on the
-same artifact, one of them needs a lock.
+isolated workspaces, non-overlapping scopes, and staggered cadences. If two loops
+can act on the same artifact, use atomic compare-and-swap leasing with a fencing
+token validated by every side effect. A Markdown claim is only an operator view.
 
 ---
 
@@ -92,9 +104,10 @@ same artifact, one of them needs a lock.
 
 ## 8. Kill switch
 
-Always have a one-step way to stop every run: disable the schedule / pause the
-routine / a flag the loop checks at the top of each run and exits if set. Document it
-in the operating plan so whoever's on call can pull it without you.
+The kill switch must both prevent launches and cancel active runs. Revoke or fence
+the credential used for side effects, check cancellation before each ACT/external
+effect/merge boundary, and fail closed if L2/L3 cannot read the switch. Record
+cancellation acknowledgement with bounded heartbeat latency.
 
 ---
 
@@ -114,12 +127,12 @@ in the operating plan so whoever's on call can pull it without you.
 Before promoting past L1, every box should be checked:
 
 - [ ] **Autonomy** starts at L1; promotion criteria per slice are written down.
-- [ ] **Budget**: per-run and per-day ceilings + a max-attempts cap.
-- [ ] **Human gate**: risky/irreversible/ambiguous actions escalate with full context.
-- [ ] **Denylist**: paths/actions it must never touch; tool/MCP scopes are minimal.
+- [ ] **Budget**: external atomic reservation for per-run/day ceilings + persistent attempts.
+- [ ] **Human gate**: durable pause + action digest + single-use matching approval.
+- [ ] **Denylist**: each rule has tested environment-level enforcement evidence.
 - [ ] **Auto-merge** (if any) passes required checks + scope + attempt gates.
-- [ ] **State + run-log** externalized; an operator can audit what shipped.
+- [ ] **State + events** are machine-readable; operator views retain event IDs.
 - [ ] **Multi-loop**: no collisions with other loops (worktrees / claims / scopes).
-- [ ] **Kill switch**: one step to stop it, documented.
+- [ ] **Kill switch**: launch prevention and active cancellation both tested.
 - [ ] **Verifier**: a maker/checker split, not the implementer grading itself.
 - [ ] **Comprehension**: volume/cadence is within what a human will actually read.

@@ -2,6 +2,44 @@
 
 本项目的版本演进记录。Newest first.
 
+## 2026-07-22 - Canonical cross-host sync + optional component architecture
+
+### Added
+
+- Added the host-neutral optional components `PROFILE`, `RULES`, `DEVIATIONS`, and
+  `EXPLAIN`, each with explicit triggers, dependencies, acceptance conditions, and
+  executable evidence fixtures.
+- Added a modular harness core, component catalog, state schemas, workflow builder,
+  containment checker, state-transition tools, quota ledger, suite manifest, and
+  cross-skill routing evals.
+- Added deterministic component-effect fixtures (38 assertions) while preserving the
+  legacy regression set (18 assertions).
+
+### Changed
+
+- Synchronized the six formal loop skills from one canonical source for Codex and
+  Claude Code.
+- Updated formal skill versions: loop-spec 4.0.0, loop-engineering 7.0.1,
+  loop-eval 3.0.0, loop-review 4.0.0, loop-ops 3.0.1, loop-retro 4.0.0.
+- Reworked intake so PROFILE actions are proportional to the input classes actually
+  present: discoverable facts, stable preferences, and context inferences.
+- Made helper roles, documentation scaffolding, fixed models, and host adapters
+  conditional rather than CORE requirements.
+- Normalized containment paths against an explicit trusted root and rejected
+  traversal, root escapes, and symlink aliases.
+- Hardened the quota ledger against non-positive reservations and mismatched
+  duplicates, with atomic cross-platform sidecar locking.
+- Hardened review and retro flows for dead/triggerless components, evidence-bound
+  deviations, and merge/ship comprehension records.
+
+### Validation
+
+- Component effects: 38/38.
+- Legacy regressions: 18/18.
+- Suite-validator tests: 5/5.
+- Paired model eval: candidate 31/33, previous baseline 27/33; limitations are
+  disclosed in the release README.
+
 ## v7.3 - 吸收《AI-driven code migration》五机制 + loop-spec 位置参数 bug 修复
 
 对照 Anthropic 的 AI 代码迁移实战文（claude.com/blog/ai-code-migration，Bun 1M 行

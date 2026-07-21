@@ -3,13 +3,19 @@ name: loop-review
 description: >-
   Audit and harden an EXISTING agentic-loop prompt or harness against
   loop-engineering best practices. Use this whenever the user has an agent/loop
-  prompt and wants it reviewed, critiqued, scored, or made more reliable — or when
+  iterative/autonomous prompt and wants it reviewed, critiqued, scored, or made
+  more reliable — or when
   they describe loop misbehavior and want to know why: "my agent runs forever /
   never stops", "it quits too early", "it says it's done but it isn't", "it keeps
   redoing the same thing", "it forgets progress after a restart", "it edits the
-  tests to pass", "review/improve my agent prompt", "why is my loop flaky". It
+  tests to pass", "review/improve my iterative agent prompt", "why is my loop flaky". It
   produces a scored report — critical gaps first, each with a concrete fix — and
-  can rewrite the prompt to close them.
+  can rewrite the prompt to close them. Exclude one-shot chatbot/system prompts.
+  If symptoms belong to a completed run or run artifacts, loop-retro diagnoses
+  first. Whole-harness audits are led here even when criteria are the suspected
+  defect. This skill also owns maintenance audits of this six-skill router.
+metadata:
+  version: 4.0.0
 ---
 
 # Loop Review
@@ -31,10 +37,23 @@ those too — a loop that doesn't match its spec is itself a finding.
 
 Run the artifact against the shared checklist in
 `../loop-engineering/references/checklist.md` (the same seven dimensions
-`loop-engineering` builds to). For each item, decide pass / gap, and for each gap
-note the **exact missing thing** and a **one-line fix**. Read
+`loop-engineering` builds to). For each item, decide pass / gap / N/A, and for
+each gap note the **exact missing thing** and a **one-line fix**. Mark conditional
+items N/A with evidence; do not penalize a one-session L1 loop for machinery it
+does not need. Read
 `../loop-engineering/references/principles.md` if you need the "why" behind a
 dimension.
+
+Also parse its component manifest against
+`../loop-engineering/references/component-catalog.md`: flag a missing triggered
+component, an included component with no trigger, a selected component with no
+reachable runtime clause or emitted evidence (dead), an unmet dependency, or an
+acceptance check that is only promised rather than exercised. Audit `PROFILE`,
+`RULES`, `DEVIATIONS`, and `EXPLAIN` explicitly when present or triggered, using
+their direct leaves in `../loop-engineering/assets/components/`. Missing
+structured evidence makes the applicable acceptance check a gap, not a pass.
+For L2/L3, prompt-only safety is a critical gap unless environment enforcement
+evidence is supplied.
 
 Be a tough but fair reviewer:
 - **Critical gaps first.** The items that cause runaway, drift, or fake success
@@ -73,4 +92,7 @@ A `LOOP-REVIEW.md` (or inline report) with:
 
 Then offer to **apply the fixes**: rewrite the prompt closing the gaps (using the
 `loop-engineering` template), changing only what the findings require — don't
-gold-plate a prompt that's mostly fine.
+gold-plate a prompt that's mostly fine. When applying fixes, snapshot the original,
+change one conceptual component at a time, and compare representative runs so you
+can tell which change helped. Do not replace the whole harness merely to make it
+look more systematic.

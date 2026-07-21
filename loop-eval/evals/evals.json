@@ -1,6 +1,6 @@
 {
   "skill_name": "loop-eval",
-  "version": "1.0",
+  "version": "3.0.0",
   "note": "First-ever eval set for this skill (previously had none). gotcha category intentionally empty — no real observed failure history exists yet to draw from; do not invent one.",
   "evals": [
     {

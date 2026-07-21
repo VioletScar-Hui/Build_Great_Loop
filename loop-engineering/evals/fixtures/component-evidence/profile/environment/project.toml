@@ -1,0 +1,3 @@
+[project]
+runtime = "python3.12"
+deployment_target = "undecided"

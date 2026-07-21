@@ -9,6 +9,12 @@ description: >-
   long-running task. Also use as the verification step when building a loop with
   loop-engineering. Covers verifiable criteria, code-based vs model-based graders,
   reliability metrics (pass@k vs pass^k), and balanced positive/negative cases.
+  For a new unscoped loop, loop-spec owns success-definition intake first. Mining
+  failures from specified run artifacts is led by loop-retro. Whole-harness
+  audits are led by loop-review. This skill owns a standalone eval artifact once
+  scope is settled. Routing tests for this suite are owned by loop-review.
+metadata:
+  version: 3.0.0
 ---
 
 # Loop Eval
@@ -42,9 +48,10 @@ disagree, it's not a criterion yet.
 
 ## Part 2 — Build a small eval set
 
-You don't need hundreds of cases to start. **20–50 tasks drawn from real failures
-is a great start**; for a brand-new loop, even 5–10 well-chosen cases give signal,
-because early changes have large effects.
+You don't need hundreds of cases to start. Use a small set that represents the
+actual deployment distribution and known failure modes. For a brand-new loop,
+5–10 diverse cases can give early signal; grow toward 20–50 as real failures
+arrive. Treat these as starting ranges, not magic sample sizes.
 
 Where cases come from:
 1. Manual checks you'd run before trusting the loop → automate them.
@@ -54,17 +61,6 @@ Where cases come from:
    not over-search). One-sided sets teach one-sided behavior.
 4. For each case, have a **reference solution** proving it's solvable — if you can't
    solve your own task, the task is broken, not the agent.
-5. **For an edge case whose "correct" behavior is a genuine judgment call** (not
-   yet settled by SPEC/STANDARDS, not a documented real failure) — don't invent
-   the `expected_output` unilaterally. Split it like an interview:
-   - **Fact** (already settled — reread SPEC.md/STANDARDS.md/golden.json rather
-     than re-asking; the ratified docs already decided it) → look it up, cite it.
-   - **Decision** (genuinely unsettled, would change the eval's verdict either
-     way) → put it to the user, **one at a time**, with your recommended
-     `expected_output` attached — don't batch several ambiguous edge cases into
-     one question wall; each answer often reshapes the next case you'd write.
-   Inventing a plausible-sounding `expected_output` for a real ambiguity is how
-   eval sets quietly encode the case-writer's guess as ground truth.
 
 ## Part 3 — Choose graders
 
@@ -100,6 +96,16 @@ has to work reliably, not just occasionally.
   saturates, graduate it into the regression set.
 - Guard against eval-hacking: design graders so the loop must genuinely solve the
   task, not exploit a loophole (over-rigid string match, ambiguous spec).
+- Separate `intent` from `effect`. Every core case needs at least one effect
+  assertion backed by a tool trace, structured artifact, or before/after state;
+  future-tense promises never satisfy it.
+- Run in a fresh fixture workspace with an explicit visible-file/skill allowlist.
+  Record skill, eval, fixture, runner, and grader hashes. A mismatch makes an old
+  result `STALE`; omitted current cases are `NOT RUN`.
+- Compare current skill with the prior release and a no-skill control over
+  repeated trials. Report assertion rates and pass^k, not one lucky run.
+- Model graders return `pass|fail|unknown` with cited evidence. Calibrate a sample
+  against blinded human labels and report disagreement and false-positive rate.
 
 ## Part 6 — Wire the evals INTO the loop: golden set + calibration protocol
 
@@ -109,13 +115,14 @@ loosening, research claims thinning, summaries bloating). For **quality-fuzzy
 loops** (verification is judgment-based rather than a deterministic command),
 design a calibration protocol the harness will run mid-loop:
 
-- **Golden set**: K items with human-ratified expected outputs, built BEFORE the
-  run (K ≥ 10, or 2% of total volume, whichever is larger; sample for diversity,
-  include the hard cases). Store at `./loop-docs/golden.json` — human-owned, the
-  loop never edits it.
-- **Cadence**: a calibration increment every N increments (default: every 25, or
-  10% of total, whichever is smaller — frequent enough that drift can't poison a
-  large batch, cheap enough to stay under ~5% overhead; state the sizing reason).
+- **Golden set**: human-ratified expected outputs, sampled for diversity and hard
+  cases. Start with 10 or roughly 2% of volume when no better evidence exists,
+  then resize from observed error rates and risk. Store it at
+  `./loop-docs/golden.json`; the loop never edits this human-owned artifact.
+- **Cadence**: choose from risk, volume, drift rate, and acceptable detection lag.
+  Every 25 increments or about 10% of volume is a provisional starting point,
+  not a universal rule. State the sizing reason and keep calibration overhead
+  visible.
 - **The calibration increment**: re-process k golden items fresh + have the
   VERIFIER re-check k random already-completed items. Compare against expected.
 - **Drift threshold**: agreement < X% (take X from the ratified 抽检一致 standard)
@@ -138,3 +145,7 @@ for quality-fuzzy loops, the **calibration protocol** (golden set path & size,
 cadence with sizing reason, drift threshold & action). Feed the sharpened criteria
 back into the loop prompt (via **loop-engineering**) so the agent's self-check
 matches what you measure.
+
+For artifact-dependent behavior, include hermetic fixtures, protected-file hashes,
+and a deterministic validator. A release gate distinguishes `PASS`, `FAIL`,
+`UNKNOWN`, `NOT RUN`, and `STALE`; qualitative examples are not proof.

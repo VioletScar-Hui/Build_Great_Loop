@@ -1,0 +1,12 @@
+{
+  "case_id": "explain-case-001",
+  "run_id": "explain-run-001",
+  "delivery_class": "merge_ship",
+  "substantial": true,
+  "outcome": "comprehension_recorded",
+  "actor": "fixture-release-reviewer",
+  "decision": "understood",
+  "reason": "Reviewed the resumable-processing change and its three recovery checks before delivery.",
+  "timestamp": "2026-07-21T09:00:00Z",
+  "action_digest": "420e3516252ce8b1f8dcec7ea184f4516be704b2e4e6a0ac867e5a3af2de51be"
+}

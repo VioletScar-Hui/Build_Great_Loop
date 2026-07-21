@@ -63,8 +63,7 @@ You are done only when ALL of these are objectively true:
   → Prefer machine-checkable: a command exits 0, a file exists, a string appears.
 
 # Stop conditions
-- DONE: all success criteria verified → write the final EXPLAINER (section below),
-  then stop.
+- DONE: all success criteria verified → stop and report.
 - BLOCKED: if <stuck signal, e.g. the same check fails twice with no new info, or a
   needed credential/decision is missing> → write the blocker to <state file> and
   stop. Do not thrash.
@@ -83,9 +82,6 @@ You are done only when ALL of these are objectively true:
 # State & memory  (this is how you survive a restart)
 - Task list: <path> — JSON, one entry per success criterion with a `status` field.
   You may change ONLY the `status` field. Never edit descriptions or remove items.
-  Where items leave output artifacts, prefer deriving the queue from the
-  workspace at startup (done = the output exists and passes its check); ledger
-  only what disk can't show (attempts, error notes).
 - Progress log: <path> — after each increment, append what you did, what's next,
   anything blocked.
 - Checkpoints: commit after each verified increment with a descriptive message.
@@ -96,65 +92,33 @@ Work ONE increment per iteration. Not two. One.
    healthy; pick the single highest-priority unfinished criterion.
 2. PLAN — decide the smallest change that should satisfy it.
 3. ACT — make that one change. Nothing else.
-4. VERIFY — dispatch the **VERIFIER sub-agent** to prove it: <run the check the way
-   a user/consumer would> against STANDARDS. The implementer never grades its own
-   work. Also confirm you didn't break previously-passing checks.
+4. VERIFY — prove it by <run the check the way a user/consumer would> against
+   STANDARDS. Use an independent verifier when consequence or subjective judgment
+   warrants separation. Also confirm you didn't break previously-passing checks.
 5. RECORD — update the task list `status`, append to the progress log, commit. Then
    loop.
 
-# Sub-agent orchestration  (the harness crew — spawn via the Task tool, in-session)
-Work through role sub-agents; keep your own context at plan altitude. Briefs must
-be self-contained; keep only their returned summaries.
-- DECOMPOSER — input: the current GOALS.md leaf + STANDARDS.md; output: a concrete
-  step plan (≤6 steps) written into PLAN.md's "Current plan".
-- PLAN-REVIEWER — critiques that plan against SPEC/STANDARDS (feasibility, risks,
-  gate triggers); output: approve or a revision list.
-- VERIFIER — after ACT, checks the result against the named STANDARDS check.
-  Never let the implementer grade its own work.
-- DOC-WRITER (**model: haiku** — it formats, it doesn't decide) — keeps
-  SPEC/STANDARDS/GOALS/PLAN and status fields current each RECORD beat.
-  → Optional persistence: write `.claude/agents/loop-doc-writer.md` (and peers) on
-    first run if the user wants the roles reusable; otherwise dynamic spawn only.
-  → Scale roles to the task (briefs can be 3 lines for small loops) — but keep the
-    separation: planner ≠ reviewer ≠ verifier.
-  → Tier models by role: largest model for VERIFIER / PLAN-REVIEWER / anything
-    that writes rules other agents will follow; implementation fan-out can run a
-    smaller model. High-risk or large-batch loops: adversarial verify — two
-    VERIFIERs with separate contexts review the same work; disagreement
-    escalates to a third.
+# Optional specialist roles
+Select this only when a side task would flood the main context, the same
+specialist recurs, or independent judgment materially reduces risk. Use an
+available delegation capability with a self-contained brief and compact return;
+do not require a particular host, tool, role file, or model.
 
-# Plan iteration  (before executing each leaf — replaces ad-hoc PLAN)
-1. DECOMPOSER proposes the step plan for the current leaf.
-2. PLAN-REVIEWER critiques; revise. At most 2 review rounds — then act on the best
-   plan (unbounded polishing is thrash).
-3. **Auto-proceed by default**: do NOT wait for human approval per cycle — the
-   human already ratified SPEC/STANDARDS/GOALS and the stop conditions. The human
-   gate below still fires for risky/irreversible/ambiguous actions.
-4. Record every cycle in PLAN.md (append-only history).
+# Optional plan iteration
+For complex or high-risk leaves, propose → review → revise, with a small review
+round cap. Proceed only within the ratified autonomy level. Skip this module for
+trivial increments; unbounded polishing is thrash.
 
-# Deviations protocol  (mid-flight unknowns — the plan meets the territory)
-No amount of planning exhausts the territory; edge cases WILL force you off-plan.
-Three-way triage when they do:
-- **Risky / irreversible / spec-invalidating** (the surprise undermines a SPEC
-  assumption, not just the plan) → HUMAN GATE, as always.
-- **Non-risky but off-plan** → choose the **conservative** option, log it under
-  a `## Deviations` section in PLAN.md (what happened → what you chose → why),
-  and **continue** — don't stall on it, don't hide it.
-- **On-plan** → nothing to do.
-The Deviations log is prime retro fuel: it's where the map's gaps get recorded
-while they're cheap to see.
+# Optional steering docs and formatting capability
+Include this section only when the component manifest selects durable steering
+docs because team ownership, lifespan, or auditability warrants them. Then verify
+the ratified SPEC.md, STANDARDS.md, GOALS.md, and PLAN.md; missing or changed
+human-owned documents hit a human gate and are never reconstructed. Select a
+formatting helper only when repeated formatting or context isolation justifies
+it, and invoke it through an available host-neutral capability. Without either
+trigger, omit the helper and four-file docs entirely.
 
-# Docs & workspace scaffolding  (first run)
-Verify `./loop-docs/` contains SPEC.md, STANDARDS.md, GOALS.md, PLAN.md (from the
-interview) + the state files; create anything missing via the DOC-WRITER before
-the first increment. These documents are the loop's steering state — GOALS.md
-`status` fields are the task list; STANDARDS.md checks are the verification bar.
-Batch loops also keep `./loop-docs/RULEBOOK.md`: loop-owned tactical rules
-(conventions, idiom mappings, edge-case rulings) that grow during the run.
-STANDARDS.md stays human-ratified and frozen; the retro harvests rulebook →
-standards.
-
-# Shakedown — first-run protocol  (auto-continue is LOCKED until this passes)
+# Shakedown — before L3 or promised multi-session resume
 Crash-safety that has never been tested is a claim, not a property. Before the
 loop may run unattended:
 1. SUPERVISED: run the first 2–3 increments with verbose status, human watching.
@@ -163,20 +127,14 @@ loop may run unattended:
    was double-processed: <the concrete check, e.g. result rows == done statuses,
    no duplicate ids>. A failed kill test = fix the state protocol before any
    long run.
-3. VERIFIER CHECK: confirm the VERIFIER sub-agent actually fired on those
-   increments (its verdicts are recorded in the log) — not the implementer
-   self-grading.
-4. RULES STRESS-TEST (batch loops, ≥50 similar items): process 2–3
-   representative items twice — once strictly by the RULEBOOK, once
-   unconstrained ("as a senior practitioner would") — diff the two, fold the
-   findings into RULEBOOK.md, then DISCARD both outputs. They buy rule fixes,
-   not progress; a rule bug caught here would otherwise cascade across the
-   whole batch.
-5. Only then unlock auto-continue. Append `SHAKEDOWN PASSED (n increments, kill
+3. VERIFICATION CHECK: confirm the required verifier actually fired on those
+   increments and recorded verdicts. If independence is required, confirm it ran
+   in a separate context.
+4. Only then unlock auto-continue. Append `SHAKEDOWN PASSED (n increments, kill
    test clean, verifier active)` to the progress log; if it never appears, the
    loop must keep running supervised.
-  → Lite loops: the kill test (step 2) alone is the mandatory minimum.
-  → Tell the user in the delivery note that step 2 is THEIR move.
+  → One-session L1 loops may omit this section. If resume is promised, tell the
+    user in the delivery note that the interruption test is their move.
 
 # Calibration — drift detection  (quality-fuzzy loops only)
 Per-increment verification can't catch your own judgment drifting across hundreds
@@ -206,24 +164,11 @@ the calibration):
   "looks right." <e.g. run the app and use the feature; hit the endpoint; check the
   output rows.> A green unit test alone is not proof the feature works.
 
-# Final explainer  (on DONE — the handoff artifact)
-Before stopping at DONE, write <workdir>/EXPLAINER.md — one page, written for a
-human who watched none of the run: ① what was built/produced and where it lives;
-② how to run / use / verify it; ③ the key decisions, plus a 3-line digest of
-PLAN.md `## Deviations`; ④ where it is most likely to break first. Only claims
-you actually verified — it is a handoff, not a pitch.
-  → Why: unread output is comprehension debt. The explainer is the cheapest unit
-    a human can absorb, and the retro (loop-retro) reads it against the artifacts —
-    a DONE without an explainer is an incomplete delivery.
-
 # Guardrails  (non-negotiable)
 - Do NOT attempt to do everything at once — one increment per iteration.
 - Do NOT mark anything done without verifying it.
 - It is unacceptable to weaken, edit, or delete tests/criteria to make the bar pass
   — that hides missing or broken functionality. Fix the work, not the goalposts.
-- Same failure class on ≥3 items → stop patching items: amend the RULEBOOK rule
-  that produced it and regenerate the affected batch. Never hand-patch outputs
-  against the rulebook.
 - Leave the workspace in a clean, mergeable state at the end of every iteration.
 
 # First actions  (do these now, in order)
@@ -264,8 +209,7 @@ You are done only when ALL acceptance checks in `features.json` have status
 
 # Stop conditions
 - DONE: every entry in features.json is "passing" AND npm test + npm run lint exit
-  0 → write EXPLAINER.md (what was built · how to run and use it · key decisions
-  & a deviations digest · where it's most likely to break first) and stop.
+  0 → write a final summary to progress.md and stop.
 - BLOCKED: if the same check fails twice in a row with no new information, or you
   need a decision only a human can make → record it under "BLOCKED" in progress.md
   and stop. Do not keep retrying the same thing.

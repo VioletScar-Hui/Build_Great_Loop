@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["event_id", "run_id", "sequence", "timestamp", "event_type"],
+  "properties": {
+    "event_id": {"type": "string", "minLength": 1},
+    "run_id": {"type": "string", "minLength": 1},
+    "item_id": {"type": ["string", "null"]},
+    "sequence": {"type": "integer", "minimum": 0},
+    "timestamp": {"type": "string", "format": "date-time"},
+    "event_type": {"enum": ["launch", "claim", "attempt", "effect", "verify", "gate_open", "gate_decision", "budget_reserve", "budget_settle", "cancel", "reconcile", "stop"]},
+    "attempt": {"type": "integer", "minimum": 0},
+    "budget": {"type": "object"},
+    "gate_id": {"type": ["string", "null"]},
+    "verifier_id": {"type": ["string", "null"]},
+    "verdict": {"enum": ["pass", "fail", "unknown", null]},
+    "evidence_ref": {"type": ["string", "null"]}
+  },
+  "additionalProperties": true
+}

@@ -1,5 +1,31 @@
 # Changelog — loop-engineering
 
+## 7.0.1 — 2026-07-22
+
+- Normalized containment paths against an explicit trusted policy root.
+- Rejected root escapes, traversal aliases, and symlink paths before applying
+  allow/deny rules.
+- Added adversarial containment and quota-controller effects; the component gate
+  now covers 38 effects while the legacy 18-effect gate remains unchanged.
+
+## 7.0.0 — 2026-07-21
+
+- Integrated PROFILE, RULES, DEVIATIONS, and EXPLAIN into component selection,
+  direct leaf routing, and the complexity budget while preserving CORE-only
+  output when no optional trigger applies.
+
+## 6.0.0 — 2026-07-21
+
+- Replaced the monolithic copy template with CORE plus triggered STATE, VERIFY,
+  CAL, SHAKE, FLOW, and CONTAIN components.
+- Added machine-readable state schema/example and semantic validator.
+- Distinguished externally enforced caps from observed token/cost metrics.
+- Required environment enforcement for L2/L3 and blocked regeneration of
+  missing human-owned steering documents.
+- Added suite manifest, version/reference/duplicate validator, and effect-based
+  adversarial component cases. Older entries below are historical release notes,
+  not a claim that every named experimental component remains active.
+
 ## 4.1 — 2026-07-17
 
 吸收 Anthropic《AI-driven code migration》（claude.com/blog/ai-code-migration，

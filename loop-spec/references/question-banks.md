@@ -6,12 +6,6 @@ pull its bank, and make sure every load-bearing question below is either
 (confirm, don't re-ask). Then add task-specific questions the bank can't know.
 Batching rules still apply: 2–4 per round, options + a recommended default.
 
-**全族通用问题（任何 family 都先问这条）**：
-
-| # | Question | Why it's load-bearing | Options |
-|---|---|---|---|
-| U1 | 有没有现成的**参考物**——往期满意的产出 / 喜欢的样式或网站 / 实现了类似行为的代码？ | 一个好参考物顶几百字描述；直接读原件（源码优于截图）反推口径，用户只需确认差异点 | 有→给路径/链接（✦） / 没有→进常规问题轮 |
-
 **Family selector** (maps to `../loop-engineering/references/patterns.md`):
 
 | The task smells like… | Family |

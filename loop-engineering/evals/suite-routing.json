@@ -1,0 +1,22 @@
+[
+  {"query":"我想做个 agent，每天把客服工单分类，但成功标准和失败处理还没想好","expected_skill":"loop-spec"},
+  {"query":"先帮我判断这个任务值不值得做成 loop：一次性整理 30 个文件","expected_skill":"loop-spec"},
+  {"query":"需求已确认：跨 500 个条目、可续跑、失败两次跳过。给我完整 harness","expected_skill":"loop-engineering"},
+  {"query":"SPEC 和 STANDARDS 都签核了，帮我生成 iterate-until-green prompt","expected_skill":"loop-engineering"},
+  {"query":"这是现有 agent prompt，它一直重复失败动作，帮我诊断并修","expected_skill":"loop-review"},
+  {"query":"审一下这个循环提示词是否会假完成，先别改","expected_skill":"loop-review"},
+  {"query":"怎么判断这个标注 loop 是否可靠？帮我设计 15 个 eval cases","expected_skill":"loop-eval"},
+  {"query":"成功标准写成‘质量要高’太模糊，帮我改成可评测的","expected_skill":"loop-eval"},
+  {"query":"把现有 PR triage loop 配成 nightly，只报告不改代码","expected_skill":"loop-ops"},
+  {"query":"这个 agent 怎样从 L1 安全升到 L2？还要每日预算和 kill switch","expected_skill":"loop-ops"},
+  {"query":"昨晚的 loop 跑完了，run-log 在 logs/run-0719.jsonl，帮我复盘","expected_skill":"loop-retro"},
+  {"query":"这次全绿但成本比预期高三倍，分析实际运行记录","expected_skill":"loop-retro"},
+  {"query":"帮我直接把这个 CSV 按 date 排序一次","expected_skill":null},
+  {"query":"解释一下 while 循环和 for 循环的区别","expected_skill":null},
+  {"query":"修复测试失败，跑到全绿为止","expected_skill":null},
+  {"query":"给普通 CLI 脚本加 --max-retries 参数","expected_skill":null},
+  {"query":"我的定时任务没启动，帮我查 cron 日志","expected_skill":null},
+  {"query":"给现有提示词润色一下语气，不涉及 agent 或循环","expected_skill":null},
+  {"query":"总结这份 agent 评测论文，不需要给我的系统设计 eval","expected_skill":null},
+  {"query":"看 git log 总结昨天改了什么","expected_skill":null}
+]

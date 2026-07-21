@@ -1,29 +1,19 @@
 ---
 name: loop-spec
-version: "2.2"
 description: >-
-  Mandatory interactive intake BEFORE any agent loop is authored: co-run
-  requirement clarification, standards setting, spec writing, and goal/sub-goal
-  decomposition WITH the user, brainstorm-style. Trigger whenever the user wants
-  to create/build a loop, autonomous agent, or harness — "我想做个 loop/agent 来
-  …", "帮我构建一个循环", "help me build a loop for X", "set up an agent that…" —
-  even if (especially if) their description already looks complete. When the idea
-  is still vague — "我想做个 agent 但还没想好怎么定", "帮我理理需求", "先帮我拆下
-  目标" — this skill MUST be used INSTEAD of generic brainstorming skills: for
-  anything that will BECOME an agent/loop this IS the purpose-built brainstorm
-  (generic brainstorming lacks the loop question banks, standards library, and
-  sign-off pipeline).
-  Clarifying questions MUST go to the user; never answer them yourself. Produces
-  user-signed-off SPEC.md / GOALS.md / STANDARDS.md (written by a cheap
-  doc-writer subagent), then hands off to loop-engineering. Not for auditing an
-  existing loop (loop-review), scheduling/operating one (loop-ops), or writing
-  evals (loop-eval).
+  Clarify and scope a NEW agent loop before its harness is authored. Use when the
+  user wants to create an autonomous/repeating agent, asks to turn a vague idea
+  into a loop, or has not yet settled success criteria, boundaries, risk, or
+  budget. First test whether a loop is justified; route one-shot or deterministic
+  tasks to a simpler workflow. Use proportionate intake: confirm only
+  load-bearing decisions, offer visible reversible defaults for minor details,
+  and write durable SPEC/STANDARDS/GOALS artifacts only when the loop's scale or
+  lifespan benefits from them. Hands settled intent to loop-engineering. Not for
+  reviewing an existing harness (loop-review), measuring it (loop-eval), running
+  it on a schedule (loop-ops), or post-run analysis (loop-retro).
+metadata:
+  version: 4.0.0
 ---
-
-<!-- 维护红线：正文里美元符号后面绝不能紧跟数字。带参数调用 /loop-spec 时，斜杠命令
-     会把「美元符号+0/1/3」这类序列当位置参数替换成用户输入，当场破坏展示给用户的
-     数字（2026-07-17 实测：预算默认值被替换成了用户传入的 URL）。金额一律写
-     "0.5 美元" / "USD 0.5"。防复发检查见 evals gotcha-2（确定性 grep）。 -->
 
 # Loop Spec — Interactive Intake
 
@@ -34,18 +24,19 @@ rounds, before a single line of loop prompt is written.
 
 > Interview in **the user's language**. Skill internals stay English.
 
-## Iron law
+## Core rule
 
-**NO INTERVIEW, NO SPEC. NO USER ANSWER, NO ASSUMPTION.**
+**NO HIDDEN LOAD-BEARING ASSUMPTIONS.**
 
-Every load-bearing unknown gets asked to the user — never self-answered, however
-"obvious" the answer seems. A loop built on a guessed requirement fails at the most
-expensive possible moment: after it has run for hours. The interview is where that
-failure is cheap.
+Ask the user about decisions that materially change success, safety, scope, cost,
+or irreversible effects. For minor, reversible details, state a concrete default
+and let the user override it. A loop built on a guessed load-bearing requirement
+fails at the most expensive moment: after it has run for hours. A loop that asks
+about every harmless detail never gets built.
 
-**绝不允许**: skipping the interview because the description "seems complete";
-inventing an answer to an open question; writing SPEC/GOALS/STANDARDS the user has
-not confirmed; treating this skill as optional when a loop is being created.
+Do not invent answers to unresolved high-impact questions or silently turn an
+ordinary task into an autonomous loop. Do not require ceremony merely because the
+word "loop" appears.
 
 ## Prerequisites
 
@@ -59,67 +50,46 @@ not confirmed; treating this skill as optional when a loop is being created.
 
 Run phases in order. Each phase has a **verify** gate — do not advance until it
 passes. Ask **2–4 questions per round** using structured options (use the
-AskUserQuestion tool when available, with concrete choices + your recommendation
-first; otherwise numbered questions in chat) — **but only for independent
-questions**, ones whose answer doesn't change what else needs asking. The moment
-a question **branches off a prior answer** (dependent, not parallel — "if retry,
-how many times; if not, escalate to whom") stop batching: ask that one alone,
-wait for the answer, then formulate the next question from it. Pre-guessing every
-branch to keep the batch full is how "2–4/round" quietly turns back into the
-ten-question wall it exists to prevent. Never ask a wall of ten questions, and
-never ask questions whose answer is already in what the user said — confirm those
-instead (see Profile & prefill below for facts, which shouldn't be asked at all).
-The ≤4-per-round grouping applies to **every list you put in front of the user,
-in every phase** — Phase 1 questions, Phase 2 open points, sign-off items — and
-to non-interactive deliverables too (Round 1 = the blocking minimum, later rounds
-follow-ups). A wall of questions is a wall even on paper, and even when you call
-them "open points".
+available structured-question capability with concrete choices and your
+recommendation first; otherwise use numbered questions in chat). Never ask a
+wall of ten questions, and never re-ask known information. Apply the PROFILE
+intake precedence only when task-relevant stable preferences or discoverable
+environment facts exist; otherwise skip PROFILE entirely, including lite loops.
+When selected, follow `../loop-engineering/assets/components/profile.md` only for
+input classes actually present: inspect and source each discoverable fact; visibly
+prefill each stable preference with an override; label and confirm each context
+inference. Do not perform or manufacture actions for absent classes. Leave every
+load-bearing decision to the user. The ≤4-per-round grouping applies to **every
+list you put in front of the user, in every phase** — Phase 1 questions, Phase 2
+open points, sign-off items — and to non-interactive deliverables too (Round 1 =
+the blocking minimum, later rounds follow-ups). A wall of questions is a wall even
+on paper, and even when you call them "open points".
 
 One more universal rule: **every deliverable that pauses for user input ends with
 a one-line "what happens next"** — through docs sign-off → harness authoring
 (loop-engineering) → the final stop-condition confirmation before delivery. The
 user should never wonder where they are in the pipeline.
 
-**Profile & prefill — information is asked ONCE, ever.** Before composing any
-question round:
-1. Read `~/.claude/loop-profile.md` if it exists (stable preferences, family
-   defaults, environment facts — each with provenance). **Never re-ask what the
-   profile answers**; instead show it as a prefilled decision ("按你的画像默认：
-   预算 ~3 美元/12 增量 — 沿用还是这次改？").
-2. **Fact-lookup, not question**: for a load-bearing question that is a *fact*
-   about the environment rather than a *decision* — settled by a config file,
-   lockfile, existing script, `git remote -v`, and not yet stated by the user —
-   go look it up rather than asking. One unambiguous answer → state it and move
-   on (not even marked 「推断」 — it isn't a guess). Multiple candidates or
-   nothing found → it's not a fact anymore; fall through to inference or a real
-   question. What never moves: decisions stay the user's, however easy they'd
-   be to guess.
-3. **Infer-prefill from context**: answers pattern-matched from the conversation
-   or repo (not a hard fact, still a guess) get drafted by you, marked 「推断」,
-   and put up for confirmation — confirming costs the user a tenth of answering.
-4. Only what is neither a looked-up fact, in the profile, nor inferable becomes
-   a real question.
-5. At sign-off, any NEW stable preference learned this interview → **propose**
-   appending it to the profile (user confirms; the profile is user-owned).
-   Conflicts resolve in favor of this task's answer, with a profile-update
-   proposal. The lite micro-interview consults the profile the same way — three
-   questions can become three confirmations.
-
 ### Phase 0 — Frame & path selection
 
 Restate the user's goal in ONE sentence ("你要的是：…，对吗？") plus what you think
-is *out* of scope. In the same breath, gauge **familiarity**（"这类任务/这个领域
-你熟吗？"，能从上下文推断就不问）——it decides whether Phase 1 opens with a
-blindspot pass.
+is *out* of scope.
+
+**Loop-worthiness gate.** Before choosing an intake path, ask whether repetition
+and model-driven decisions are actually needed. Prefer a normal command, script,
+workflow, or single agent run when the task is one-shot, the route is fully known,
+or deterministic automation can solve it. Explain the simpler option and continue
+with loop intake only when the loop earns its extra latency, cost, and operational
+risk.
 
 **Path selection (proportionate intake).** A gate that is disproportionate gets
-bypassed, and a bypassed gate protects nothing. Judge the task against the **lite
-criteria — ALL four must hold**:
+bypassed, and a bypassed gate protects nothing. Use the following as heuristics,
+not universal laws. The **lite criteria — all four should hold**:
 
 1. Estimated **< 20 increments**;
 2. **No irreversible or risky actions** (nothing that would trip a human gate:
    deletes, prod, payments, auth, force-push…);
-3. Budget **< 0.5 USD**;
+3. Budget **< $0.5**;
 4. Writes **only inside the workspace**.
 
 All four hold → *propose* the lite path in the same breath as the framing
@@ -128,40 +98,34 @@ path — eligibility is judged by the criteria, **never by the user's framing or
 urgency** ("很小/很急" is not a criterion).
 
 - **Lite path** = the 3-question micro-interview below, then an **inline spec**
-  (restated in chat for confirmation — no `./loop-docs/`, no doc-writer, no goal
-  tree). loop-engineering's final stop-condition confirmation **still applies**.
+  (restated in chat for confirmation — no `./loop-docs/`, formatting helper, or
+  goal tree). loop-engineering's final stop-condition confirmation **still
+  applies**.
 - **One-way ratchet**: if any micro-answer reveals risk or scale beyond the
   criteria, upgrade to the full path immediately. Never downgrade mid-flow.
 
 **Micro-interview (lite path, exactly these three — each with a numeric default):**
 1. 完成的机器可检标准是什么？（哪条命令/观察能证明做完了）
 2. 失败怎么处理 + 有什么绝对不能碰的？（✦默认：跳过并记录；只写工作区）
-3. 上限：最多多少增量 / 多少预算？（✦默认：增量 = 条目数 ×1.2 封顶，预算 0.3 美元 —
-   lite 判据本就要求 <0.5 美元。默认值必须是具体数字，"跑跑看再定"不算上限）
+3. 上限：最多多少增量 / 多少预算？（✦默认：增量 = 条目数 ×1.2 封顶，预算 $0.3 —
+   lite 判据本就要求 <$0.5。默认值必须是具体数字，"跑跑看再定"不算上限）
 
 **Verify (both paths)**: the user explicitly confirms the framing AND the path.
 No confirmation, no progress.
 
-### Phase 1 — Clarify (需求澄清 · brainstorm · 未知项四象限)
+### Phase 1 — Clarify (需求澄清 · brainstorm)
 
 Identify the task family and **pull its question bank**
 (`references/question-banks.md`) — that's the floor: every load-bearing question
 in the bank must end up user-answered or visibly already-answered (confirm, don't
-re-ask). Then work the **four-quadrant elicitation**
-(`references/unknowns-elicitation.md`) on top:
-
-- Phase 0 gauged familiarity（"这个领域你熟吗？"，或从上下文推断）。不熟 → 提问
-  之前先做 **盲点扫描**：列出该领域的经典陷阱与"行家才知道该问的问题"（3–6 条，
-  各带一句为什么），把未知的未知降级为可提问项。（真实运行的 gotcha「转载源冒充
-  独立源」正是这一步能提前抓住的。）
-- 固定问一句 **参考物**："有没有现成的参考物——往期满意的产出/喜欢的样式/类似
-  实现的代码？" 一个好参考物顶几百字描述；有就直接读原件反推口径。
-- This is also the **brainstorm**: each round, offer at least one option the user
-  likely hasn't considered — diverge first, then converge on decisions.
+re-ask). Then add task-specific questions the bank can't know. This is also the
+**brainstorm**: each round, offer at least one option the user likely hasn't
+considered (a simpler alternative, a riskier-but-faster path, an adjacent
+opportunity) — diverge first, then converge on decisions.
 
 **Why**: users under-specify what they've never watched fail, and interviewers
 under-ask what they've never watched fail — the bank encodes the failures already
-watched; the blindspot pass covers the domain-specific ones the bank can't know.
+watched. Options teach users what's decidable.
 
 **Verify**: you can list zero remaining load-bearing unknowns. Anything genuinely
 undecidable now goes into SPEC.md's Open Questions **by user consent**, not by
@@ -171,11 +135,6 @@ silent omission.
 
 Turn quality expectations into **machine-checkable standards**: acceptance checks,
 quality bars, hard constraints/red lines, and the budget class (time/token).
-**样例先行 pre-step（未知的已知）**：若质量目标属于"说不清、看到才知道"（简报
-长相、标注口径、文风），先花一个便宜增量做 **2–4 版差异大的微样例**让用户挑和改，
-把反应反推成标准条款——**不要让用户批准他们无法想象的抽象标准**。样例即弃，
-不是交付物。
-
 **Draft from the standards library** (`references/standards-library.md`) — pull
 the family's proven patterns, instantiate the thresholds from Phase 1 answers —
 then walk the user through each: they approve, edit, or strike. Don't invent from
@@ -200,19 +159,24 @@ reorders, and approves.
 
 **Verify**: user has approved the tree, and every leaf names its acceptance check.
 
-### Phase 4 — Docs (规格化文档 · doc-writer subagent)
+### Phase 4 — Durable artifacts when useful
 
-Dispatch a **doc-writer subagent on a cheap model (haiku)** to write the documents
-into the project (default `./loop-docs/`), one file per template in `assets/`:
+For multi-session, high-risk, team-owned, or recurring loops, write the approved
+decisions into the project (default `./loop-docs/`), one file per template:
 
 - `SPEC.md` — framing, decisions from Phase 1, open questions (user-consented);
 - `STANDARDS.md` — the approved standards, each with its check;
 - `GOALS.md` — the approved goal tree with per-leaf acceptance checks;
 - `PLAN.md` — skeleton only (the loop's plan-iteration cycle will fill it).
 
-Brief the subagent with the interview conclusions verbatim; it formats, it does
-not invent. Review its output yourself, fix drift, then show the user a compact
-summary for **sign-off**.
+Write them directly, or delegate formatting only when it would flood the main
+context or is a repeated side task. If delegating, choose the cheapest model that
+can reliably preserve the approved content; do not hard-code a model name. The
+writer formats and does not invent. Review the output and show the user a compact
+summary for sign-off.
+
+For a genuinely lite loop, keep the approved mini-spec inline. Do not create four
+files just to satisfy the process.
 
 **Verify**: files exist on disk, match the interview, and the user has signed off.
 
@@ -231,7 +195,6 @@ exits only through the checklist below.
 | "文档可以之后再补。" | The docs ARE the loop's steering state. A loop without STANDARDS.md re-invents its quality bar every iteration. |
 | "先给个初版提示词，跑起来再迭代。" | An unratified loop prompt is exactly the deliverable this skill exists to prevent. Spec first. |
 | "用户说这是小任务/很赶，走轻量吧。" | Lite eligibility is judged by the four criteria, not by framing or urgency. An irreversible action stays full-path however "small" the task sounds — and pressure is precisely when gates earn their keep. |
-| "这几个问题有依赖，但硬凑进一轮也就是多问几个选项。" | A batched question covering every possible branch of a dependent answer IS the ten-question wall, just reshuffled into one message. Ask the root question alone; the dependent one only exists once you know which branch you're on. |
 
 ## Good / bad interview (contrast)
 
@@ -250,8 +213,8 @@ options, user does all the work)
 - [ ] Zero load-bearing unknowns un-asked; open questions are user-consented.
 - [ ] Every standard machine-checkable AND user-approved.
 - [ ] Goal tree approved; every leaf has an acceptance check and fits one increment.
-- [ ] SPEC.md / STANDARDS.md / GOALS.md / PLAN.md written to disk by the doc-writer
-      and signed off by the user.
+- [ ] Durable loops: SPEC.md / STANDARDS.md / GOALS.md / PLAN.md exist and match
+      the approved decisions. Lite loops: the inline mini-spec is confirmed.
 
 **Lite path — all of these instead:**
 
@@ -261,20 +224,16 @@ options, user does all the work)
 - [ ] No answer revealed risk/scale that demands the full path (else ratchet up).
 
 Then hand off to **loop-engineering** to author the harness. Tell the user what
-comes next: loop-engineering will still ask **one final confirmation of the stop
-conditions** before delivering the prompt — that gate belongs to it, not to you.
+comes next: loop-engineering will assemble the harness and will reconfirm stop
+conditions only if the chosen autonomy/risk level requires a final human gate.
 
 ## Assets & references
 
 - `references/question-banks.md` — load-bearing questions by task family
   (Phase 1's floor). **Read when the family is identified.**
-- `references/unknowns-elicitation.md` — 四象限引出法：盲点扫描 / 样例先行 /
-  参考物优先。**Read when the user is unfamiliar with the domain or the quality
-  target is "看到才知道".**
 - `references/standards-library.md` — proven machine-checkable standard patterns
   by family (Phase 2's drafting source).
 - `assets/spec-template.md` · `assets/standards-template.md` ·
-  `assets/goals-template.md` · `assets/plan-template.md` — the doc-writer's
-  templates.
-- `assets/doc-writer-brief.md` — the reusable subagent brief (model: haiku), with
-  the optional `.claude/agents/` persistence snippet.
+  `assets/goals-template.md` · `assets/plan-template.md` — artifact templates.
+- `assets/formatting-helper-brief.md` — optional reusable formatting brief; use a helper
+  only when context isolation or repetition justifies it.

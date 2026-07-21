@@ -1,0 +1,1 @@
+{"case_id":"deviations-case-001","component":"DEVIATIONS","run_id":"deviations-run-001","plan_step":"read primary.csv","expected":"primary.csv contains 3 rows"}

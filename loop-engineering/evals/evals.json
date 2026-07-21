@@ -1,19 +1,18 @@
 {
   "skill_name": "loop-engineering",
-  "version": "4.1",
+  "version": "7.0.1",
   "evals": [
     {
       "id": "core-1",
       "category": "core",
-      "note": "完整签核的 spec → 应产出带子代理编排的 harness",
+      "note": "完整签核的 spec → 应产出比例适配的 harness",
       "prompt": "（本会话已完成 loop-spec 访谈并签核：SPEC/STANDARDS/GOALS 均确认，停止条件已由用户最终确认：全部 500 个工单分类完且抽检通过 / 同一工单连败两次跳过 / 上限 100 增量与 $2。）请产出循环提示词。",
-      "expected_output": "完整可粘贴 harness：含 DECOMPOSER/PLAN-REVIEWER/VERIFIER/DOC-WRITER(haiku) 子代理编排、./loop-docs/ 脚手架、计划迭代(≤2轮评审)默认自动续跑、崩溃安全状态、可机器核对标准、成本上限、操作者状态行。",
+      "expected_output": "完整可粘贴 harness：含崩溃安全状态、可核对标准、成本上限、操作者状态行；对500条且含人工抽检的任务，使用独立 verifier 和持久 docs 有明确收益，但不硬编码四个角色、模型名或特定 Task 工具。",
       "assertions": [
-        { "id": "a1", "text": "含四个子代理角色且 doc-writer 指定 haiku" },
+        { "id": "a1", "text": "只加入有理由的角色；至少有独立 verifier，但不强制四角色或固定模型名" },
         { "id": "a2", "text": "首步动作校验/创建 ./loop-docs/ 四文档" },
         { "id": "a3", "text": "计划迭代 ≤2 轮评审后默认自动续跑（不逐轮等人批）" },
-        { "id": "a4", "text": "保留核心：可机器核对标准/崩溃安全/单增量/含预算的硬上限/状态行" },
-        { "id": "a6", "text": "批量任务(500 工单)：含系统性失败升级路径（同类错误≥3次→修 RULEBOOK 规则→重新生成受影响批次，不逐个手补）" }
+        { "id": "a4", "text": "保留核心：可机器核对标准/崩溃安全/单增量/含预算的硬上限/状态行" }
       ]
     },
     {
@@ -57,6 +56,40 @@
       "assertions": [
         { "id": "g1", "text": "没有跳过访谈/终问直接产出" },
         { "id": "g2", "text": "没有替用户执行任务本体" }
+      ]
+    },
+    {
+      "id": "edge-3",
+      "category": "edge",
+      "note": "已有 harness 请求优化，应路由到 review",
+      "prompt": "这是我现在在用的 agent loop prompt，帮我优化一下，最近总会重复做同一项。",
+      "expected_output": "识别为已有 harness 的诊断/改进，先使用 loop-review，而不是重新走 loop-spec 或从零生成新 harness。",
+      "assertions": [
+        { "id": "e5", "text": "路由到 loop-review" },
+        { "id": "e6", "text": "没有从零重建或重新强制访谈" }
+      ]
+    },
+    {
+      "id": "edge-4",
+      "category": "edge",
+      "note": "一会话内低风险小循环不应强塞多代理",
+      "prompt": "目标和标准都确认了：在当前工作区逐个格式化 8 个 JSON 文件，jq 校验通过即完成，最多 10 次，只生成报告不提交。给我 loop prompt。",
+      "expected_output": "生成轻量单代理 harness；保留成功标准、上限、逐项验证和状态行，不强塞四个子代理、固定模型、四文档或 kill test。",
+      "assertions": [
+        { "id": "e7", "text": "使用轻量单代理结构" },
+        { "id": "e8", "text": "没有硬编码四角色、模型名或无意义 kill test" }
+      ]
+    },
+    {
+      "id": "legacy-template-conditional-docs",
+      "category": "edge",
+      "note": "模板不能强制格式助手或四文档",
+      "prompt": "已确认的一会话只读检查，不跨运行、不需要团队交接，也没有可用的委派能力。请按参考模板生成 harness。",
+      "expected_output": "生成 CORE-only 平面 harness；不创建四文件 docs，不加入格式助手或宿主专用委派语法。",
+      "assertions": [
+        { "id": "e9", "text": "无文档触发时不创建或校验四文件 docs" },
+        { "id": "e10", "text": "无格式触发或委派能力时不加入格式助手" },
+        { "id": "e11", "text": "manifest 与运行正文保持 CORE-only" }
       ]
     }
   ]

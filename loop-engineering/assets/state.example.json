@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "loop_id": "example-loop",
+  "goal_digest": "sha256:replace-me",
+  "run_id": "run-0001",
+  "items": [
+    {
+      "id": "item-1",
+      "input_digest": "sha256:replace-me",
+      "status": "pending",
+      "attempt": 0,
+      "idempotency_key": null,
+      "claim": null,
+      "output_ref": null,
+      "verification": null,
+      "last_error": null
+    }
+  ],
+  "budget": {"increments_used": 0, "increments_max": 10}
+}

@@ -2,7 +2,7 @@
 name: loop-retro
 description: >-
   Post-run retrospective for an agent loop — close the improvement flywheel.
-  Reads the ACTUAL run artifacts (progress log / run-log / state files / PLAN
+  Reads the ACTUAL run artifacts (structured event log / progress view / state files / PLAN
   history / loop-docs) and produces: an evidence-cited diagnosis, concrete
   harness revision proposals, gotcha eval cases from real failures, and
   SPEC/STANDARDS revision proposals for human ratification. Trigger AFTER a loop
@@ -11,6 +11,8 @@ description: >-
   actually do a good job". Not for auditing a loop prompt BEFORE it runs
   (loop-review), operating/scheduling a loop (loop-ops), or building one
   (loop-spec / loop-engineering).
+metadata:
+  version: 4.0.0
 ---
 
 # Loop Retro — the improvement flywheel
@@ -31,6 +33,10 @@ every significant run — especially the bad ones, but not only the bad ones.
   silently modified** — you produce proposals; the human ratifies.
 - Gotcha eval cases record only failures that **actually happened** in this run.
   Never invent hypothetical failures — that's loop-eval's job, done before the run.
+- Prefer immutable event IDs and evidence references from `run-events.jsonl`.
+  Human-readable Markdown is a view, not sufficient proof for retry, budget,
+  approval, verifier, or crash-recovery claims. If structured evidence was not
+  captured, report the metric as `unknown` and make observability finding #1.
 
 ## Prerequisites
 
@@ -51,14 +57,16 @@ possible — read the whole log via commands, not by skimming the tail):
 increments attempted/completed/failed · retries per item (max & distribution) ·
 human-gate hits and outcomes · budget burned vs. cap · wall-clock · verifier
 activity (how many verdicts, any failures caught?) · resume events (crashes, and
-whether resume was clean) · **PLAN.md `## Deviations` entries** — each one is a
-map-vs-territory gap caught mid-flight; a run with zero deviations logged and
-visible surprises in the output means the protocol was skipped (itself a finding).
+whether resume was clean).
 
-Also read **EXPLAINER.md** if the run reached DONE: check its claims against the
-actual artifacts — every claim the artifacts don't support is a finding
-(false-completion smell), and a DONE run with **no** explainer is itself a finding
-(the harness's delivery bar was missing or skipped).
+Read the harness component manifest before requesting optional evidence. When
+`DEVIATIONS` was selected, consume its structured mismatch ledger as defined in
+`../loop-engineering/assets/components/deviations.md`. When `EXPLAIN` was
+selected, consume its evidence-linked claims and comprehension gate as defined in
+`../loop-engineering/assets/components/explainer.md`. Do not require either
+evidence class when its component was not selected. If a selected component lacks
+its structured evidence, record an observability finding and leave the affected
+metric or conclusion `unknown`.
 
 **Checkpoint**: a vitals table with numbers, each traceable to the log.
 
@@ -75,7 +83,12 @@ Walk the taxonomy; for each hit, cite the evidence line:
 | Verifier rubber-stamping | 100% pass verdicts, near-zero verdict variance, or a pass on later-known-broken work |
 | Resume failure | duplicate/missing items after a restart; state file corruption |
 | Budget overrun | spend exceeded cap, or cap hit with disproportionate progress |
-| Comprehension debt | output volume nobody read; status lines missing or useless |
+| Comprehension debt | for a substantial merge/ship, neither comprehension nor an explicit recorded waiver exists |
+
+Apply comprehension review only to substantial merge/ship delivery. An explicit
+recorded waiver satisfies the gate and remains visible for diagnosis. Do not
+force a comprehension gate on report-only, research, simple, or insubstantial
+work.
 
 **Also mine the non-failures** (this is not optional): cost per increment vs.
 expectation, standards that never once failed (possibly too loose to matter),
@@ -86,53 +99,25 @@ gates never hit (possibly miscalibrated), increments that were trivially small
 
 1. **Harness revision proposals** — for each diagnosis, a concrete before→after
    edit to the harness prompt (quote the current line, give the replacement).
-2. **Gotcha eval case(s)** — for each real failure, one runnable eval case in the
-   manual format (`category: "gotcha"`, prompt reproducing the situation,
-   assertions phrased as "没有重复 <the observed failure>"). Append to the
-   project's `loop-docs/gotchas.json` (create if absent).
+2. **Gotcha eval proposal(s)** — for each real failure, one runnable eval case in
+   the manual format (`category: "gotcha"`, prompt reproducing the situation,
+   assertions phrased as "没有重复 <the observed failure>"). Show the patch for
+   `loop-docs/gotchas.json`; append only after the user approves it.
 3. **SPEC/STANDARDS revision proposals** — marked explicitly **"需人工签核"**;
    listed separately, never applied.
-
-### Step 3.5 — Sedimentation check（retro → skill 沉淀判定）
-
-A loop that ran well is a **candidate skill** — this is where one-off work turns
-into compounding assets. Run the three-criteria precheck from skill-craft:
-
-- 会重复吗？（这个 loop 还会再跑 / 同类任务还会出现 ≥3 次？）
-- 有跑偏风险吗？（本次 retro 的 findings 就是证据）
-- 有可验收交付物吗？（harness + 产出文件即是）
-
-All three hold → add a **沉淀提案** to the report: hand the harness, SPEC
-decisions, and gotchas to **skill-craft Task A** as raw material（三判据证据已
-现成）。A thin-shell skill (description + a one-page router to the LOOP-PROMPT)
-is often enough — the marginal value is natural-language triggering. Not all
-three → say so and skip; don't sediment single-use work.
 
 ### Step 4 — Report and hand decisions to the human
 
 Write `RETRO.md` in the loop's directory using `assets/retro-template.md`
-(summary → vitals → findings w/ evidence → the triad → sedimentation check →
-decision list). Present the user a compact decision list: which revisions to
-apply, which proposals to ratify, whether to sediment. Applying ratified harness
-edits is **loop-review --fix territory or a follow-up request** — not something
-you do unasked. **Profile feedback**: any stable preference this run revealed
-(e.g. a cap style, a red line) → propose appending to `~/.claude/loop-profile.md`.
-**Comprehension check（对抗理解债）**: for runs that produced substantial output
-the user hasn't read, quiz the user — ~5 questions grounded in the actual
-deliverables (EXPLAINER.md claims make good question material). Two modes, by
-where the output is headed:
+(summary → vitals → findings w/ evidence → the triad → decision list). Present
+the user a compact decision list: which revisions to apply, which proposals to
+ratify. Applying ratified harness edits is **loop-review --fix territory or a
+follow-up request** — not something you do unasked.
 
-- **Merge/ship class** (output will be merged into a codebase, deployed, or
-  published): the quiz is a **gate by default** — administer it BEFORE presenting
-  the decision list. Fail or skip → the decision list opens with
-  `merge NOT recommended (quiz failed/skipped)`. The user may explicitly waive
-  the gate — record the waiver in RETRO.md: a logged waiver is a decision, a
-  silent skip is comprehension debt. (Source doctrine: merge only when you pass.)
-- **Report/research class** (output is read, not merged): offer the quiz, don't
-  force it — "要不要我出 5 道关于这次产出的测验？"
-
-A loop the user can't pass a quiz on is a loop they're trusting blind; accepting
-unread output is how comprehension debt compounds.
+When fixes are approved, apply one conceptual harness change at a time and rerun
+the reproducing gotcha plus a small regression set. This preserves attribution:
+you can tell which component was load-bearing instead of replacing the harness
+wholesale.
 
 ## Rationalizations table
 
@@ -152,10 +137,6 @@ unread output is how comprehension debt compounds.
 - [ ] Every finding cites concrete evidence (line/quote).
 - [ ] Triad produced: harness revisions (before→after) + ≥0 gotcha cases (every
       real failure captured, none invented) + standards proposals (marked 需签核).
-- [ ] Sedimentation check run (three-criteria precheck; 沉淀提案 or explicit skip).
-- [ ] Merge/ship-class run: comprehension quiz administered BEFORE the decision
-      list — outcome recorded as pass / fail / explicitly-logged waiver, never
-      silently skipped.
 - [ ] Nothing ratified was edited; `RETRO.md` written; decision list presented.
 
 ## Assets

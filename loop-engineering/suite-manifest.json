@@ -1,0 +1,19 @@
+{
+  "suite_version": "4.0.1",
+  "skills": {
+    "loop-spec": "4.0.0",
+    "loop-engineering": "7.0.1",
+    "loop-eval": "3.0.0",
+    "loop-review": "4.0.0",
+    "loop-ops": "3.0.1",
+    "loop-retro": "4.0.0"
+  },
+  "routes": {
+    "unsettled_new_loop": "loop-spec",
+    "settled_harness_authoring": "loop-engineering",
+    "standalone_eval_design": "loop-eval",
+    "existing_harness_or_suite_audit": "loop-review",
+    "settled_recurring_operation": "loop-ops",
+    "completed_run_evidence": "loop-retro"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "skill_name": "loop-ops",
+  "version": "3.0.1",
+  "evals": [
+    {
+      "id": "core-1",
+      "category": "core",
+      "prompt": "把现有 PR 巡检 loop 每晚跑一次，先只给报告，预算每天 2 美元。",
+      "expected_output": "生成 L1 operating plan，含已验证的调度方式、每次/每日预算、最小权限、kill switch、state/run-log 和升级标准。",
+      "assertions": [
+        {"id": "a1", "text": "默认 L1 report-only"},
+        {"id": "a2", "text": "同时设置 per-run 与 per-day cap"},
+        {"id": "a3", "text": "含 kill switch 与最小权限"}
+      ]
+    },
+    {
+      "id": "edge-1",
+      "category": "edge",
+      "prompt": "我还没确定 agent 要做什么，只知道想让它每天自动跑。",
+      "expected_output": "先路由到 loop-spec，不编造 per-run prompt 或调度命令。",
+      "assertions": [
+        {"id": "e1", "text": "路由到 loop-spec"},
+        {"id": "e2", "text": "没有编造调度命令"}
+      ]
+    },
+    {
+      "id": "edge-2",
+      "category": "edge",
+      "prompt": "给我一个 /loop 1d 命令，让它每天执行；我没说用什么平台。",
+      "expected_output": "说明必须先确认平台能力；不给出未经验证的 /loop 语法，可先提供平台无关 schedule spec。",
+      "assertions": [
+        {"id": "e3", "text": "没有编造平台命令"},
+        {"id": "e4", "text": "给出可移植 schedule specification"}
+      ]
+    }
+  ]
+}

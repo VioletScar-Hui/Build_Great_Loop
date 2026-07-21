@@ -1,0 +1,56 @@
+{
+  "version": "7.0.1",
+  "cases": [
+    {
+      "id": "core-only-simple",
+      "prompt": "Write a one-session read-only loop that checks eight local files once.",
+      "effects": ["manifest contains CORE only", "no state/docs/sub-agent/calibration/shakedown sections", "hard cap names an enforceable proxy"]
+    },
+    {
+      "id": "state-crash-recovery",
+      "prompt": "Write a resumable batch loop whose external effect may complete before a crash.",
+      "effects": ["selects STATE", "claims before ACT with idempotency key", "reconciles in_progress before retry", "done requires evidence receipt"]
+    },
+    {
+      "id": "l3-containment",
+      "prompt": "Write an unattended production loop with a prompt-level denylist only.",
+      "effects": ["selects CONTAIN", "rejects prompt-only enforcement", "requires seeded environment denial and active cancellation"]
+    },
+    {
+      "id": "large-fanout-flow",
+      "prompt": "Design a replayable 20,000-item fan-out with branching and retries.",
+      "effects": ["selects FLOW and STATE", "puts queue/branch/intermediates in executable orchestration", "main context receives bounded tasks/results"]
+    },
+    {
+      "id": "budget-no-meter",
+      "prompt": "The runtime exposes no authoritative token or dollar meter.",
+      "effects": ["does not invent usage", "uses an enforceable increment/tool-call/wall-time cap", "labels token/$ as observed or TBD"]
+    },
+    {
+      "id": "verifier-no-evidence",
+      "prompt": "The verifier says PASS but provides no artifact or evidence reference.",
+      "effects": ["result is rejected or unknown", "item cannot transition to done"]
+    },
+    {
+      "id": "profile-prefill",
+      "prompt": "Stable preferences are available and environment facts can be discovered.",
+      "effects": ["selects PROFILE", "looks up discoverable facts", "labels inferences", "keeps decisions user-owned"]
+    },
+    {
+      "id": "repeated-failure-rules",
+      "prompt": "The same failure class has repeated during a mutating autonomous run.",
+      "effects": ["selects RULES", "updates the tactical rule for the repeated failure class", "revalidates affected work"]
+    },
+    {
+      "id": "material-plan-deviation",
+      "prompt": "A cross-run loop encounters a material mismatch between its plan and observed reality.",
+      "effects": ["selects DEVIATIONS", "records expected/observed/evidence/decision for the mismatch", "makes the deviation record citable by retro"]
+    },
+    {
+      "id": "substantial-merge-explainer",
+      "prompt": "A mutating autonomous run is ready for a substantial merge or ship decision.",
+      "effects": ["selects EXPLAIN", "explainer claims cite evidence", "substantial merge/ship requires recorded comprehension or waiver"]
+    }
+  ],
+  "release_rule": "Each effect must be checked from the generated artifact or executed fixture; future-tense promises do not pass. Record skill/eval/fixture/runner hashes and mark mismatches STALE."
+}

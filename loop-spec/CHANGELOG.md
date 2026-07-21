@@ -1,5 +1,18 @@
 # Changelog — loop-spec
 
+## 4.0.0 — 2026-07-21
+
+- Added host-neutral PROFILE intake precedence for sourced facts, visible
+  preference prefills, labeled inferences, and user-owned decisions.
+- Removed host-specific intake and helper-role requirements.
+
+## 3.0.0 — 2026-07-21
+
+- Made intake proportional to risk and lifespan; lite loops avoid ceremonial
+  document sets and repeated confirmation.
+- Clarified lifecycle handoff and visible reversible defaults.
+- Removed stale historical result artifacts from the distributable candidate.
+
 ## 2.2 — 2026-07-17
 
 - 修复：正文 4 处 "$数字" 字面量（$0.5 ×2、$0.3、$3）改写为 "x 美元 / USD" 形式。

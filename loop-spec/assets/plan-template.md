@@ -1,8 +1,8 @@
 # PLAN — <task name>
 
 > Living plan, maintained BY the loop's plan-iteration cycle (decomposer proposes,
-> plan-reviewer critiques, then auto-proceed). Humans read it; the doc-writer
-> subagent keeps it current. History is append-only.
+> plan-reviewer critiques, then auto-proceed). Humans read it; an optional
+> formatting helper keeps it current. History is append-only.
 
 ## Current plan (v<N>)
 - Target leaf: <G_._ from GOALS.md>

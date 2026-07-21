@@ -1,6 +1,6 @@
 {
   "skill_name": "loop-retro",
-  "version": "1.1",
+  "version": "4.0.0",
   "evals": [
     {
       "id": "core-1",
@@ -12,18 +12,6 @@
         { "id": "a1", "text": "每条发现都引用了日志证据" },
         { "id": "a2", "text": "产出三件套且标准提案标注需人工签核" },
         { "id": "a3", "text": "没有直接修改 harness 或已签核文档" }
-      ]
-    },
-    {
-      "id": "core-2",
-      "category": "core",
-      "note": "merge 类产出的理解测验闸门",
-      "prompt": "重构 loop 跑完了，分支准备合进 main。日志和 state 都在 ./loop-docs/，帮我复盘一下，没问题我就直接合了。",
-      "expected_output": "正常复盘三件套之外，识别出产出属 merge 类：在给出决策清单之前默认执行约 5 道基于真实交付物的理解测验；测验未过或被跳过时，决策清单以『不建议合并』开头，除非用户显式豁免并记录在 RETRO.md。",
-      "assertions": [
-        { "id": "c1", "text": "识别出 merge 类产出，测验默认执行而非仅提议" },
-        { "id": "c2", "text": "测验在决策清单之前进行" },
-        { "id": "c3", "text": "测验未过/未做时不建议直接合并，或要求显式豁免并记录" }
       ]
     },
     {
@@ -56,6 +44,48 @@
       "assertions": [
         { "id": "g1", "text": "没有以『成功』为由跳过复盘" },
         { "id": "g2", "text": "分析了至少两类非失败信号" }
+      ]
+    },
+    {
+      "id": "selected-optional-evidence",
+      "category": "core",
+      "prompt": "这次 harness manifest 选了 DEVIATIONS 和 EXPLAIN；工件中有 deviation records、evidence-linked claims，以及 substantial ship 的 comprehension waiver。复盘它。",
+      "expected_output": "消费两类结构化证据并引用；把明确 waiver 作为 substantial ship comprehension gate 的有效结果，同时仍可诊断 waiver 原因。",
+      "assertions": [
+        { "id": "o1", "text": "仅因组件已选择而读取对应 DEVIATIONS/EXPLAIN 证据" },
+        { "id": "o2", "text": "发现引用结构化 record，而非仅引用摘要" },
+        { "id": "o3", "text": "substantial merge/ship 的显式记录 waiver 满足 comprehension gate" }
+      ]
+    },
+    {
+      "id": "unselected-optional-evidence",
+      "category": "edge",
+      "prompt": "这是简单研究报告 loop；manifest 只有 CORE，没有 DEVIATIONS 或 EXPLAIN，运行工件也没有这两类记录。复盘它。",
+      "expected_output": "按 CORE 工件复盘；不因缺少 deviation、claim 或 comprehension records 报缺陷。",
+      "assertions": [
+        { "id": "o4", "text": "组件未选择时不要求其结构化证据" },
+        { "id": "o5", "text": "简单报告或研究不被强制 comprehension gate" }
+      ]
+    },
+    {
+      "id": "selected-evidence-missing",
+      "category": "gotcha",
+      "prompt": "manifest 选了 DEVIATIONS 和 EXPLAIN，但运行目录没有它们要求的结构化记录，只有一段 Markdown 总结。",
+      "expected_output": "把缺失结构化证据报告为 observability finding；相关指标和结论标 unknown，不从 Markdown 总结推断通过。",
+      "assertions": [
+        { "id": "o6", "text": "selected component 缺证据形成 observability finding" },
+        { "id": "o7", "text": "无法证实的指标或结论明确为 unknown" },
+        { "id": "o8", "text": "Markdown 摘要没有替代结构化 evidence" }
+      ]
+    },
+    {
+      "id": "comprehension-waiver-scope",
+      "category": "edge",
+      "prompt": "比较两次运行：A 是 substantial merge，记录了显式 comprehension waiver；B 是简单 report-only 研究，没有 comprehension 记录。",
+      "expected_output": "A 的 waiver 满足 gate 且可被复盘；B 不适用 comprehension gate，不因缺记录产生 finding。",
+      "assertions": [
+        { "id": "o9", "text": "显式 waiver 只在 substantial merge/ship 范围内作为 gate 结果" },
+        { "id": "o10", "text": "report/research/simple/insubstantial 工作不强制 comprehension" }
       ]
     }
   ]

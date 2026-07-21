@@ -1,0 +1,1 @@
+{"root":".","allow_actions":["read"],"deny_actions":["deploy","delete"],"deny_paths":["auth","prod"],"cancel_requested":false}

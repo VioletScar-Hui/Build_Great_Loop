@@ -1,0 +1,47 @@
+{
+  "skill_name": "loop-review",
+  "version": "4.0.0",
+  "evals": [
+    {
+      "id": "core-1",
+      "category": "core",
+      "prompt": "我这份循环提示词最近总会重复处理同一个任务，帮我找原因并优化。",
+      "expected_output": "读取现有 artifact，按适用 checklist 诊断 thrash；引用原文、先给最小修复，并在修改前保留基线。",
+      "assertions": [
+        {"id": "a1", "text": "识别为已有 harness 的 review，而非重新 spec"},
+        {"id": "a2", "text": "发现与修复均引用具体 prompt 证据"},
+        {"id": "a3", "text": "只提出针对性修改，不整体重写"}
+      ]
+    },
+    {
+      "id": "edge-1",
+      "category": "edge",
+      "prompt": "这是一个只跑一次、只读当前目录的 6 项检查 loop。它没有 sub-agent、kill test 和四份 loop-docs，是不是不合格？",
+      "expected_output": "将不适用项标 N/A；不因为缺少重型模块而扣分，重点检查成功标准、上限、验证和边界。",
+      "assertions": [
+        {"id": "e1", "text": "条件项按 N/A 处理"},
+        {"id": "e2", "text": "没有强制四角色或 kill test"}
+      ]
+    },
+    {
+      "id": "edge-2",
+      "category": "edge",
+      "prompt": "我想从零做一个每天自动巡检 PR 的 agent。",
+      "expected_output": "路由到 loop-spec；不对不存在的 harness 做 review。",
+      "assertions": [
+        {"id": "e3", "text": "路由到 loop-spec"}
+      ]
+    },
+    {
+      "id": "component-dead-triggerless",
+      "category": "gotcha",
+      "prompt": "审计这份 harness：manifest 选了 EXPLAIN，但任务只是简单只读报告；正文没有 EXPLAIN 运行条款，也不会产出 claim/comprehension evidence。",
+      "expected_output": "分别报告 EXPLAIN 无触发且为 dead component；其 acceptance 因没有实际 evidence 不能通过，并建议移除而不是补仪式。",
+      "assertions": [
+        {"id": "c1", "text": "识别 selected component 没有有效 trigger"},
+        {"id": "c2", "text": "识别 manifest 到运行条款/证据不可达的 dead component"},
+        {"id": "c3", "text": "没有把未来承诺当作 acceptance evidence"}
+      ]
+    }
+  ]
+}

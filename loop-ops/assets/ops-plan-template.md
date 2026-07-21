@@ -16,12 +16,13 @@
 
 ## Cadence & schedule
 - **Cadence:** <e.g. 1d / 2h / 5–15m>
-- **Scheduler / command:** <tool-specific, e.g. `/loop 1d Run <prompt>. Update STATE.md.`
-  · Claude Code schedule/cron · GitHub Actions workflow>
+- **Scheduler kind / timezone / misfire policy:** <verified capabilities>
+- **Verified command:** <exact command only after capability detection; otherwise TBD>
 
 ## Budget (cost is a stop condition)
-- **Per run:** <max tokens / $ / turns>
-- **Per day:** <ceiling>
+- **Hard controller:** <scheduler/quota store and atomic reservation method>
+- **Per run / per day:** <enforced increments, tool calls, wall time, or metered cost>
+- **Observed only:** <tokens/$ when no stopping meter exists>
 - **Max-attempts per item:** <N>
 
 ## Safety gates
@@ -29,20 +30,24 @@
 - **Denylist (never touch):** <paths / actions / packages>
 - **Tool / MCP scopes:** <minimal set; read-only unless L2+>
 - **Auto-merge rule (if any):** <required checks + scope + attempt gates, else PR>
-- **Kill switch:** <the one step to stop all runs>
+- **Enforcement evidence:** <credential/sandbox/branch-policy checks for each rule>
+- **Kill switch:** <prevent launches + cancel active run + revoke side-effect token>
 
 ## State & audit
-- **State file:** `STATE.md` (durable spine — see STATE-template.md)
-- **Run-log:** `run-log.md` (one line per run incl. cost — see run-log-template.md)
-- **Verifier:** maker/checker split — implementer + a separate verifier sub-agent
+- **Control state:** `control-state.json` (budget/gate/cancellation/claim authority)
+- **Events:** `run-events.jsonl` (append-only; see run-event.schema.json)
+- **Views:** `STATE.md`, `run-log.md` generated/updated from machine state
+- **Verification mode:** <deterministic_check | independent_context | human_review>
+- **Independent verifier for L2/L3 mutation:** immutable criteria, own evidence,
+  read-only access to candidate/tests/verdict history; fail closed on no verdict
 
 ## Per-run prompt
 - Authored with **loop-engineering**. Confirm its stop conditions, human gate, and
   budget match this plan. Link/path: <…>
 
 ## Multi-loop
-- Other loops on this repo: <list / none>. Collision avoidance: <worktrees / claims
-  in STATE.md / non-overlapping scopes / staggered cadence>
+- Other loops on this repo: <list / none>. If scopes overlap, use an atomic lease
+  with owner/run ID, expiry, and fencing token; worktrees/cadence are supplementary.
 
 ---
 **Operator note:** pattern = <…>; top risks = <…>; promote past L1 only after <…>.

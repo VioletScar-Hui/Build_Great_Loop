@@ -1,0 +1,25 @@
+{
+  "case_id": "rules-case-001",
+  "run_id": "rules-run-001",
+  "failure_class": "missing-normalized-title",
+  "checks": [
+    {
+      "item_id": "item-001",
+      "command": "fixture-check normalized-title item-001",
+      "check_id": "normalized-title-present:item-001",
+      "artifact_path": "affected/item-001.txt"
+    },
+    {
+      "item_id": "item-002",
+      "command": "fixture-check normalized-title item-002",
+      "check_id": "normalized-title-present:item-002",
+      "artifact_path": "affected/item-002.txt"
+    },
+    {
+      "item_id": "item-003",
+      "command": "fixture-check normalized-title item-003",
+      "check_id": "normalized-title-present:item-003",
+      "artifact_path": "affected/item-003.txt"
+    }
+  ]
+}

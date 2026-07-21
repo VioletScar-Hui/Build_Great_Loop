@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["schema_version", "loop_id", "goal_digest", "run_id", "items", "budget"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "loop_id": {"type": "string", "minLength": 1},
+    "goal_digest": {"type": "string", "minLength": 1},
+    "run_id": {"type": "string", "minLength": 1},
+    "items": {"type": "array", "items": {"$ref": "#/$defs/item"}},
+    "budget": {
+      "type": "object",
+      "required": ["increments_used", "increments_max"],
+      "properties": {
+        "increments_used": {"type": "integer", "minimum": 0},
+        "increments_max": {"type": "integer", "minimum": 1},
+        "external_cost_observed": {"type": "number", "minimum": 0}
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "item": {
+      "type": "object",
+      "required": ["id", "input_digest", "status", "attempt", "idempotency_key", "claim", "output_ref", "verification", "last_error"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "input_digest": {"type": "string", "minLength": 1},
+        "status": {"enum": ["pending", "in_progress", "done", "blocked"]},
+        "attempt": {"type": "integer", "minimum": 0},
+        "idempotency_key": {"type": ["string", "null"]},
+        "claim": {"type": ["object", "null"]},
+        "output_ref": {"type": ["string", "null"]},
+        "verification": {"type": ["object", "null"]},
+        "last_error": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
