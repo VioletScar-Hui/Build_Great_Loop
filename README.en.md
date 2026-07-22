@@ -1,45 +1,77 @@
-# Build Great Loop · Composable Agent Loop Skills
+# Build Great Loop · Loop Engineering Skills
 
 [中文](README.md) | [English](README.en.md)
 
 ![Codex Skill](https://img.shields.io/badge/Codex-Skill-111827)
 ![Claude Compatible](https://img.shields.io/badge/Claude-Compatible-6B46C1)
-![Loop Skills](https://img.shields.io/badge/Loop%20Skills-6-0E7490)
+![Skills](https://img.shields.io/badge/Skills-6%20loop%20%2B%20skill--craft-0E7490)
+![Benchmarked](https://img.shields.io/badge/Benchmark-6%20rounds%20adversarial-success)
 ![Component Tests](https://img.shields.io/badge/Component%20Tests-38%2F38-success)
+![Field Tested](https://img.shields.io/badge/Field%20Tested-real%20run%202026--07-8B5CF6)
+![Language](https://img.shields.io/badge/Language-ZH%20%2B%20EN-blue)
 ![License](https://img.shields.io/github/license/VioletScar-Hui/Build_Great_Loop)
+![Status](https://img.shields.io/badge/Status-Active-success)
 
-A Loop Engineering skill suite for both Codex and Claude Code. It turns an unsettled goal into an executable, resumable, verifiable agent loop, then supports evaluation, review, operation, and post-run learning.
+A **composable "Loop Engineering" skill group** for both Codex and Claude Code.
+Trigger it whenever you need an AI to **run on its own, run until done, survive being
+interrupted, and not fake completion** — it interviews your task and emits a
+**ready-to-paste, top-tier loop prompt (harness)**.
 
-This release synchronizes both hosts from one canonical source. The six formal loop-skill directories are byte-identical across Codex and Claude.
+> The model is the engine; the loop is the whole chassis around it: the goal it
+> steers by, the state it remembers, the verification that keeps it honest, and the
+> conditions that tell it to stop. This skill group turns "what a senior engineer does
+> instinctively" into default instructions inside the prompt.
 
-## Highlights
+![Build Great Loop — six-skill workflow and skill-craft flywheel](assets/workflow.svg)
 
-- Six-skill lifecycle: `spec → engineering → eval → review → ops → retro`.
-- CORE stays small; optional components appear only when their triggers are present.
-- `PROFILE` reads task-relevant stable preferences and discoverable facts without treating inference as authorization.
-- `RULES` revises tactical rules after repeated failure classes and revalidates affected work.
-- `DEVIATIONS` persists material plan mismatches with evidence without expanding scope.
-- `EXPLAIN` adds evidence-bound handoff and recorded comprehension or waiver before substantial merge/ship actions.
-- Environment-first L3 containment, independent verification, crash recovery, and machine-checkable stop conditions.
-- Host-neutral behavior: no mandatory fixed model, Claude agent path, `/loop`, Git, or proprietary question tool.
+---
 
-## Skills
+## What it is
 
-| Skill | Current version | Responsibility |
-|---|---:|---|
-| `loop-spec` | 4.0.0 | Decide whether a loop is justified; settle goals, boundaries, risks, and success criteria |
-| `loop-engineering` | 7.0.1 | Emit the smallest sufficient runnable harness; includes the component catalog and validators |
-| `loop-eval` | 3.0.0 | Design success criteria, eval sets, and graders |
-| `loop-review` | 4.0.0 | Audit an existing harness for missing, dead, triggerless, or unevidenced components |
-| `loop-ops` | 3.0.1 | Operate recurring or unattended loops with budgets, permissions, and kill controls |
-| `loop-retro` | 4.0.0 | Learn from real run artifacts and propose rule, standard, and harness revisions |
-| `skill-craft` | Companion | Methodology for creating, modifying, diagnosing, merging, and retiring skills |
+`Build Great Loop` isn't one monolithic skill — it is **six formal loop skills, each independently triggerable and composable**, plus the `skill-craft` companion that turns proven loop knowledge into reusable assets:
+
+| Skill | Current version | What it does | When it triggers |
+|---|---:|---|---|
+| **loop-spec** | 4.0.0 | Interview a fuzzy task into a runnable `SPEC.md` | Task isn't pinned down yet — need goal / success criteria / stop conditions first |
+| **loop-engineering** (core) | 7.0.1 | Interview → emit the **paste-ready loop prompt itself** | "Write me an agent / loop / harness that keeps going until it's done" |
+| **loop-eval** | 3.0.0 | Design success criteria + a small eval set + graders (pass@k vs pass^k) | "How do I know this loop is reliable / write evals for my agent" |
+| **loop-review** | 4.0.0 | Audit and harden an **existing** loop prompt | "My agent never stops / says done when it isn't / loses progress on restart" |
+| **loop-ops** | 3.0.1 | Operate a loop as a recurring / unattended automation (scheduling · cost · safety gates · rollout) | "Run this agent daily / on every PR / nightly", "babysit my PRs", "auto-triage issues", "how do I run it unattended safely" |
+| **loop-retro** | 4.0.0 | Post-run retrospective: evidence-cited diagnosis → harness revisions + real-failure gotchas + standards proposals + **sedimentation check** | "My loop finished — retro it", "why did it thrash / overspend", "analyze the run log" |
+| **skill-craft** | Companion | Full skill-lifecycle methodology front door: create / modify / diagnose / merge / retire (three-criteria gate, evals-first, pressure testing) | "Write me a skill", "why doesn't my skill trigger", "should these two skills merge", "retire this old skill" |
+
+The method is distilled from official engineering writing by Anthropic, GitHub,
+Sourcegraph, and OpenAI (see [Sources](#sources--credits)).
+
+---
+
+## Use cases
+
+- Autonomous coding / build-until-green: implement endpoints/features one at a time until tests pass.
+- Batch processing: label / clean / translate thousands of items overnight, resumable.
+- Autonomous research: gather authoritative sources, dig until confident, write up with citations.
+- Debug loops: reproduce → hypothesize → verify → fix, until the root cause is nailed.
+- Long jobs (data migration, etc.) that "run for hours, will be interrupted, must never double-write or skip."
+- And — **auditing an existing loop prompt** to tell you exactly where it'll break and how to fix it.
+
+---
 
 ## Installation
 
-Run these commands in a terminal. Use PowerShell on Windows and Terminal on macOS/Linux.
+### Easiest: let your AI agent install from the URL
 
-### macOS / Linux: install for both Codex and Claude
+Tell Codex or Claude Code:
+
+> Install this skill group from `https://github.com/VioletScar-Hui/Build_Great_Loop`.
+> Synchronize the seven folders `loop-spec` / `loop-engineering` / `loop-eval` /
+> `loop-review` / `loop-ops` / `loop-retro` / `skill-craft` into both my Codex
+> and Claude skill directories, then verify that both copies match.
+
+> Run the commands below **in a terminal** (PowerShell on Windows; Terminal on
+> macOS/Linux). Optional companion: skill-craft's benchmark machinery reuses
+> Anthropic's `skill-creator` (not bundled here; the methodology works without it).
+
+### macOS / Linux: synchronize Codex and Claude
 
 ```bash
 set -euo pipefail
@@ -54,7 +86,7 @@ for dest in "$HOME/.codex/skills" "$HOME/.claude/skills"; do
 done
 ```
 
-### Windows PowerShell: install for both Codex and Claude
+### Windows PowerShell: synchronize Codex and Claude
 
 ```powershell
 $ErrorActionPreference = "Stop"
@@ -77,60 +109,142 @@ try {
 }
 ```
 
-Remove the destination for the host you do not use. Rerun the same command to update matching directories.
+Delete the destination for a host you do not use. Rerun the same command to update.
+The repository remains the canonical source, so the two host copies do not drift.
 
-## Usage
+### Quick installation check
 
-Start a new session after installation and ask naturally:
-
-```text
-Turn this vague automation idea into a settled loop specification first.
+```bash
+for root in "$HOME/.codex/skills" "$HOME/.claude/skills"; do
+  for skill in loop-spec loop-engineering loop-eval loop-review loop-ops loop-retro skill-craft; do
+    test -f "$root/$skill/SKILL.md" && echo "OK  $root/$skill" || echo "MISSING  $root/$skill"
+  done
+done
 ```
 
-```text
-Write a resumable agent-loop harness that stops only after the tests pass.
+Fourteen `OK` lines mean both hosts are installed; expect seven when installing only one.
+
+---
+
+## First successful run
+
+After installing, open a fresh session and describe — in natural language — any task that
+**needs to run repeatedly**, for example:
+
+> Write me a reliable loop: for each `.md` in `notes/`, generate a one-sentence summary
+> and append it to `summaries.csv`; it must resume after an interruption, never duplicate,
+> never skip.
+
+`loop-engineering` triggers, asks one or two key questions (what counts as done, when to
+stop), then emits a **paste-ready** loop prompt — with verifiable success criteria, stop
+conditions (incl. a hard cap), the five-beat loop, externalized state, crash-safe resume,
+verification + guardrails, and a one-line glanceable status.
+
+---
+
+## Workflow
+
+The six formal loop skills work standalone or cover the complete lifecycle:
+
+```
+loop-spec ──► loop-engineering ──► loop-eval ──► loop-ops
+settle goal       emit harness         design evals     operate safely
+                      ▲                                  │
+                      └──── loop-review                  ▼
+                            audit/harden             loop-retro
+                                                   evidence retro
+                                                        │
+                                                        ▼
+                                                   skill-craft
+                                                sediment reusable assets
 ```
 
-```text
-Audit this loop prompt for false completion, runaway retrying, and lost restart state.
-```
+---
 
-```text
-The loop finished. Retro it from the run log and state artifacts.
-```
+## The core method
 
-The suite routes automatically. You can also name `loop-spec`, `loop-engineering`, or another skill explicitly when your host supports it.
+![The five-beat loop: Orient → Plan → Act → Verify → Record](assets/five-beats.svg)
 
-## Component model
+- **Five beats**: `Orient` (read state first) → `Plan` (pick one smallest increment) →
+  `Act` (do only that) → `Verify` (test it like a user would) → `Record` (write durable
+  state, leave it clean and handoff-ready).
+- **Seven design dimensions**: goal & verifiable success criteria, stop conditions, the
+  loop skeleton, state & memory, context discipline, tools, verification & guardrails.
+- **Two killer failure modes**: over-ambition (one-shotting → context blows up) and false
+  completion (declaring done untested) — every output must defend against both by name.
+- **Four "operational rigor" upgrades** (good → top-tier): machine-checkable success
+  criteria, crash-safe + idempotent resume, deliberately sized caps, a glanceable operator
+  status.
+- **Mandatory interactive intake** (v4+): clarify → standards → goal tree → sign-off;
+  a hard **final stop-condition confirmation** before delivery; tiny tasks take a
+  3-question lite path (all four lite criteria required).
+- **Profile prefill + the unknowns quadrant** (v7): answered questions are never re-asked
+  (`~/.claude/loop-profile.md`); unfamiliar domains get a **blindspot pass**, fuzzy quality
+  targets get **samples-first** elicitation, and references beat descriptions.
+- **Shakedown + calibration + Deviations**: auto-continue stays locked until a deliberate
+  kill/resume test passes; quality-fuzzy loops carry golden-set calibration increments;
+  off-plan surprises follow conservative-choice + log + continue.
+- **The retro flywheel** (loop-retro): real failures become gotcha evals; loops that ran
+  well get a three-criteria sedimentation check → handed to skill-craft to become a
+  reusable skill — one-off work turns into compounding assets.
 
-`loop-engineering` starts with `CORE` and selects components proportionally:
+See `loop-engineering/references/` (`principles` / `patterns` / `harness-template` /
+`context-and-state` / `checklist`).
+
+### Component model
+
+The current harness architecture starts with an always-present `CORE` and adds optional
+components only when evidence triggers them. Simple tasks stay simple; state, containment,
+calibration, and handoff machinery appear only when the task needs them.
 
 | Trigger | Component |
 |---|---|
 | State must survive restart | `STATE` |
-| Executable verification is required | `VERIFY` |
+| Completion needs executable independent verification | `VERIFY` |
 | High-risk or unattended boundary | `CONTAIN` |
-| Quality can drift | `CALIBRATE` |
-| Recovery must be rehearsed before launch | `SHAKEDOWN` |
-| Independent work can fan out | `FANOUT` |
-| Stable preferences or discoverable facts exist | `PROFILE` |
+| Subjective quality can drift across a batch | `CALIBRATE` |
+| Recovery must be rehearsed before auto-continue | `SHAKEDOWN` |
+| Work items can fan out independently | `FANOUT` |
+| Stable preferences or discoverable environment facts exist | `PROFILE` |
 | A failure class repeats | `RULES` |
-| Evidence shows a material plan mismatch | `DEVIATIONS` |
+| Evidence shows a material mismatch from plan | `DEVIATIONS` |
 | A substantial merge/ship needs comprehension handoff | `EXPLAIN` |
 
-See `loop-engineering/references/component-catalog.md` for complete triggers, dependencies, and acceptance rules.
+See [`component-catalog.md`](loop-engineering/references/component-catalog.md) for full
+triggers, dependencies, and acceptance rules. A component must have trigger evidence,
+enter the execution path, and leave a verifiable artifact; otherwise loop-review classifies
+it as missing, hollow, or dead.
 
-## Verification
+---
 
-This synchronized release passes:
+## Why trust it
 
-- Optional-component and adversarial effects: 38/38.
-- Legacy behavior regression: 18/18.
-- Cross-root sync-validator tests: 35/35.
-- Suite-validator tests: 5/5.
-- Paired model eval: candidate 31/33 versus previous baseline 27/33; the discriminating gains are explicit selection of the four new components.
+Not vibes — six rounds of snapshot-vs-snapshot benchmarking (adversarially graded by
+independent grader agents from round 4 on), plus one real field run:
 
-Run from the repository root:
+| Round | New capability under test | Result (new vs old) |
+|---|---|---|
+| 1 | with-skill vs no-skill | **100% vs 69%** |
+| 2 | operational rigor | **100% vs 70%** |
+| 3 | autonomy / human gate / cost budget | **100% vs 67.5%** |
+| 4 | mandatory interview / final stop-condition gate / orchestration | **97.5% vs 60%** |
+| 5 | retro flywheel / shakedown / lite path | **97.5% vs 72.5%** |
+| 6 | question banks / standards library / calibration | **90% vs 82.5%** (diminishing returns → pivot to usage layer) |
+
+**Field evidence** (2026-07-06, legal-AI industry research loop): the VERIFIER sub-agent
+genuinely rejected a "reprint posing as an independent cross-validation source" and forced
+two more fixes — the maker/checker split earning its keep in the wild. The retro also
+exposed a real design flaw (agents can't self-measure $ spend), now folded into doctrine
+(hard caps use self-measurable quantities only). Trigger routing measured: 36/36 on a
+12-skill panel, 7/8 in the full real environment (≥85% bar).
+
+**Current synchronized-release validation** (2026-07-22): optional-component and adversarial
+effects 38/38, legacy regressions 18/18, cross-root sync-validator tests 35/35, and suite
+validator tests 5/5. The paired model eval scored candidate 31/33 versus previous baseline
+27/33; discriminating gains were concentrated in explicit selection of the four new
+components, without presenting non-discriminating cases as gains.
+
+Re-run from the repository root:
 
 ```bash
 python3 loop-engineering/scripts/test_validate_suite.py
@@ -140,35 +254,89 @@ python3 loop-engineering/scripts/run_component_fixtures.py --legacy
 python3 loop-engineering/scripts/select_components.py loop-engineering/evals/fixtures/simple.json
 ```
 
+---
+
+## Version highlights
+
+| Version | Highlights |
+|---|---|
+| v1 | First release: five-beat loop + seven dimensions + two failure modes; 4-skill group; distilled from 6 references |
+| v2 | Operational rigor: machine-checkable criteria, crash-safe idempotent resume, sized caps, glanceable status (benchmark v2 100% vs v1 70%) |
+| v2.1 | Hardened per a "workflow-skill best practices" article: a `Rationalizations` table (closes the author's own shortcuts) + a Weak-vs-strong teaching contrast |
+| v2.2 | Deliverable guardrail: using the group yields the paste-ready loop prompt itself, not the executed task (unless you explicitly ask) |
+| v3.0 | Per cobusgreyling/loop-engineering: added a 5th skill **loop-ops** (operating layer) + folded autonomy levels (L1/L2/L3), human gate, cost budget, comprehension-debt into loop-engineering (benchmark v3 100% vs v2.2 67.5%) |
+| v4.0 | Restructured per the user's skill-writing handbook: **mandatory interactive intake** (5-phase loop-spec), the **final stop-condition confirmation** gate, in-harness sub-agent orchestration (decomposer / plan-reviewer / verifier / doc-writer@haiku) + docs scaffolding + plan iteration with default auto-continue |
+| v5.0 | 6th skill **loop-retro** (the flywheel: evidence diagnosis → revisions → real gotchas) + **shakedown protocol** (kill-test gates auto-continue) + **lite path** (3-question micro-interview for tiny tasks) |
+| v6.0 | **Question banks / standards library** (6 task families) + **mid-run calibration** (golden-set drift detection; deterministic loops explicitly waived) |
+| v7.0 | Usage layer + unknowns: **profile prefill** (ask once, ever), **blindspot pass / samples-first / reference-first** (four-quadrant elicitation), **Deviations protocol**, retro quiz, **retro→skill sedimentation channel** + **skill-craft** merged in (full skill-lifecycle methodology) |
+| v7.1 | Closes the last cell of Shihipar's three-phase frame: **Final explainer** (DONE must ship a one-page EXPLAINER.md handoff; retro reads it against the artifacts) + **comprehension-quiz gate** (merge/ship-class output defaults to "merge only when you pass", waivers logged; report-class stays offer-only). Regression: 4 legacy cases zero regression, new core-2 1/3 → 3/3 |
+| v7.2 | Adopted the third-party **grilling** technique (mattpocock/skills, 570K+ installs) and isolated two non-overlapping deltas: loop-spec gains **fact-lookup over asking** (verifiable facts get checked, not asked; only genuine decisions go to the user) + **dependency-aware question batching** (a branching follow-up is asked alone, not crammed into the 2-4/round batch); loop-eval gets its **first-ever evals.json** plus a fact/decision split for ambiguous edge cases (don't invent `expected_output` for genuine unknowns). Regression, reported honestly: the dependency-batching case is the one clean discriminator (1/3 → 3/3); two other new cases scored equally on both versions (the eval prompts didn't isolate the new behavior, not evidence the technique is inert); one pre-existing gap surfaced identically on both versions (edge cases don't always cite STANDARDS.md explicitly) — flagged, not fixed, out of this change's scope |
+| v7.3 | Gap-analysis against Anthropic's ***AI-driven code migration*** (the two-week, 1M-line Bun Zig→Rust migration) landed five field-tested mechanisms in loop-engineering: **RULEBOOK layering + systemic-failure escalation** (same failure class ≥3× → amend the rule and regenerate the batch, never hand-patch items — "fix the process, not the code"), a **discarded rules stress-test** (pilot items done by-the-rulebook vs unconstrained, diffed, outputs thrown away), **adversarial dual review + model tiering by role** (largest model for verifiers and rule-writers, smaller for fan-out), **derive-don't-track state** (queue rebuilt from disk each start; done = the output artifact exists and passes; verification output self-writes the queue), and **verification placement by cost + a Pipeline-of-loops pattern** (pattern #8, incl. build-daemon serialization). Also fixed a real, session-triggered loop-spec bug: literal dollar-digit sequences in SKILL.md get clobbered by slash-command positional-arg substitution when invoked with arguments (a budget default rendered as the user's URL) — amounts rewritten, a maintenance red line added, and a deterministic gotcha check recorded. Regression: loop-spec core-1 4/4, loop-engineering core-1 5/5 |
+| 2026-07-22 | **Canonical six-skill cross-host sync + optional-component architecture**: formal versions are now loop-spec 4.0.0, loop-engineering 7.0.1, loop-eval 3.0.0, loop-review 4.0.0, loop-ops 3.0.1, and loop-retro 4.0.0. Added `PROFILE / RULES / DEVIATIONS / EXPLAIN`; hardened environment-first containment, state schemas, validators, adversarial fixtures, path normalization, and cross-platform atomic quota controls. See [CHANGELOG.md](CHANGELOG.md) for complete details. |
+
+---
+
 ## Repository structure
 
-```text
+```
 Build_Great_Loop/
-├── loop-spec/
-├── loop-engineering/
-│   ├── assets/components/
-│   ├── evals/fixtures/
-│   ├── references/component-catalog.md
-│   └── scripts/
-├── loop-eval/
-├── loop-review/
-├── loop-ops/
-├── loop-retro/
-├── skill-craft/
-├── README.md
-├── README.en.md
-└── CHANGELOG.md
+├── README.md / README.en.md
+├── CHANGELOG.md
+├── LICENSE
+├── loop-engineering/        # core: emits the loop prompt
+│   ├── SKILL.md
+│   ├── references/          # principles, patterns, templates, component catalog, audit checklist
+│   ├── assets/
+│   │   ├── harness-core.md / harness-skeleton.md
+│   │   └── components/      # optional components selected by trigger evidence
+│   ├── evals/               # example, routing, adversarial, and regression fixtures
+│   └── scripts/             # component, state, containment, quota, and suite validators
+├── loop-spec/               # interview → SPEC.md (assets/spec-template.md)
+├── loop-eval/               # success criteria + evals + calibration protocol (golden-set drift detection)
+├── loop-review/             # audit/harden an existing loop
+├── loop-ops/                # operate recurring/unattended loops (scheduling · cost · safety · 7 patterns)
+├── loop-retro/              # post-run retrospective: evidence → gotchas → sedimentation check
+└── skill-craft/             # full skill lifecycle: create/modify/diagnose/merge/retire (pressure testing, templates, check-limits script)
 ```
 
-## Changelog
+---
 
-- 2026-07: synchronized the six-skill canonical suite across hosts; added `PROFILE / RULES / DEVIATIONS / EXPLAIN`; hardened modular harnesses, environment containment, state schemas, validators, and adversarial fixtures; added normalized containment paths and cross-platform atomic quota reservations.
-- See [CHANGELOG.md](CHANGELOG.md) and each skill's own `CHANGELOG.md` for details and historical releases.
+## Updating
 
-## Sources and credits
+Re-run the install script above (`git clone` pulls the latest and overwrites the
+same-named folders).
 
-The design draws on Anthropic's Agent Skills, long-running agent harness, context-engineering, evaluation, and containment practices, adapted into a host-neutral implementation for Codex and Claude.
+---
+
+## FAQ
+
+- **Is this the same as Claude Code's built-in `/loop`?** No. `/loop` re-runs one command on
+  an interval; this skill group **designs the loop itself** — goal, state, verification, stop
+  conditions — and its output is a prompt/harness.
+- **Can I use just one of the skills?** Yes. All six formal loop skills trigger independently;
+  `skill-craft` is an optional companion. Do not copy the folders you do not want.
+- **What language is the generated prompt in?** It follows your conversation language; the
+  skill internals are English (more reliable triggering, aligned with the source articles).
+- **Can I use it in Cursor / other agents?** A skill is essentially knowledge-injection
+  Markdown; any agent that can read `SKILL.md` can use it — adjust the install path to that
+  tool's convention.
+
+---
+
+## Sources & credits
+
+Method distilled from these official engineering articles:
+
+- Anthropic — Agent Skills / Effective harnesses for long-running agents /
+  Effective context engineering for AI agents / Writing effective tools for AI agents /
+  Demystifying evals for AI agents / AI-driven code migration / agent containment practices
+- GitHub — Spec-driven development / Agentic primitives & context engineering / Continuous AI (agentic CI)
+- Sourcegraph — Agentic Coding in 2026
+- OpenAI — Codex best practices
+- Skill-writing patterns: Qingfu, "How to write workflow Skills — patterns & best practices from 7 top Skills"
+
+---
 
 ## License
 
-[MIT](LICENSE)
+MIT — see [LICENSE](LICENSE).
