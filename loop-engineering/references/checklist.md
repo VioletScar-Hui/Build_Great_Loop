@@ -88,6 +88,11 @@ that cause runaway, drift, or fake success.
 - [ ] Is the tool set **minimal and consolidated** (no redundant/overlapping tools)?
 - [ ] Do tool returns look **high-signal and token-efficient**?
 - [ ] Do error paths **teach recovery** (the error models the fix)?
+- [ ] Does every call declare `read_only` or `side_effecting`, parallelize only
+      independent reads, and serialize mutations/shared-state effects with an
+      ordered sequence plus lease/fencing/transaction enforcement?
+- [ ] When state, memory, or connectors are shared, do runtime and persisted
+      `authority_context` values match exactly and fail closed on mismatch?
 
 ## G. Verification & guardrails
 - [ ] **(Critical)** Is self-verification **mandatory and real** — exercising the
@@ -118,6 +123,9 @@ that cause runaway, drift, or fake success.
 - [ ] **(Critical for L2/L3)** Are denylist, permissions, gate pause, budget,
       branch/deployment policy, and active cancellation enforced outside the
       model, with a seeded denial test?
+- [ ] **(Critical for shared/team L2/L3)** Are tools, data, memory, and connector
+      identities scoped by tenant/channel/principal, with a seeded cross-namespace
+      leakage test?
 
 ---
 

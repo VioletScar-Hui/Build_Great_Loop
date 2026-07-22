@@ -12,7 +12,7 @@ description: >-
   reviewing an existing harness (loop-review), measuring it (loop-eval), running
   it on a schedule (loop-ops), or post-run analysis (loop-retro).
 metadata:
-  version: 4.0.0
+  version: 4.1.0
 ---
 
 # Loop Spec — Interactive Intake
@@ -122,6 +122,12 @@ re-ask). Then add task-specific questions the bank can't know. This is also the
 **brainstorm**: each round, offer at least one option the user likely hasn't
 considered (a simpler alternative, a riskier-but-faster path, an adjacent
 opportunity) — diverge first, then converge on decisions.
+
+For shared, team, connector-backed, or multi-tenant loops, settle the authority
+boundary as a load-bearing decision: tenant/channel/principal, connector identity,
+memory namespace, and who may change the permission snapshot. Do not infer these
+from channel visibility or a previous run. Personal single-user loops may mark
+the shared-authority questions N/A with a reason.
 
 **Why**: users under-specify what they've never watched fail, and interviewers
 under-ask what they've never watched fail — the bank encodes the failures already

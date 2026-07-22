@@ -1,5 +1,17 @@
 # Loop Eval: <task name>
 
+## System under test
+- **Harness hash:** <sha256>
+- **Tool-interface hash:** <sha256 or `none`>
+- **Controller ID:** <versioned identifier or `none`>
+- **Permission-profile hash:** <sha256>
+- **Model-policy hash:** <sha256>
+- **Language:** <deployment language code>
+
+When capability depends on the control surface, run the same end-state case
+against the relevant no-tool/read-only/constrained/high-level-controller variants.
+Changing any identity above makes an old comparison `STALE`.
+
 ## Sharpened success criteria  (what "done" means — feeds the loop prompt)
 Each is verifiable (two people would agree on pass/fail) and grades the end state,
 not the path:
@@ -36,6 +48,12 @@ reference solution proving it's solvable.
 - **Capability** (currently failing, climbing): <which cases>
 - **Regression** (must stay ~100%): <which cases — graduate capability cases here
   once they saturate>
+
+## Multilingual parity (when the product supports multiple languages)
+- Pair each deployment-critical case across languages.
+- Keep invariant IDs identical for autonomy, human gate, authority, stop, and
+  verification decisions; do not require literal wording equality.
+- Record cross-language disagreement as a regression, not translation noise.
 
 ## Calibration protocol (quality-fuzzy loops only; deterministic loops: state "test suite is the calibration" and skip)
 - **Golden set:** `./loop-docs/golden.json` · K = <≥10 or 2% of volume> items,

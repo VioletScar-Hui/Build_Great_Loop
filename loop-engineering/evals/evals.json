@@ -1,6 +1,6 @@
 {
   "skill_name": "loop-engineering",
-  "version": "7.0.1",
+  "version": "7.1.0",
   "evals": [
     {
       "id": "core-1",
@@ -90,6 +90,30 @@
         { "id": "e9", "text": "无文档触发时不创建或校验四文件 docs" },
         { "id": "e10", "text": "无格式触发或委派能力时不加入格式助手" },
         { "id": "e11", "text": "manifest 与运行正文保持 CORE-only" }
+      ]
+    },
+    {
+      "id": "flow-effect-scheduling",
+      "category": "core",
+      "note": "只读并行，副作用串行",
+      "prompt": "已签核：并行读取 100 个文件，随后把结果写入同一个索引并发送一条完成通知。请生成 harness。",
+      "expected_output": "选择 FLOW；读取可并行，索引写入和通知标为 side_effecting 并按唯一 sequence 串行；共享索引写入有 lease/fencing/transaction，reduce 等待提交后再验证。",
+      "assertions": [
+        { "id": "flow1", "text": "只把相互独立的 read_only 操作放入 parallel group" },
+        { "id": "flow2", "text": "索引写入与通知是有序 side_effecting 操作" },
+        { "id": "flow3", "text": "共享资源副作用包含环境执行的并发控制" }
+      ]
+    },
+    {
+      "id": "current-runtime-adapter",
+      "category": "edge",
+      "note": "模型、prefill 与宿主语义留在 adapter",
+      "prompt": "目标已签核，宿主可能是 Claude Code 或 Codex。请给出 harness，并强制用 assistant prefill 和 /fork 子代理。",
+      "expected_output": "CORE 保持宿主中立；拒绝把当前 Claude assistant prefill 写入 API 契约；只有验证 Claude Code W29+ 后才把 /fork 作为独立 background session，当前会话子任务使用 /subtask；模型按角色要求由日期化 adapter 解析。",
+      "assertions": [
+        { "id": "adapter1", "text": "没有把 provider 模型或 Claude 命令硬编码进 CORE" },
+        { "id": "adapter2", "text": "拒绝当前模型的 final assistant prefill" },
+        { "id": "adapter3", "text": "区分 /fork background session 与 /subtask in-session" }
       ]
     }
   ]

@@ -1,6 +1,6 @@
 {
   "skill_name": "loop-spec",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "evals": [
     {
       "id": "core-1",
@@ -125,6 +125,18 @@
       "assertions": [
         { "id": "h1", "text": "缺少结构化问答能力时使用编号问题完成同一效果" },
         { "id": "h2", "text": "没有要求固定工具、模型、代理路径或角色格式" }
+      ]
+    },
+    {
+      "id": "shared-authority-intake",
+      "category": "core",
+      "note": "共享频道和 connector 的 authority 是载荷决策",
+      "prompt": "设计一个供销售和工程频道共同使用、能读取各自 CRM/GitHub connector 并积累记忆的长期 loop。",
+      "expected_output": "在规格阶段分别确认 tenant/channel/principal、connector identity、memory namespace 和权限快照所有者；不因频道可见就推断数据权限，也不允许两个频道共用无边界记忆。",
+      "assertions": [
+        { "id": "auth1", "text": "把 tenant/channel/principal 和 connector identity 作为载荷决策确认" },
+        { "id": "auth2", "text": "分别定义 memory namespace 与权限快照所有者" },
+        { "id": "auth3", "text": "没有从频道可见性推断 connector 数据权限" }
       ]
     }
   ]

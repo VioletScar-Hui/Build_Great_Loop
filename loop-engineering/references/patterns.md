@@ -85,18 +85,23 @@ over-ambition (lead stays at plan altitude).
 
 Many independent items, same operation. Process in parallel, then merge.
 
-**Use when:** items don't depend on each other — classify N documents, migrate N
-files, summarize N tickets. (If they share state or order matters, don't use this.)
+**Use when:** items don't depend on each other — classify N documents or summarize
+N tickets. A migration may fan out its independent reads/computation, but its
+side effects still need ordered serialization. If order or shared mutable state
+cannot be isolated, don't use this pattern.
 
 **Skeleton:**
 ```
 Map:    split into independent units; run the same per-unit loop on each (often
         as parallel sub-agents).
-Reduce: merge results; resolve conflicts; verify the aggregate.
+Effect: classify calls as read_only or side_effecting. Parallelize only independent
+        reads; enqueue mutations with a unique sequence and lease/fencing token.
+Reduce: merge results after required effects commit; resolve conflicts; verify the aggregate.
 ```
 
 **State:** a manifest of units with per-unit status (so a reset can resume the
-unfinished ones); a results store.
+unfinished ones); a results store; for mutations, an ordered effect queue whose
+claims bind the run and authority context.
 
 **Guards against:** lost progress on large batches (manifest = resumable) and
 context bloat (each unit is isolated).

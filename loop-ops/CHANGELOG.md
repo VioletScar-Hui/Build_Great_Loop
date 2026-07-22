@@ -1,5 +1,10 @@
 # Changelog — loop-ops
 
+## 3.1.0 — 2026-07-22
+
+- Bound operations, recovery, memory, and connector use to explicit authority
+  context and documented Claude Code W29 background-session semantics.
+
 ## 3.0.1 — 2026-07-22
 
 - Rejected non-positive reservations and caps.

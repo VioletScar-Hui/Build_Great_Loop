@@ -2,6 +2,38 @@
 
 本项目的版本演进记录。Newest first.
 
+## 2026-07-22 - Anthropic Mind v1.7 runtime-contract hardening
+
+### Added
+
+- Added an executable runtime-contract validator and 13 regression tests for
+  effect scheduling, authority isolation, current Claude prefill rules,
+  role-based model policy, and Claude Code W29 session semantics.
+- Added six paired Chinese/English behavioral-invariant evals and suite checks
+  that reject missing variants or divergent invariants.
+- Added a dated, host-neutral runtime-adapter reference so volatile model and
+  effort capabilities stay outside the stable loop doctrine.
+
+### Changed
+
+- Classified tool work as read-only or side-effecting: independent read-only
+  work may fan out, while shared-state and external effects must be serialized.
+- Bound durable state, claims, idempotency keys, memory, connector identity,
+  and recovery to an explicit authority context.
+- Made the control interface part of eval identity to prevent interface changes
+  from being mistaken for harness improvements.
+- Distinguished Claude Code W29 background `/fork` sessions from in-session
+  `/subtask` workers and rejected current Claude assistant-turn prefills.
+- Updated formal versions: loop-spec 4.1.0, loop-engineering 7.1.0,
+  loop-eval 3.1.0, loop-review 4.1.0, loop-ops 3.1.0, loop-retro 4.1.0.
+
+### Validation
+
+- Runtime-contract tests: 13/13.
+- Authority-bound state-transition tests: 3/3.
+- Suite-validator tests: 7/7.
+- Multilingual behavioral-invariant pairs: 6/6 structurally valid.
+
 ## 2026-07-22 - Canonical cross-host sync + optional component architecture
 
 ### Added

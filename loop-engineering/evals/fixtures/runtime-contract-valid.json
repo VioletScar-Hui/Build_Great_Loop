@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "execution": {
+    "tool_actions": [
+      {
+        "id": "read-spec",
+        "effect_class": "read_only",
+        "resources": ["SPEC.md"],
+        "parallel_group": "reads"
+      },
+      {
+        "id": "read-tests",
+        "effect_class": "read_only",
+        "resources": ["tests/"],
+        "parallel_group": "reads"
+      }
+    ]
+  },
+  "authority_context": {
+    "tenant_id": "tenant-demo",
+    "channel_id": "channel-engineering",
+    "principal_id": "agent-loop",
+    "connector_identity": "github-app-demo",
+    "memory_namespace": "tenant-demo/channel-engineering/agent-loop",
+    "permission_snapshot_hash": "sha256:authority-demo"
+  },
+  "state": {
+    "authority_context": {
+      "tenant_id": "tenant-demo",
+      "channel_id": "channel-engineering",
+      "principal_id": "agent-loop",
+      "connector_identity": "github-app-demo",
+      "memory_namespace": "tenant-demo/channel-engineering/agent-loop",
+      "permission_snapshot_hash": "sha256:authority-demo"
+    }
+  },
+  "api_contract": {
+    "model_family": "claude-sonnet-5",
+    "assistant_prefill": false,
+    "messages": [
+      {"role": "user", "content": "Return a structured result."}
+    ]
+  },
+  "model_policy": {
+    "capability_snapshot": "2026-07-22",
+    "role_requirements": {
+      "planner": "intelligence_sensitive",
+      "worker": "cheapest_capable",
+      "verifier": "highest_available"
+    },
+    "runtime_resolution": {
+      "planner": {
+        "model": "provider-resolved-planner",
+        "workload": "agentic",
+        "effort": "runtime-resolved",
+        "thinking_mode": "runtime-resolved",
+        "max_output_reserve": 4096
+      },
+      "worker": {
+        "model": "provider-resolved-worker",
+        "workload": "tool_use",
+        "effort": "runtime-resolved",
+        "thinking_mode": "runtime-resolved",
+        "max_output_reserve": 2048
+      },
+      "verifier": {
+        "model": "provider-resolved-verifier",
+        "workload": "verification",
+        "effort": "runtime-resolved",
+        "thinking_mode": "runtime-resolved",
+        "max_output_reserve": 4096
+      }
+    }
+  },
+  "eval_context": {
+    "harness_hash": "sha256:harness-demo",
+    "tool_interface_hash": "sha256:tools-demo",
+    "controller_id": "controller-demo-v1",
+    "permission_profile_hash": "sha256:permissions-demo",
+    "model_policy_hash": "sha256:model-policy-demo",
+    "language": "zh-CN"
+  },
+  "host_adapter": {
+    "host": "claude-code",
+    "capability_week": "2026-W29",
+    "command": "/fork",
+    "session_mode": "background_session",
+    "session_id": "session-demo",
+    "run_id": "run-demo",
+    "lease_id": "lease-demo",
+    "budget_id": "budget-demo",
+    "cancellation_id": "cancel-demo"
+  }
+}

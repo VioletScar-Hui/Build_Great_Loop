@@ -7,6 +7,7 @@
 ![Skills](https://img.shields.io/badge/Skills-6%20loop%20%2B%20skill--craft-0E7490)
 ![Benchmarked](https://img.shields.io/badge/Benchmark-6%20rounds%20adversarial-success)
 ![Component Tests](https://img.shields.io/badge/Component%20Tests-38%2F38-success)
+![Runtime Contract](https://img.shields.io/badge/Runtime%20Contract-16%2F16-success)
 ![Field Tested](https://img.shields.io/badge/Field%20Tested-real%20run%202026--07-8B5CF6)
 ![Language](https://img.shields.io/badge/Language-ZH%20%2B%20EN-blue)
 ![License](https://img.shields.io/github/license/VioletScar-Hui/Build_Great_Loop)
@@ -32,12 +33,12 @@ interrupted, and not fake completion** — it interviews your task and emits a
 
 | Skill | Current version | What it does | When it triggers |
 |---|---:|---|---|
-| **loop-spec** | 4.0.0 | Interview a fuzzy task into a runnable `SPEC.md` | Task isn't pinned down yet — need goal / success criteria / stop conditions first |
-| **loop-engineering** (core) | 7.0.1 | Interview → emit the **paste-ready loop prompt itself** | "Write me an agent / loop / harness that keeps going until it's done" |
-| **loop-eval** | 3.0.0 | Design success criteria + a small eval set + graders (pass@k vs pass^k) | "How do I know this loop is reliable / write evals for my agent" |
-| **loop-review** | 4.0.0 | Audit and harden an **existing** loop prompt | "My agent never stops / says done when it isn't / loses progress on restart" |
-| **loop-ops** | 3.0.1 | Operate a loop as a recurring / unattended automation (scheduling · cost · safety gates · rollout) | "Run this agent daily / on every PR / nightly", "babysit my PRs", "auto-triage issues", "how do I run it unattended safely" |
-| **loop-retro** | 4.0.0 | Post-run retrospective: evidence-cited diagnosis → harness revisions + real-failure gotchas + standards proposals + **sedimentation check** | "My loop finished — retro it", "why did it thrash / overspend", "analyze the run log" |
+| **loop-spec** | 4.1.0 | Interview a fuzzy task into a runnable `SPEC.md` | Task isn't pinned down yet — need goal / success criteria / stop conditions first |
+| **loop-engineering** (core) | 7.1.0 | Interview → emit the **paste-ready loop prompt itself** | "Write me an agent / loop / harness that keeps going until it's done" |
+| **loop-eval** | 3.1.0 | Design success criteria + a small eval set + graders (pass@k vs pass^k) | "How do I know this loop is reliable / write evals for my agent" |
+| **loop-review** | 4.1.0 | Audit and harden an **existing** loop prompt | "My agent never stops / says done when it isn't / loses progress on restart" |
+| **loop-ops** | 3.1.0 | Operate a loop as a recurring / unattended automation (scheduling · cost · safety gates · rollout) | "Run this agent daily / on every PR / nightly", "babysit my PRs", "auto-triage issues", "how do I run it unattended safely" |
+| **loop-retro** | 4.1.0 | Post-run retrospective: evidence-cited diagnosis → harness revisions + real-failure gotchas + standards proposals + **sedimentation check** | "My loop finished — retro it", "why did it thrash / overspend", "analyze the run log" |
 | **skill-craft** | Companion | Full skill-lifecycle methodology front door: create / modify / diagnose / merge / retire (three-criteria gate, evals-first, pressure testing) | "Write me a skill", "why doesn't my skill trigger", "should these two skills merge", "retire this old skill" |
 
 The method is distilled from official engineering writing by Anthropic, GitHub,
@@ -239,8 +240,8 @@ exposed a real design flaw (agents can't self-measure $ spend), now folded into 
 12-skill panel, 7/8 in the full real environment (≥85% bar).
 
 **Current synchronized-release validation** (2026-07-22): optional-component and adversarial
-effects 38/38, legacy regressions 18/18, cross-root sync-validator tests 35/35, and suite
-validator tests 5/5. The paired model eval scored candidate 31/33 versus previous baseline
+effects 38/38, legacy regressions 18/18, runtime/authority contracts 16/16, suite-validator
+tests 7/7, plus six paired Chinese/English behavioral-invariant cases. The paired model eval scored candidate 31/33 versus previous baseline
 27/33; discriminating gains were concentrated in explicit selection of the four new
 components, without presenting non-discriminating cases as gains.
 
@@ -248,6 +249,8 @@ Re-run from the repository root:
 
 ```bash
 python3 loop-engineering/scripts/test_validate_suite.py
+python3 loop-engineering/scripts/test_runtime_contract.py
+python3 loop-engineering/scripts/test_state_transition.py
 python3 loop-engineering/scripts/validate_suite.py .
 python3 loop-engineering/scripts/run_component_fixtures.py
 python3 loop-engineering/scripts/run_component_fixtures.py --legacy
@@ -273,6 +276,7 @@ python3 loop-engineering/scripts/select_components.py loop-engineering/evals/fix
 | v7.2 | Adopted the third-party **grilling** technique (mattpocock/skills, 570K+ installs) and isolated two non-overlapping deltas: loop-spec gains **fact-lookup over asking** (verifiable facts get checked, not asked; only genuine decisions go to the user) + **dependency-aware question batching** (a branching follow-up is asked alone, not crammed into the 2-4/round batch); loop-eval gets its **first-ever evals.json** plus a fact/decision split for ambiguous edge cases (don't invent `expected_output` for genuine unknowns). Regression, reported honestly: the dependency-batching case is the one clean discriminator (1/3 → 3/3); two other new cases scored equally on both versions (the eval prompts didn't isolate the new behavior, not evidence the technique is inert); one pre-existing gap surfaced identically on both versions (edge cases don't always cite STANDARDS.md explicitly) — flagged, not fixed, out of this change's scope |
 | v7.3 | Gap-analysis against Anthropic's ***AI-driven code migration*** (the two-week, 1M-line Bun Zig→Rust migration) landed five field-tested mechanisms in loop-engineering: **RULEBOOK layering + systemic-failure escalation** (same failure class ≥3× → amend the rule and regenerate the batch, never hand-patch items — "fix the process, not the code"), a **discarded rules stress-test** (pilot items done by-the-rulebook vs unconstrained, diffed, outputs thrown away), **adversarial dual review + model tiering by role** (largest model for verifiers and rule-writers, smaller for fan-out), **derive-don't-track state** (queue rebuilt from disk each start; done = the output artifact exists and passes; verification output self-writes the queue), and **verification placement by cost + a Pipeline-of-loops pattern** (pattern #8, incl. build-daemon serialization). Also fixed a real, session-triggered loop-spec bug: literal dollar-digit sequences in SKILL.md get clobbered by slash-command positional-arg substitution when invoked with arguments (a budget default rendered as the user's URL) — amounts rewritten, a maintenance red line added, and a deterministic gotcha check recorded. Regression: loop-spec core-1 4/4, loop-engineering core-1 5/5 |
 | 2026-07-22 | **Canonical six-skill cross-host sync + optional-component architecture**: formal versions are now loop-spec 4.0.0, loop-engineering 7.0.1, loop-eval 3.0.0, loop-review 4.0.0, loop-ops 3.0.1, and loop-retro 4.0.0. Added `PROFILE / RULES / DEVIATIONS / EXPLAIN`; hardened environment-first containment, state schemas, validators, adversarial fixtures, path normalization, and cross-platform atomic quota controls. See [CHANGELOG.md](CHANGELOG.md) for complete details. |
+| 2026-07-22 v4.1 | **Runtime contracts adopted from anthropic-mind v1.7**: explicit read-only parallelism versus serialized effects; state, idempotency, and recovery bound to tenant/channel/principal/connector/memory/permission; controlled eval interfaces; a host-neutral model/effort adapter; Claude W29 `/fork` versus `/subtask` semantics; rejection of current Claude assistant-prefill configurations; and six paired Chinese/English behavioral invariants. The original README content remains intact. |
 
 ---
 
@@ -285,12 +289,12 @@ Build_Great_Loop/
 ├── LICENSE
 ├── loop-engineering/        # core: emits the loop prompt
 │   ├── SKILL.md
-│   ├── references/          # principles, patterns, templates, component catalog, audit checklist
+│   ├── references/          # principles, patterns, templates, runtime adapters, component catalog, audit checklist
 │   ├── assets/
 │   │   ├── harness-core.md / harness-skeleton.md
 │   │   └── components/      # optional components selected by trigger evidence
 │   ├── evals/               # example, routing, adversarial, and regression fixtures
-│   └── scripts/             # component, state, containment, quota, and suite validators
+│   └── scripts/             # component, state, runtime-contract, containment, quota, and suite validators
 ├── loop-spec/               # interview → SPEC.md (assets/spec-template.md)
 ├── loop-eval/               # success criteria + evals + calibration protocol (golden-set drift detection)
 ├── loop-review/             # audit/harden an existing loop

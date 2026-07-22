@@ -14,9 +14,13 @@ def save(path, data):
 p=argparse.ArgumentParser(); p.add_argument("state"); p.add_argument("action", choices=["claim","effect","reconcile","complete"]); p.add_argument("item"); p.add_argument("--run-id"); p.add_argument("--output-ref"); p.add_argument("--receipt")
 a=p.parse_args(); path=Path(a.state); data=json.loads(path.read_text()); item=next(x for x in data["items"] if x["id"]==a.item)
 if a.action=="claim":
+    if not a.run_id: raise SystemExit("RUN ID REQUIRED")
     if item["status"] not in {"pending","blocked"}: raise SystemExit("INVALID transition")
-    item["attempt"] += 1; item["status"]="in_progress"; item["claim"]={"run_id":a.run_id}
-    raw=f'{data["loop_id"]}:{item["id"]}:{item["input_digest"]}:{item["attempt"]}'
+    authority_json=json.dumps(data["authority_context"], sort_keys=True, separators=(",", ":"))
+    authority_digest="sha256:"+hashlib.sha256(authority_json.encode()).hexdigest()
+    item["attempt"] += 1; item["status"]="in_progress"
+    item["claim"]={"run_id":a.run_id, "authority_digest":authority_digest}
+    raw=f'{data["loop_id"]}:{item["id"]}:{item["input_digest"]}:{item["attempt"]}:{authority_digest}'
     item["idempotency_key"]="sha256:"+hashlib.sha256(raw.encode()).hexdigest()
 elif a.action=="effect":
     if item["status"]!="in_progress" or not item["idempotency_key"]: raise SystemExit("CLAIM REQUIRED")

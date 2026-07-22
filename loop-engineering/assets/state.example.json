@@ -1,8 +1,16 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "loop_id": "example-loop",
   "goal_digest": "sha256:replace-me",
   "run_id": "run-0001",
+  "authority_context": {
+    "tenant_id": "tenant-example",
+    "channel_id": "channel-example",
+    "principal_id": "loop-agent-example",
+    "connector_identity": "connector-example",
+    "memory_namespace": "tenant-example/channel-example/loop-agent-example",
+    "permission_snapshot_hash": "sha256:replace-me"
+  },
   "items": [
     {
       "id": "item-1",

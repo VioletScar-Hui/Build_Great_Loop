@@ -1,12 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
-  "required": ["schema_version", "loop_id", "goal_digest", "run_id", "items", "budget"],
+  "required": ["schema_version", "loop_id", "goal_digest", "run_id", "authority_context", "items", "budget"],
   "properties": {
-    "schema_version": {"const": "1.0"},
+    "schema_version": {"const": "1.1"},
     "loop_id": {"type": "string", "minLength": 1},
     "goal_digest": {"type": "string", "minLength": 1},
     "run_id": {"type": "string", "minLength": 1},
+    "authority_context": {"$ref": "#/$defs/authority_context"},
     "items": {"type": "array", "items": {"$ref": "#/$defs/item"}},
     "budget": {
       "type": "object",
@@ -20,6 +21,19 @@
     }
   },
   "$defs": {
+    "authority_context": {
+      "type": "object",
+      "required": ["tenant_id", "channel_id", "principal_id", "connector_identity", "memory_namespace", "permission_snapshot_hash"],
+      "properties": {
+        "tenant_id": {"type": "string", "minLength": 1},
+        "channel_id": {"type": "string", "minLength": 1},
+        "principal_id": {"type": "string", "minLength": 1},
+        "connector_identity": {"type": "string", "minLength": 1},
+        "memory_namespace": {"type": "string", "minLength": 1},
+        "permission_snapshot_hash": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
     "item": {
       "type": "object",
       "required": ["id", "input_digest", "status", "attempt", "idempotency_key", "claim", "output_ref", "verification", "last_error"],
@@ -29,10 +43,24 @@
         "status": {"enum": ["pending", "in_progress", "done", "blocked"]},
         "attempt": {"type": "integer", "minimum": 0},
         "idempotency_key": {"type": ["string", "null"]},
-        "claim": {"type": ["object", "null"]},
+        "claim": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/claim"}
+          ]
+        },
         "output_ref": {"type": ["string", "null"]},
         "verification": {"type": ["object", "null"]},
         "last_error": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "claim": {
+      "type": "object",
+      "required": ["run_id", "authority_digest"],
+      "properties": {
+        "run_id": {"type": "string", "minLength": 1},
+        "authority_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
       },
       "additionalProperties": false
     }

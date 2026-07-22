@@ -1,6 +1,6 @@
 {
   "skill_name": "loop-ops",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "evals": [
     {
       "id": "core-1",
@@ -31,6 +31,27 @@
       "assertions": [
         {"id": "e3", "text": "没有编造平台命令"},
         {"id": "e4", "text": "给出可移植 schedule specification"}
+      ]
+    },
+    {
+      "id": "shared-channel-authority",
+      "category": "core",
+      "prompt": "把 loop 部署给两个团队频道长期使用，各自连接不同数据源并保存记忆。",
+      "expected_output": "操作计划绑定 tenant/channel/principal、connector identity、memory namespace 和 permission snapshot；包含跨频道记忆与凭据复用的 seeded denial test。",
+      "assertions": [
+        {"id": "o1", "text": "工具、数据、memory、state 和 events 绑定同一 authority context"},
+        {"id": "o2", "text": "包含跨 namespace 泄漏与 token 复用拒绝测试"}
+      ]
+    },
+    {
+      "id": "claude-w29-background-session",
+      "category": "edge",
+      "prompt": "环境确认是 Claude Code 2026-W29；我要 fork 一条后台工作线，同时当前会话继续。",
+      "expected_output": "使用 /fork 作为独立 background session，分配 session/run/lease/budget/cancellation IDs 并纳入 kill switch；若只是当前会话子任务则使用 /subtask。",
+      "assertions": [
+        {"id": "o3", "text": "把 /fork 作为独立 background session 管理"},
+        {"id": "o4", "text": "后台会话有独立控制 IDs 和 active cancellation"},
+        {"id": "o5", "text": "明确 /subtask 属于 in-session"}
       ]
     }
   ]

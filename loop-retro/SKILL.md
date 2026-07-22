@@ -12,7 +12,7 @@ description: >-
   (loop-review), operating/scheduling a loop (loop-ops), or building one
   (loop-spec / loop-engineering).
 metadata:
-  version: 4.0.0
+  version: 4.1.0
 ---
 
 # Loop Retro — the improvement flywheel
@@ -59,6 +59,13 @@ human-gate hits and outcomes · budget burned vs. cap · wall-clock · verifier
 activity (how many verdicts, any failures caught?) · resume events (crashes, and
 whether resume was clean).
 
+Also record the run's harness, tool-interface, controller, permission-profile,
+model-policy, and language identities. A changed or missing identity makes the
+comparison `STALE` or `unknown`, not evidence of model improvement/regression.
+For FLOW, inspect whether side effects were serialized. For shared/team runs,
+verify that runtime and persisted authority contexts matched and that no
+cross-namespace memory or credential access occurred.
+
 Read the harness component manifest before requesting optional evidence. When
 `DEVIATIONS` was selected, consume its structured mismatch ledger as defined in
 `../loop-engineering/assets/components/deviations.md`. When `EXPLAIN` was
@@ -84,6 +91,10 @@ Walk the taxonomy; for each hit, cite the evidence line:
 | Resume failure | duplicate/missing items after a restart; state file corruption |
 | Budget overrun | spend exceeded cap, or cap hit with disproportionate progress |
 | Comprehension debt | for a substantial merge/ship, neither comprehension nor an explicit recorded waiver exists |
+| Effect race | side-effecting calls overlap, share a sequence, or mutate without lease/fencing/transaction evidence |
+| Authority drift | tenant/channel/principal, memory namespace, connector identity, or permission snapshot changes across a run |
+| Interface confound | result changes after tool/controller/permission/model-policy identity changes but is attributed to the model alone |
+| Language regression | paired deployment-language cases disagree on a safety or control invariant |
 
 Apply comprehension review only to substantial merge/ship delivery. An explicit
 recorded waiver satisfies the gate and remains visible for diagnosis. Do not

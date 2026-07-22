@@ -14,7 +14,7 @@ description: >-
   ordinary execution. Requests that include actual scheduling/operation are led
   by loop-ops; when called by loop-ops, return only the per-run prompt.
 metadata:
-  version: 7.0.1
+  version: 7.1.0
 ---
 
 # Loop Engineering
@@ -91,7 +91,8 @@ sure each is concretely specified, not hand-waved. Deep guidance for each lives 
 5. **Context discipline** — keep the working set small and high-signal;
    just-in-time retrieval over preloading; compaction/cleanup as it grows.
 6. **Tools** — the minimal set of clear, consolidated tools the loop needs, with
-   recovery-oriented error handling.
+   recovery-oriented error handling. Classify calls as read-only or
+   side-effecting; parallelize only independent reads and serialize effects.
 7. **Verification & guardrails** — how each iteration self-checks, plus explicit
    guardrails against the anti-patterns (no faking, no editing tests to pass).
 
@@ -162,6 +163,11 @@ task characteristics justify them:
 4. **Wire in verification.** Decide how the loop proves each increment, and how
    the human will measure overall quality. For real success criteria and eval
    design, use the **loop-eval** skill.
+
+   When the harness uses tools, shared state, provider model controls, or a host
+   session command, emit and validate the applicable runtime contract from
+   `references/runtime-adapters.md`. Bind STATE/CONTAIN to one authority context;
+   do not treat PROFILE defaults as API assistant prefill.
 
 5. **Self-review before delivering.** Run the produced prompt past the checklist
    in `references/checklist.md` (the same one **loop-review** uses). Fix any gap.
@@ -301,10 +307,14 @@ Read these as needed — don't load everything up front (practice what you preac
   example is needed, never copy it wholesale.
 - `references/context-and-state.md` — deep dive on context engineering, memory,
   and surviving resets (dimensions 4–5).
+- `references/runtime-adapters.md` — effect scheduling, authority binding,
+  model/effort resolution, current prefill compatibility, eval identity, and
+  verified host-session semantics.
 - `references/checklist.md` — the audit checklist for self-review (step 5).
 - `assets/harness-skeleton.md` — modular assembly sheet.
 - `assets/state.schema.json`, `assets/state.example.json`, and
   `scripts/validate_state.py` — STATE contract and deterministic checks.
 - `scripts/select_components.py`, `scripts/state_transition.py`,
-  `scripts/build_workflow.py`, and `scripts/containment_check.py` — deterministic
-  selector and reference implementations used by component fixtures.
+  `scripts/build_workflow.py`, `scripts/containment_check.py`, and
+  `scripts/validate_runtime_contract.py` — deterministic selector, runtime
+  contract, and reference implementations used by component fixtures.

@@ -1,12 +1,12 @@
 {
-  "suite_version": "4.0.1",
+  "suite_version": "4.1.0",
   "skills": {
-    "loop-spec": "4.0.0",
-    "loop-engineering": "7.0.1",
-    "loop-eval": "3.0.0",
-    "loop-review": "4.0.0",
-    "loop-ops": "3.0.1",
-    "loop-retro": "4.0.0"
+    "loop-spec": "4.1.0",
+    "loop-engineering": "7.1.0",
+    "loop-eval": "3.1.0",
+    "loop-review": "4.1.0",
+    "loop-ops": "3.1.0",
+    "loop-retro": "4.1.0"
   },
   "routes": {
     "unsettled_new_loop": "loop-spec",

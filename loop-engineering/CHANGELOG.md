@@ -1,5 +1,13 @@
 # Changelog — loop-engineering
 
+## 7.1.0 — 2026-07-22
+
+- Added effect-aware scheduling, authority-bound state/idempotency, executable
+  runtime-contract checks, multilingual parity fixtures, and a dated
+  host-neutral model/effort adapter.
+- Rejected current Claude assistant prefills and clarified W29 `/fork` versus
+  `/subtask` execution semantics.
+
 ## 7.0.1 — 2026-07-22
 
 - Normalized containment paths against an explicit trusted policy root.

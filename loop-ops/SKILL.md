@@ -18,7 +18,7 @@ description: >-
   gates + schedule command + STATE/run-log scaffolding). Pairs with
   loop-engineering, which authors the per-run prompt this operates.
 metadata:
-  version: 3.0.1
+  version: 3.1.0
 ---
 
 # Loop Ops
@@ -54,6 +54,11 @@ A loop that runs unattended is assembled from six primitives (Cobus Greyling's
    separate verifier checks it.
 6. **Memory / state** — the durable spine (a `STATE.md` + a run-log) that lives
    *outside* any single run, so each run orients and the operator can audit.
+
+For team/shared agents, bind tools, connector credentials, memory, state, and
+events to one tenant/channel/principal authority context. Channel visibility does
+not grant connector-data access, and another channel never inherits memory or a
+side-effect token.
 
 ## The one rule that matters most: phased rollout (L1 → L2 → L3)
 
@@ -91,6 +96,9 @@ a deliberate decision, not a default.
    actually supports. Never invent a `/loop` command or scheduler syntax; provide
    a platform-specific command only when verified, otherwise give a portable
    schedule specification.
+   Host-specific background sessions are adapters, not CORE. On verified Claude
+   Code W29+, `/fork` is a separately managed background session and `/subtask`
+   stays in-session; never emit either from stale assumptions.
 6. **Scaffold control state and events.** Use machine-readable `control-state.json`
    for budget, gate, cancellation, and claims; append structured events to
    `run-events.jsonl`; derive the glanceable Markdown status rather than treating
@@ -119,6 +127,8 @@ L1 → L2 → L3.
 - Risky / irreversible / ambiguous actions hit a durable, action-bound **human
   gate** with full context; the scheduler stays paused until a matching decision.
 - A **denylist** names what the loop must never touch; MCP/tool scopes are minimal.
+- Shared/team operation has an explicit authority context and a seeded
+  cross-namespace memory/credential denial test.
 - State + run-log are externalized so the operator can audit what shipped.
 - If several loops touch the same repo, **multi-loop coordination** is addressed.
 - A human can read the run-log in 30 seconds and know the loop's health.

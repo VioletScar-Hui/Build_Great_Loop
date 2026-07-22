@@ -73,6 +73,22 @@ class ValidateSuiteTests(unittest.TestCase):
         result = self.run_validator()
         self.assert_controlled_failure(result, "loop-review: invalid eval file")
 
+    def test_multilingual_pair_requires_both_languages(self):
+        path = self.root / "loop-engineering/evals/multilingual-parity.json"
+        data = __import__("json").loads(path.read_text(encoding="utf-8"))
+        del data["pairs"][0]["variants"]["en"]
+        path.write_text(__import__("json").dumps(data), encoding="utf-8")
+        result = self.run_validator()
+        self.assert_controlled_failure(result, "multilingual parity: pair l1-default requires zh and en")
+
+    def test_multilingual_pair_requires_identical_invariants(self):
+        path = self.root / "loop-engineering/evals/multilingual-parity.json"
+        data = __import__("json").loads(path.read_text(encoding="utf-8"))
+        data["pairs"][0]["variants"]["en"]["expected_invariants"] = ["different"]
+        path.write_text(__import__("json").dumps(data), encoding="utf-8")
+        result = self.run_validator()
+        self.assert_controlled_failure(result, "multilingual parity: pair l1-default invariants differ")
+
 
 if __name__ == "__main__":
     unittest.main()

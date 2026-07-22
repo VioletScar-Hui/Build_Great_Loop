@@ -14,7 +14,7 @@ description: >-
   audits are led by loop-review. This skill owns a standalone eval artifact once
   scope is settled. Routing tests for this suite are owned by loop-review.
 metadata:
-  version: 3.0.0
+  version: 3.1.0
 ---
 
 # Loop Eval
@@ -100,8 +100,16 @@ has to work reliably, not just occasionally.
   assertion backed by a tool trace, structured artifact, or before/after state;
   future-tense promises never satisfy it.
 - Run in a fresh fixture workspace with an explicit visible-file/skill allowlist.
-  Record skill, eval, fixture, runner, and grader hashes. A mismatch makes an old
-  result `STALE`; omitted current cases are `NOT RUN`.
+  Record skill, eval, fixture, runner, grader, harness, tool-interface,
+  permission-profile, and model-policy hashes plus controller ID and language.
+  A mismatch makes an old result `STALE`; omitted current cases are `NOT RUN`.
+- Treat the control interface as part of the system under test. Compare the same
+  task across no-tool, read-only, constrained low-level, and high-level controller
+  variants when those interfaces materially change capability or risk. Do not
+  attribute a scaffold uplift to the model alone.
+- For multilingual products, pair deployment-critical cases across languages and
+  require the same behavioral invariants (autonomy, gates, scope, stop, and
+  verification). Compare decisions, not literal translated wording.
 - Compare current skill with the prior release and a no-skill control over
   repeated trials. Report assertion rates and pass^k, not one lucky run.
 - Model graders return `pass|fail|unknown` with cited evidence. Calibrate a sample

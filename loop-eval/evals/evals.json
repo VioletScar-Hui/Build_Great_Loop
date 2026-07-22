@@ -1,6 +1,6 @@
 {
   "skill_name": "loop-eval",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "note": "First-ever eval set for this skill (previously had none). gotcha category intentionally empty — no real observed failure history exists yet to draw from; do not invent one.",
   "evals": [
     {
@@ -70,6 +70,30 @@
       "assertions": [
         { "id": "e1", "text": "没有把 STANDARDS.md 已经回答过的问题再次抛给用户" },
         { "id": "e2", "text": "expected_output 明确引用了 STANDARDS.md 作为依据来源" }
+      ]
+    },
+    {
+      "id": "core-6-control-interface",
+      "category": "core",
+      "note": "控制接口是被测系统的一部分",
+      "prompt": "同一个模型换成更强的工具 controller 后成功率提高了，能否说模型能力提升？",
+      "expected_output": "不能直接归因模型；把 harness、tool interface、controller、permission profile、model policy 与语言纳入 eval identity，在相同任务上比较 no-tool/read-only/constrained/high-level controller 变体。",
+      "assertions": [
+        { "id": "a14", "text": "没有把控制接口带来的 uplift 归因给模型" },
+        { "id": "a15", "text": "记录 tool/controller/permission/model-policy eval identity" },
+        { "id": "a16", "text": "提出同任务控制接口矩阵" }
+      ]
+    },
+    {
+      "id": "core-7-multilingual-parity",
+      "category": "core",
+      "note": "跨语言比较行为不比较逐字翻译",
+      "prompt": "产品同时支持中文和英文，怎样验证高风险动作在两种语言下都守同样的 gate？",
+      "expected_output": "为同一场景建立中英配对用例，共享 autonomy/human-gate/authority/stop/verification invariant IDs；比较决策一致性而不是字面翻译。",
+      "assertions": [
+        { "id": "a17", "text": "建立中英文配对用例" },
+        { "id": "a18", "text": "两种语言共享安全与控制 invariant IDs" },
+        { "id": "a19", "text": "不要求逐字输出相同" }
       ]
     }
   ]

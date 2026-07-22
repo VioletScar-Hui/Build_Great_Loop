@@ -66,6 +66,9 @@ long runs). Treat cost as a stop condition, not an afterthought:
 - For L2/L3, implement these boundaries outside the model with least-privilege
   credentials, filesystem/network sandboxing, and protected environments. Prompt
   text is an explanation of policy, not the enforcement layer.
+- For shared/team agents, scope state, memory, connector credentials, and event
+  ownership by tenant/channel/principal. Persist the permission snapshot hash and
+  fail closed when runtime authority differs from the stored run.
 
 ---
 
@@ -130,6 +133,8 @@ Before promoting past L1, every box should be checked:
 - [ ] **Budget**: external atomic reservation for per-run/day ceilings + persistent attempts.
 - [ ] **Human gate**: durable pause + action digest + single-use matching approval.
 - [ ] **Denylist**: each rule has tested environment-level enforcement evidence.
+- [ ] **Authority**: shared/team memory and credentials pass a cross-namespace
+      denial test; runtime and persisted authority contexts match exactly.
 - [ ] **Auto-merge** (if any) passes required checks + scope + attempt gates.
 - [ ] **State + events** are machine-readable; operator views retain event IDs.
 - [ ] **Multi-loop**: no collisions with other loops (worktrees / claims / scopes).

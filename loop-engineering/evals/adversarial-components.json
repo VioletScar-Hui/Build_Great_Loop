@@ -1,5 +1,5 @@
 {
-  "version": "7.0.1",
+  "version": "7.1.0",
   "cases": [
     {
       "id": "core-only-simple",
@@ -50,6 +50,21 @@
       "id": "substantial-merge-explainer",
       "prompt": "A mutating autonomous run is ready for a substantial merge or ship decision.",
       "effects": ["selects EXPLAIN", "explainer claims cite evidence", "substantial merge/ship requires recorded comprehension or waiver"]
+    },
+    {
+      "id": "flow-effect-contract",
+      "prompt": "Fan out independent reads, then write one shared index and send one notification.",
+      "effects": ["parallelizes independent read_only actions", "serializes side_effecting actions with unique sequence", "shared mutation uses lease/fencing/transaction enforcement"]
+    },
+    {
+      "id": "shared-authority-contract",
+      "prompt": "Run one long-lived L3 agent in two team channels with separate connectors and memory.",
+      "effects": ["binds state and memory to tenant/channel/principal", "fails closed on permission snapshot mismatch", "seeded cross-namespace access is denied"]
+    },
+    {
+      "id": "runtime-adapter-contract",
+      "prompt": "Use current Claude models and optionally launch a Claude Code background session.",
+      "effects": ["role requirements stay provider-neutral", "current Claude final assistant prefill is rejected", "verified W29 /fork gets independent control identities"]
     }
   ],
   "release_rule": "Each effect must be checked from the generated artifact or executed fixture; future-tense promises do not pass. Record skill/eval/fixture/runner hashes and mark mismatches STALE."

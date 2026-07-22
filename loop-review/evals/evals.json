@@ -1,6 +1,6 @@
 {
   "skill_name": "loop-review",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "evals": [
     {
       "id": "core-1",
@@ -41,6 +41,17 @@
         {"id": "c1", "text": "识别 selected component 没有有效 trigger"},
         {"id": "c2", "text": "识别 manifest 到运行条款/证据不可达的 dead component"},
         {"id": "c3", "text": "没有把未来承诺当作 acceptance evidence"}
+      ]
+    },
+    {
+      "id": "runtime-contract-audit",
+      "category": "gotcha",
+      "prompt": "审查这份共享频道 L3 harness：两个写工具在同一 parallel group；STATE 没有 channel/principal；评测只记了模型名；还使用 assistant prefill 和未经版本确认的 /fork 子代理。",
+      "expected_output": "把并行副作用和共享 authority 泄漏列为条件性 critical；指出 eval interface confound、当前 Claude prefill 不兼容和 /fork 语义未验证；只修改相应 FLOW/STATE/CONTAIN/eval/adapter 条款。",
+      "assertions": [
+        {"id": "r1", "text": "识别并行 side effect 与 authority 缺失"},
+        {"id": "r2", "text": "识别控制接口未纳入 eval identity"},
+        {"id": "r3", "text": "识别 current prefill 和未验证 host semantics"}
       ]
     }
   ]

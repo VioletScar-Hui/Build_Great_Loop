@@ -14,12 +14,21 @@ def main():
     if len(sys.argv) != 2:
         fail("usage: validate_state.py STATE.json")
     data = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
-    required = {"schema_version", "loop_id", "goal_digest", "run_id", "items", "budget"}
+    required = {"schema_version", "loop_id", "goal_digest", "run_id", "authority_context", "items", "budget"}
     missing = required - data.keys()
     if missing:
         fail(f"missing top-level fields: {sorted(missing)}")
-    if data["schema_version"] != "1.0":
+    if data["schema_version"] != "1.1":
         fail("unsupported schema_version")
+    authority_fields = {
+        "tenant_id", "channel_id", "principal_id", "connector_identity",
+        "memory_namespace", "permission_snapshot_hash",
+    }
+    authority = data["authority_context"]
+    if not isinstance(authority, dict) or authority_fields - authority.keys():
+        fail("authority_context is incomplete")
+    if any(not isinstance(authority[field], str) or not authority[field] for field in authority_fields):
+        fail("authority_context values must be non-empty strings")
     ids = [item.get("id") for item in data["items"]]
     if None in ids or len(ids) != len(set(ids)):
         fail("item ids must be present and unique")

@@ -1,5 +1,10 @@
 # Changelog — loop-spec
 
+## 4.1.0 — 2026-07-22
+
+- Added authority-context intake for tenant, channel, principal, connector,
+  memory namespace, and permission snapshot when state is shared or persistent.
+
 ## 4.0.0 — 2026-07-21
 
 - Added host-neutral PROFILE intake precedence for sourced facts, visible

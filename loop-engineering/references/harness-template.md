@@ -79,6 +79,19 @@ You are done only when ALL of these are objectively true:
 - How to run / build / test: <exact commands>.
 - <Any access, credentials, conventions the agent needs.>
 
+# Runtime contract  (include only when tools/shared state/provider controls/host sessions require it)
+- Tool actions declare `read_only` or `side_effecting`; parallel groups contain
+  only independent reads. Side effects use a unique ordered sequence and enforce
+  a lease/fencing token or transaction for shared resources.
+- Authority context: <tenant/channel/principal/connector identity/memory namespace/
+  permission snapshot hash>. Persisted state must match or fail closed.
+- Model policy is role-based; a dated runtime adapter records concrete model,
+  effort, thinking mode, and output reserve. Do not hard-code provider defaults in CORE.
+- Current Claude API adapters reject final assistant-turn prefill. PROFILE defaults
+  are user-visible preferences, not API prefill.
+- Host session commands are emitted only after capability detection; managed
+  background sessions get independent run/lease/budget/cancellation IDs.
+
 # State & memory  (this is how you survive a restart)
 - Task list: <path> — JSON, one entry per success criterion with a `status` field.
   You may change ONLY the `status` field. Never edit descriptions or remove items.

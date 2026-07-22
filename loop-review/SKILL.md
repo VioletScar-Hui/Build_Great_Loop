@@ -15,7 +15,7 @@ description: >-
   first. Whole-harness audits are led here even when criteria are the suspected
   defect. This skill also owns maintenance audits of this six-skill router.
 metadata:
-  version: 4.0.0
+  version: 4.1.0
 ---
 
 # Loop Review
@@ -55,6 +55,13 @@ structured evidence makes the applicable acceptance check a gap, not a pass.
 For L2/L3, prompt-only safety is a critical gap unless environment enforcement
 evidence is supplied.
 
+When FLOW, shared/team memory, provider controls, or host session commands are
+present, also audit `../loop-engineering/references/runtime-adapters.md` and the
+runtime contract. Flag parallel side effects, missing/changed authority context,
+unhashed control interfaces, obsolete assistant prefill, stale model capability
+snapshots, and unverified `/fork` or `/subtask` semantics. For shared/team L2/L3,
+cross-namespace memory or credential access is a critical gap.
+
 Be a tough but fair reviewer:
 - **Critical gaps first.** The items that cause runaway, drift, or fake success
   (no hard cap, no verifiable criteria, no externalized state, no real
@@ -80,6 +87,9 @@ Use this to go straight to the cause when the user reports a behavior:
 | Tries to do everything at once | No "one increment per iteration" rule | C |
 | Slows down / loses the thread over time | No context discipline / compaction / notes | E |
 | Picks the wrong next thing | No Orient step / no prioritized task list | C, D |
+| Parallel workers overwrite or double-send | Side effects placed in a parallel group | F, D |
+| Another channel sees prior memory | State/connector not bound to authority context | D, I |
+| Same model scores change after tool swap | Control interface omitted from eval identity | G, F |
 
 ## Output
 

@@ -18,6 +18,8 @@
 - **Cadence:** <e.g. 1d / 2h / 5–15m>
 - **Scheduler kind / timezone / misfire policy:** <verified capabilities>
 - **Verified command:** <exact command only after capability detection; otherwise TBD>
+- **Session mode:** <foreground | in_session | background_session>; for a managed
+  background session record independent session/run/lease/budget/cancellation IDs
 
 ## Budget (cost is a stop condition)
 - **Hard controller:** <scheduler/quota store and atomic reservation method>
@@ -32,6 +34,8 @@
 - **Auto-merge rule (if any):** <required checks + scope + attempt gates, else PR>
 - **Enforcement evidence:** <credential/sandbox/branch-policy checks for each rule>
 - **Kill switch:** <prevent launches + cancel active run + revoke side-effect token>
+- **Authority context:** <tenant/channel/principal/connector identity/memory namespace/permission snapshot hash>
+- **Cross-namespace seed:** <prove another principal/channel cannot read memory or reuse credentials>
 
 ## State & audit
 - **Control state:** `control-state.json` (budget/gate/cancellation/claim authority)
